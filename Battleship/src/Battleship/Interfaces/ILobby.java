@@ -9,6 +9,6 @@ package Battleship.Interfaces;
  *
  * @author sebas
  */
-public interface IGameManager {
+public interface ILobby {
     
 }
