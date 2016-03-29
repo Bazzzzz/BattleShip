@@ -5,6 +5,7 @@
  */
 package Battleship.Domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  *
  * @author sebas
  */
-public class Overview {
+public class Overview implements Serializable {
     private boolean isOpponentsBoard;
     private List<SpecialPackage> specials;
     
@@ -25,7 +26,7 @@ public class Overview {
      * @param location not null
      * @return True if the location is available, False if filled.
      */
-    public boolean locationAvailable(int[][] location) {
+    public boolean locationAvailable(int[] location) {
         return false;
     }
     /**
@@ -33,7 +34,7 @@ public class Overview {
      * @param location not null
      * @return True if the location holds a piece of a ship, False if not.
      */
-    public boolean locationHasShip(int[][] location) {
+    public boolean locationHasShip(int[] location) {
         return false;
     }
 }

@@ -9,6 +9,23 @@ package Battleship.Domain;
  *
  * @author sebas
  */
-public class SpecialTorpedo {
+public class SpecialTorpedo extends SpecialPackage {
+    private int[] hitbox;
+    private String name;
+    private int[] location;
     
+    /**
+     *
+     * @param name
+     * @param location
+     */
+    public SpecialTorpedo(String name, int[] locationFound) {
+        super(name,locationFound);
+        if (hitbox != null && name != null && location != null) {
+            this.hitbox = hitbox;
+            this.location = location;
+            this.name = name;
+            
+        }
+    }
 }
