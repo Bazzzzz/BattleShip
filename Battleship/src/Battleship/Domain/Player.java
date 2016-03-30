@@ -10,5 +10,6 @@ package Battleship.Domain;
  * @author sebas
  */
 public class Player {
-    
+    private String name;
+    private boolean isTurn;
 }

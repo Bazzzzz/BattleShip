@@ -18,7 +18,16 @@ public class Torpedo implements Serializable {
 
     /**
      * Constructs a Torpedo
-     *
+     * @param name not null
+     */
+    public Torpedo(String name) {
+        if (name != null) {
+            this.name = name;
+            this.firedLocation = null;
+        }
+    }
+    /**
+     * Constructs a Torpedo
      * @param name not null
      * @param firedLocation not null
      */
@@ -28,7 +37,10 @@ public class Torpedo implements Serializable {
             this.firedLocation = firedLocation;
         }
     }
-
+    
+    public void updateFireLocation(int[] location) {
+        this.firedLocation = location;
+    }
     public String getName() {
         return name;
     }
@@ -37,7 +49,11 @@ public class Torpedo implements Serializable {
         return firedLocation;
     }
 
+    @Override
     public String toString() {
+        if (this.firedLocation == null) {
+            return "Torpedo: " + name;
+        }
         return "Torpedo: " + name + " fired at: " + firedLocation + ".";
     }
 
