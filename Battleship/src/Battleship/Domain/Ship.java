@@ -18,6 +18,12 @@ public class Ship {
     private String name;
     private int direction;
 
+    /**
+     * Constructs a Ship.
+     * @param length Between 2 and 7
+     * @param locationStart must hold 2 elements
+     * @param direction 0 for vertical, 1 for horizontal
+     */
     public Ship(int length, int[] locationStart, int direction) {
         if (length < 2) {
             throw new IllegalArgumentException("Ship can't be smaller than 2.");
@@ -42,6 +48,33 @@ public class Ship {
         this.name = determineShipName(length);
 
     }
+
+    public int getLength() {
+        return length;
+    }
+
+    public int[] getLocationStart() {
+        return locationStart;
+    }
+
+    public int[] getLocationEnd() {
+        return locationEnd;
+    }
+
+    public int getAmountHit() {
+        return amountHit;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+    
+    
+    
     /**
      * Changes the damage a ship has taken from torpedos.
      * @param number
@@ -118,7 +151,7 @@ public class Ship {
                 calculatedEndLocation[1] = endYIndex;
                 return calculatedEndLocation;
             } else {
-                throw new IllegalArgumentException("Ships has to fit in the board.");
+                throw new IllegalArgumentException("Ships has to fit on the board.");
             }
         } else {
             throw new IllegalArgumentException("Ships can't be placed in a corner.");
@@ -137,12 +170,12 @@ public class Ship {
     private boolean checkIfFits(int[] locationStart, int length, int direction) {
         // Check horizontal ships
         if (direction == 1) {
-            if (checkIfFitsIndex(locationStart[0], length)) {
+            if (checkIfFitsIndex(locationStart[0], length, "HORIZONTAL")) {
                 return true;
             }
         } // Check vertical ships
         else {
-            if (checkIfFitsIndex(locationStart[1], length)) {
+            if (checkIfFitsIndex(locationStart[1], length, "VERTICAL")) {
                 return true;
             }
         }
@@ -157,8 +190,16 @@ public class Ship {
      * @param length
      * @return True if a ship fits.
      */
-    private boolean checkIfFitsIndex(int value, int length) {
-        if (value + length < 15) {
+    private boolean checkIfFitsIndex(int value, int length, String direction) {
+        int maxSize;
+        switch(direction) {
+            case "HORIZONTAL": maxSize = Overview.BOARDWIDTH;
+                break;
+            case "VERTICAL": maxSize = Overview.BOARDHEIGHT;
+                break;
+            default: maxSize = 0;
+        }
+        if (value + length < maxSize) {
             return true;
         } else {
             return false;
@@ -172,13 +213,17 @@ public class Ship {
      * @return True if it doesn't start in a corner.
      */
     private boolean checkCorners(int[] locationStart) {
+        int boardWidth = Overview.BOARDWIDTH;
+        int boardHeight = Overview.BOARDHEIGHT;
         if ((locationStart[0] > 1 && locationStart[1] > 1) // Top left corner
-                || (locationStart[0] < 15 && locationStart[1] < 15) // Bottom right corner
-                || (locationStart[0] > 1 && locationStart[1] < 15) // Bottom left corner
-                || locationStart[0] < 15 && locationStart[1] > 1) // Top right corner
+                || (locationStart[0] < boardWidth - 1 && locationStart[1] < boardHeight - 1) // Bottom right corner
+                || (locationStart[0] > 1 && locationStart[1] < boardHeight - 1) // Bottom left corner
+                || locationStart[0] < boardWidth - 1 && locationStart[1] > 1) // Top right corner
         {
             return true;
         }
+        
+        
         return false;
     }
 }

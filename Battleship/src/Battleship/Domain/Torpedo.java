@@ -37,7 +37,10 @@ public class Torpedo implements Serializable {
             this.firedLocation = firedLocation;
         }
     }
-    
+    /**
+     * Gives a torpedo it's fire location
+     * @param location 
+     */
     public void updateFireLocation(int[] location) {
         this.firedLocation = location;
     }
