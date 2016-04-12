@@ -95,7 +95,7 @@ public class Ship {
         
     }
     private int decreaseHit(int number) {
-        return this.amountHit -= number;
+        return this.amountHit -= ((-1) * number);
     }
     /**
      * Determines the name of the ship dependant on the size.

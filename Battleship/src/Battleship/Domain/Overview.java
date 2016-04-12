@@ -18,6 +18,12 @@ public class Overview implements Serializable {
 
     private boolean isOpponentsBoard;
     private List<SpecialPackage> specials;
+    private List<Ship> ships;
+    /**
+     * 0 = nothing is placed
+     * 1 = ship location
+     * 2 = SpecialPackage
+     */
     private int[][] board;
     public static final int BOARDWIDTH = 16;
     public static final int BOARDHEIGHT = 16;
@@ -25,6 +31,7 @@ public class Overview implements Serializable {
     public Overview() {
         this.isOpponentsBoard = false;
         this.specials = new ArrayList<SpecialPackage>(4);
+        this.ships = new ArrayList<Ship>(7);
         board = new int[BOARDWIDTH][BOARDHEIGHT];
     }
 
@@ -160,6 +167,15 @@ public class Overview implements Serializable {
     }
 
     /**
+     * Shows the amount of ships a player has on the overview.
+     *
+     * @return Size of ships.
+     */
+    public int amountOfShips() {
+        return ships.size();
+    }
+
+    /**
      * Checks if a location on the overview has a special package.
      *
      * @param location has 2 elements First index holds x-axis, second index
@@ -179,6 +195,121 @@ public class Overview implements Serializable {
             }
         }
         return false;
+    }
+
+    /**
+     * Add a ship to the board.
+     *
+     * @param ship
+     * @return True if placed.
+     */
+    public boolean addShip(Ship ship) {
+        if (ship != null) {
+            ships.add(ship);
+            this.placeShipOnBoard(ship);
+            return true;
+        }
+        return false;
+
+    }
+
+    /**
+     * Get the ship that's located on a certain location. Ship can be found by
+     * it's start and end location, as well as any location in between.
+     *
+     * @param location has to hold 2 elements.
+     * @return Ship that's located on a location.
+     */
+    public Ship getShipOnLocation(int[] location) {
+        if (location.length == 2
+                && location[0] > 0 && location[0] < BOARDWIDTH
+                && location[1] > 0 && location[1] < BOARDHEIGHT) {
+            for (Ship ship : this.ships) {
+                if (ship.getLocationStart().equals(location)) {
+                    return ship;
+                } else if (ship.getLocationEnd().equals(location)) {
+                    return ship;
+                } else if (checkForShipOnLocation(ship, location)) {
+                    return ship;
+                } else {
+                    continue;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Calculates whether the given location holds a ship.
+     *
+     * @param ship
+     * @param location
+     * @return True if a ship is found. False if not.
+     */
+    private boolean checkForShipOnLocation(Ship ship, int[] location) {
+        int locationStart[] = ship.getLocationStart();
+        int locationEnd[] = ship.getLocationEnd();
+        // Vertical x-axis remains the same
+        if (ship.getDirection() == 0) {
+            int xIndex = locationStart[0];
+            for (int i = locationEnd[1]; i > locationStart[0]; i--) {
+                int[] tempLocation = new int[2];
+                tempLocation[0] = xIndex;
+                tempLocation[1] = i;
+                if (location == tempLocation) {
+                    return true;
+                }
+            }
+        } // Horizontal y-axis remains the same
+        else if (ship.getDirection() == 1) {
+            int yIndex = locationStart[1];
+            for (int i = locationEnd[0]; i > locationStart[0]; i--) {
+                int[] tempLocation = new int[2];
+                tempLocation[0] = i;
+                tempLocation[1] = yIndex;
+                if (location == tempLocation) {
+                    return true;
+                }
+            }
+        } else {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Place ship on the board.
+     *
+     * @param ship
+     */
+    private void placeShipOnBoard(Ship ship) {
+        this.defineLocationsForShipBody(ship);
+    }
+
+    /**
+     * Calculates the location of the ship on the board. Fills in a 1 to
+     * determine where a ship is located.
+     *
+     * @param ship
+     */
+    private void defineLocationsForShipBody(Ship ship) {
+        int[] locationStart = ship.getLocationStart();
+        int[] locationEnd = ship.getLocationEnd();
+        int direction = ship.getDirection();
+        // Vertical x-axis remains the same
+        if (direction == 0) {
+            int xIndex = locationStart[0];
+            for (int i = locationEnd[1]; i > locationStart[1]; i--) {
+                board[xIndex][i] = 1;
+            }
+        } // Horizontal y-axis remains the same
+        else if (direction == 1) {
+            int yIndex = locationStart[1];
+            for (int i = locationEnd[0]; i > locationStart[0]; i--) {
+                board[i][yIndex] = 1;
+            }
+        }
     }
 
     /**
@@ -202,7 +333,7 @@ public class Overview implements Serializable {
     /**
      * Builds and places random special packages on the overview.
      */
-    private void buildSpecialPackages() {
+    public void buildSpecialPackages() {
         int[] randomLocation = new int[2];
         int numberOfPackages = 0;
         while (numberOfPackages < 4) {
@@ -226,5 +357,13 @@ public class Overview implements Serializable {
                 specials.add(special);
             }
         }
+        if(specials.size() == 4) {
+            for (SpecialPackage special : specials) {
+                placeSpecialOnBoard(special);
+            }
+        }
+    }
+    private void placeSpecialOnBoard(SpecialPackage special) {
+        board[special.getPlacedLocation()[0]][special.getPlacedLocation()[1]] = 2;
     }
 }

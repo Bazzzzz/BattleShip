@@ -21,13 +21,18 @@ public abstract class SpecialPackage {
         this.placedLocation = placedLocation;
     }
 
+    public int[] getPlacedLocation() {
+        return this.placedLocation;
+    }
     /**
      * Claims a special package
      *
      * @return boolean
      */
     public boolean isClaimed() {
-        this.claimed = !this.claimed;
         return this.claimed;
+    }
+    public void claimSpecial() {
+        this.claimed = !this.claimed;
     }
 }
