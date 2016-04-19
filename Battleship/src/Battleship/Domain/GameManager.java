@@ -124,7 +124,7 @@ public class GameManager implements IGameManager {
     }
 
     public void updateOverview() {
-
+        
     }
 
     /**
@@ -147,7 +147,7 @@ public class GameManager implements IGameManager {
     }
 
     public List<Overview> getOverviews() {
-        return getOverviews();
+        return this.overviews;
     }
 
     public List<SpecialPackage> getSpecials(IPlayer player) {
@@ -157,7 +157,7 @@ public class GameManager implements IGameManager {
     public boolean useSpecial(SpecialPackage special) {
         return false;
     }
-
+    
     /**
      * Add a player to the players list
      *
@@ -203,5 +203,34 @@ public class GameManager implements IGameManager {
         int damage = -1;
         int shipDamage = ship.changeAmountHit(damage);
         return shipDamage;
+    }
+    
+    /**
+     * Set the overviews per player.
+     * @param player1
+     * @param player2 
+     */
+    public void buildOverviewsForPlayers(IPlayer player1, IPlayer player2) {
+        // Set players own overviews.
+        Overview player1OwnField = new Overview();
+        Overview player2OwnField = new Overview();
+        
+        player1.setPlayerOverview(player1OwnField);
+        player2.setPlayerOverview(player2OwnField);
+        
+        // Set players opponents overviews.
+        Overview player1OpponentField = new Overview();
+        player1OpponentField = player2OwnField;
+        
+        player1.setOpponentOverview(player2OwnField);
+        Overview player1OpponentFieldTemp = player1.getOpponent();
+        
+        player2.setOpponentOverview(player1OwnField);
+        Overview player2OpponentField = player2.getOpponent();
+        
+        overviews.add(player1OwnField);
+        overviews.add(player2OwnField);
+        overviews.add(player1OpponentField);
+        overviews.add(player2OpponentField);
     }
 }

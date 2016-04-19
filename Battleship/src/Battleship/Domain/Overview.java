@@ -366,4 +366,13 @@ public class Overview implements Serializable {
     private void placeSpecialOnBoard(SpecialPackage special) {
         board[special.getPlacedLocation()[0]][special.getPlacedLocation()[1]] = 2;
     }
+    
+    public void printBoard() {
+        for(int i = BOARDHEIGHT; i > 0; i--) {
+            for(int j = BOARDWIDTH; j > 0; j--) {
+                System.out.print(board[i-1][j-1]);
+            }
+            System.out.print("\n");
+        }
+    }
 }

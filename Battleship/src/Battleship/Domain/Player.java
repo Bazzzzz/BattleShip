@@ -5,6 +5,7 @@
  */
 package Battleship.Domain;
 
+import Battleship.Interfaces.IPlayer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  *
  * @author sebas
  */
-public class Player {
+public class Player implements IPlayer {
     private String name;
     private boolean isTurn;
     private Overview player;
@@ -43,7 +44,14 @@ public class Player {
         return opponent;
     }
     
+    public void setPlayerOverview(Overview playerOverview) {
+        this.player = playerOverview;
+    }
     
+    public void setOpponentOverview(Overview opponentOverview) {
+        opponentOverview.setOpponentsBoard();
+        this.opponent = opponentOverview;
+    }
     /**
      * Changes the turn.
      * @return True if it's the players turn. False if not.
