@@ -21,10 +21,12 @@ public interface IGameManager {
 
     public boolean placeShip(IPlayer player, int[] locationStart, int shipLength, int direction);
 
-    public void fireTorpedo(IPlayer player, String torpedoName, int[] firedLocation);
+    public boolean fireTorpedo(IPlayer player, String torpedoName, int[] firedLocation);
 
     public List<IPlayer> getPlayers();
 
+    public List<Torpedo> getTorpedos();
+    
     public SpecialPackage claimSpecial(int[] location, IPlayer player);
 
     public void updateOverview();

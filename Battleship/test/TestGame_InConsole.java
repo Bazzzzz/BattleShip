@@ -38,7 +38,7 @@ public class TestGame_InConsole {
         Overview overview = overviews.get(0);
         overview.printBoard();
     }*/
-
+/*
     @Test
     public void testPrintBoardAfterShipPlacement() {
         int[] locationShip = new int[2];
@@ -46,9 +46,9 @@ public class TestGame_InConsole {
         locationShip[1] = 4;
         manager.buildOverviewsForPlayers(player1, player2);
 
-        manager.placeShip(player1, locationShip, 4, 0);
+        manager.placeShip(player1, locationShip, 3, 0);
         
-        System.out.println("Players own board. First turn.");
+        System.out.println("Players own board. First turn. Placed on 4,4 size 3");
         player1.getPlayer().printBoard();
         System.out.println("Players opponent board.First turn.");
         player2.getOpponent().printBoard();
@@ -58,9 +58,40 @@ public class TestGame_InConsole {
         
         manager.placeShip(player1, locationShip, 6, 1);
         
-        System.out.println("Players own board. Second turn.");
+        System.out.println("Players own board. Second turn. Placed on 7,8 size 6");
         player1.getPlayer().printBoard();
         System.out.println("Players opponent board. Second turn.");
         player2.getOpponent().printBoard();
+    }
+*/
+    
+    @Test
+    public void testPrintBoardAfterTorpedoOnShip() {
+        int[] locationShip = new int[2];
+        locationShip[0] = 4;
+        locationShip[1] = 4;
+        manager.buildOverviewsForPlayers(player1, player2);
+        manager.addPlayer(player1);
+        assertNull("[TEST] Add the same player to a game twice.", manager.addPlayer(player1));
+        manager.addPlayer(player2);
+        
+        manager.placeShip(player2, locationShip, 3, 0);
+        
+        System.out.println("Players own board. After Place Ship.");
+        player1.getPlayer().printBoard();
+        System.out.println("Players opponent board. After Place Ship.");
+        player1.getOpponent().printBoard();
+        
+        int[] locationTorpedo = new int[2];
+        locationTorpedo[0] = 4;
+        locationTorpedo[1] = 4;
+        manager.fireTorpedo(player1, "TorpedoNormal", locationTorpedo);
+        
+        System.out.println("Players own board. After Torpedo Fire.");
+        player1.getPlayer().printBoard();
+        System.out.println("Players opponent board. After Torpedo Fire.");
+        player1.getOpponent().printBoard();
+        
+        assertTrue("Location has Torpedo", player1.getOpponent().locationHasTorpedo(locationTorpedo));
     }
 }

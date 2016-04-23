@@ -19,6 +19,10 @@ public class Player implements IPlayer {
     private Overview player;
     private Overview opponent;
     private List<SpecialPackage> specials;
+
+    public String getName() {
+        return name;
+    }
     
     /**
      * Constructs a player.
@@ -77,5 +81,13 @@ public class Player implements IPlayer {
         // TODO: Method.
         return true;
     }
-    
+    public boolean equals(Object o) {
+        if(o instanceof IPlayer) {
+            IPlayer player = (IPlayer)o;
+            if(this.getName().equals(player.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

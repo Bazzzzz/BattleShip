@@ -20,9 +20,11 @@ public class Overview implements Serializable {
     private List<SpecialPackage> specials;
     private List<Ship> ships;
     /**
-     * 0 = nothing is placed
-     * 1 = ship location
+     * 0 = nothing is placed 
+     * 1 = ship location 
      * 2 = SpecialPackage
+     * -1 = torpedo
+     * -5 = torpedo hit ship
      */
     private int[][] board;
     public static final int BOARDWIDTH = 16;
@@ -104,20 +106,20 @@ public class Overview implements Serializable {
      * holds y-axis. Board location is available if location index holds 0.
      * Board location has ship if location index holds 1. Board location has
      * special if location index holds 2. Board location has torpedo if location
-     * index holds -1.
+     * index holds -1. Board location ship hit with torpedo if location index
+     * holds -5.
      * @return True if the location is available, False if filled.
      */
     public boolean locationAvailable(int[] location) {
         if (location.length == 2) {
-            int xLocationIndex = location[0];
-            int yLocationIndex = location[1];
+            int xLocationIndex = location[0] - 1;
+            int yLocationIndex = location[1] - 1;
             if ((xLocationIndex >= 0 && xLocationIndex < BOARDWIDTH - 1)
                     && (yLocationIndex >= 0 && yLocationIndex < BOARDHEIGHT - 1)) {
                 if (board[xLocationIndex][yLocationIndex] == 0) {
                     return true;
                 }
             }
-
         }
         return false;
     }
@@ -129,13 +131,14 @@ public class Overview implements Serializable {
      * holds y-axis. Board location is available if location index holds 0.
      * Board location has ship if location index holds 1. Board location has
      * special if location index holds 2. Board location has torpedo if location
-     * index holds -1.
+     * index holds -1. Board location ship hit with torpedo if location index
+     * holds -5.
      * @return True if the location holds a piece of a ship, False if not.
      */
     public boolean locationHasShip(int[] location) {
         if (verifySpecificLocation(location)) {
-            int xLocationIndex = location[0];
-            int yLocationIndex = location[1];
+            int xLocationIndex = location[0] - 1;
+            int yLocationIndex = location[1] - 1;
 
             if (board[xLocationIndex][yLocationIndex] == 1) {
                 return true;
@@ -151,15 +154,16 @@ public class Overview implements Serializable {
      * holds y-axis. Board location is available if location index holds 0.
      * Board location has ship if location index holds 1. Board location has
      * special if location index holds 2. Board location has torpedo if location
-     * index holds -1.
+     * index holds -1. Board location ship hit with torpedo if location index
+     * holds -5.
      * @return True if the location holds a torpedo, False if not.
      */
     public boolean locationHasTorpedo(int[] location) {
         if (verifySpecificLocation(location)) {
-            int xLocationIndex = location[0];
-            int yLocationIndex = location[1];
+            int xLocationIndex = location[0] - 1;
+            int yLocationIndex = location[1] - 1;
 
-            if (board[xLocationIndex][yLocationIndex] == -1) {
+            if (board[xLocationIndex][yLocationIndex] == -1 || board[xLocationIndex][yLocationIndex] == -5) {
                 return true;
             }
         }
@@ -182,13 +186,14 @@ public class Overview implements Serializable {
      * holds y-axis. Board location is available if location index holds 0.
      * Board location has ship if location index holds 1. Board location has
      * special if location index holds 2. Board location has torpedo if location
-     * index holds -1.
+     * index holds -1. Board location ship hit with torpedo if location index
+     * holds -5.
      * @return True if the location holds a special package, False if not.
      */
     public boolean locationHasSpecial(int[] location) {
         if (verifySpecificLocation(location)) {
-            int xLocationIndex = location[0];
-            int yLocationIndex = location[1];
+            int xLocationIndex = location[0] - 1;
+            int yLocationIndex = location[1] - 1;
 
             if (board[xLocationIndex][yLocationIndex] == 2) {
                 return true;
@@ -225,9 +230,11 @@ public class Overview implements Serializable {
                 && location[0] > 0 && location[0] < BOARDWIDTH
                 && location[1] > 0 && location[1] < BOARDHEIGHT) {
             for (Ship ship : this.ships) {
-                if (ship.getLocationStart().equals(location)) {
+                if (ship.getLocationStart()[0] == location[0]
+                        && ship.getLocationStart()[1] == location[1]) {
                     return ship;
-                } else if (ship.getLocationEnd().equals(location)) {
+                } else if (ship.getLocationEnd()[0] == location[0]
+                        && ship.getLocationEnd()[1] == location[1]) {
                     return ship;
                 } else if (checkForShipOnLocation(ship, location)) {
                     return ship;
@@ -252,11 +259,12 @@ public class Overview implements Serializable {
         // Vertical x-axis remains the same
         if (ship.getDirection() == 0) {
             int xIndex = locationStart[0];
-            for (int i = locationEnd[1]; i > locationStart[0]; i--) {
+            for (int i = locationEnd[1]; i > locationStart[1]; i--) {
                 int[] tempLocation = new int[2];
                 tempLocation[0] = xIndex;
                 tempLocation[1] = i;
-                if (location == tempLocation) {
+                if (location[0] == tempLocation[0]
+                        && location[1] == tempLocation[1]) {
                     return true;
                 }
             }
@@ -267,7 +275,8 @@ public class Overview implements Serializable {
                 int[] tempLocation = new int[2];
                 tempLocation[0] = i;
                 tempLocation[1] = yIndex;
-                if (location == tempLocation) {
+                if (location[0] == tempLocation[0]
+                        && location[1] == tempLocation[1]) {
                     return true;
                 }
             }
@@ -299,14 +308,14 @@ public class Overview implements Serializable {
         int direction = ship.getDirection();
         // Vertical x-axis remains the same
         if (direction == 0) {
-            int xIndex = locationStart[0];
-            for (int i = locationEnd[1]; i > locationStart[1]; i--) {
+            int xIndex = locationStart[0] - 1;
+            for (int i = locationEnd[1] - 1; i >= locationStart[1] - 1; i--) {
                 board[xIndex][i] = 1;
             }
         } // Horizontal y-axis remains the same
         else if (direction == 1) {
-            int yIndex = locationStart[1];
-            for (int i = locationEnd[0]; i > locationStart[0]; i--) {
+            int yIndex = locationStart[1] - 1;
+            for (int i = locationEnd[0] - 1; i >= locationStart[0] - 1; i--) {
                 board[i][yIndex] = 1;
             }
         }
@@ -320,14 +329,36 @@ public class Overview implements Serializable {
      */
     private boolean verifySpecificLocation(int[] location) {
         if (location.length == 2) {
-            int xLocationIndex = location[0];
-            int yLocationIndex = location[1];
+            int xLocationIndex = location[0] - 1;
+            int yLocationIndex = location[1] - 1;
             if ((xLocationIndex >= 0 && xLocationIndex < BOARDWIDTH - 1)
                     && (yLocationIndex >= 0 && yLocationIndex < BOARDHEIGHT - 1)) {
                 return true;
             }
         }
         return false;
+    }
+    /**
+     * Updates the overview to indicate that a torpedo was fired.
+     * @param torpedoLocation 
+     */
+    public void displayTorpedo(int[] torpedoLocation) {
+        if (torpedoLocation.length == 2) {
+            int xIndex = torpedoLocation[0] - 1;
+            int yIndex = torpedoLocation[1] - 1;
+            board[xIndex][yIndex] = -1;
+        }
+    }
+    /**
+     * Updates the overview to indicate that a torpedo has hit a ship.
+     * @param torpedoLocation 
+     */
+    public void displayTorpedoShipHit(int[] torpedoLocation) {
+        if (torpedoLocation.length == 2) {
+            int xIndex = torpedoLocation[0] - 1;
+            int yIndex = torpedoLocation[1] - 1;
+            board[xIndex][yIndex] = -5;
+        }
     }
 
     /**
@@ -357,20 +388,21 @@ public class Overview implements Serializable {
                 specials.add(special);
             }
         }
-        if(specials.size() == 4) {
+        if (specials.size() == 4) {
             for (SpecialPackage special : specials) {
                 placeSpecialOnBoard(special);
             }
         }
     }
+
     private void placeSpecialOnBoard(SpecialPackage special) {
         board[special.getPlacedLocation()[0]][special.getPlacedLocation()[1]] = 2;
     }
-    
+
     public void printBoard() {
-        for(int i = BOARDHEIGHT; i > 0; i--) {
-            for(int j = BOARDWIDTH; j > 0; j--) {
-                System.out.print(board[i-1][j-1]);
+        for (int i = BOARDHEIGHT; i > 0; i--) {
+            for (int j = BOARDWIDTH; j > 0; j--) {
+                System.out.print(board[i - 1][j - 1]);
             }
             System.out.print("\n");
         }

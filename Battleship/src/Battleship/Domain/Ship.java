@@ -82,21 +82,32 @@ public class Ship {
      */
     public int changeAmountHit(int number) {
         if (number > 0) {
-            this.amountHit = this.increaseHit(number);
+            this.amountHit = this.increaseHitCounter(number);
         }
         else {
-            this.amountHit = this.decreaseHit(number);
+            this.amountHit = this.decreaseHitCounter(number);
         }
         return this.amountHit;
     }
     
-    private int increaseHit(int number) {
+    private int increaseHitCounter(int number) {
         return this.amountHit += number;
         
     }
-    private int decreaseHit(int number) {
+    private int decreaseHitCounter(int number) {
         return this.amountHit -= ((-1) * number);
     }
+    /**
+     * Determine whether a ship has been destroyed or not.
+     * @return 
+     */
+    public boolean isDestroyed() {
+        if(this.amountHit == this.length) {
+            return true;
+        }
+        return false;
+    }
+    
     /**
      * Determines the name of the ship dependant on the size.
      *
@@ -130,8 +141,8 @@ public class Ship {
      * @return
      */
     private int[] calculateLocationEnd(int length, int[] locationStart, int direction) {
-        int endXIndex = 1;
-        int endYIndex = 1;
+        int endXIndex = 0;
+        int endYIndex = 0;
         int[] calculatedEndLocation;
         // Check to see if a ship doesn't start in a corner.
         if (checkCorners(locationStart)) {
@@ -139,19 +150,19 @@ public class Ship {
             if (checkIfFits(locationStart, length, direction)) {
                 // Horizontal ships
                 if (direction == 1) {
-                    endXIndex += locationStart[0] + length;
-                    endYIndex += locationStart[1];
+                    endXIndex += locationStart[0] + length - 1;
+                    endYIndex = locationStart[1];
                 } // Vertical ships
                 else {
-                    endXIndex += locationStart[0];
-                    endYIndex += locationStart[1] + length;
+                    endXIndex = locationStart[0];
+                    endYIndex += locationStart[1] + length - 1;
                 }
                 calculatedEndLocation = new int[2];
                 calculatedEndLocation[0] = endXIndex;
                 calculatedEndLocation[1] = endYIndex;
                 return calculatedEndLocation;
             } else {
-                throw new IllegalArgumentException("Ships has to fit on the board.");
+                throw new IllegalArgumentException("Ship has to fit on the board.");
             }
         } else {
             throw new IllegalArgumentException("Ships can't be placed in a corner.");

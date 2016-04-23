@@ -72,8 +72,9 @@ public class GameManager implements IGameManager {
      * @param player not null
      * @param torpedoName not null
      * @param firedLocation
+     * @return True if torpedo was fired.
      */
-    public void fireTorpedo(IPlayer player, String torpedoName, int[] firedLocation) {
+    public boolean fireTorpedo(IPlayer player, String torpedoName, int[] firedLocation) {
         Torpedo torpedo = null;
         if (player != null) {
             IPlayer opponentPlayer = null;
@@ -85,18 +86,28 @@ public class GameManager implements IGameManager {
                 }
             }
             if (torpedoName != null) {
+                if(player.getOpponent().locationHasTorpedo(firedLocation)) {
+                    return false;
+                }
                 torpedo = new Torpedo(torpedoName);
+                torpedo.updateFireLocation(firedLocation);
+                torpedos.add(torpedo);
                 if (player.getOpponent().locationHasShip(firedLocation)) {
-                    this.damageShip(opponentPlayer, firedLocation);
-                    torpedo.updateFireLocation(firedLocation);
-                    torpedos.add(torpedo);
+                    if(this.damageShip(opponentPlayer, firedLocation) == -1) {
+                        // TODO: Animation of ship destruction?
+                        return true;
+                    }
+                    player.getOpponent().displayTorpedoShipHit(firedLocation);
                 } else if (player.getOpponent().locationHasSpecial(firedLocation)) {
-
+                    // TODO: Obtain Special.
+                    return true;
                 } else {
-                    return;
+                    player.getOpponent().displayTorpedo(firedLocation);
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     public List<IPlayer> getPlayers() {
@@ -124,7 +135,7 @@ public class GameManager implements IGameManager {
     }
 
     public void updateOverview() {
-        
+
     }
 
     /**
@@ -150,6 +161,10 @@ public class GameManager implements IGameManager {
         return this.overviews;
     }
 
+    public List<Torpedo> getTorpedos() {
+        return torpedos;
+    }
+
     public List<SpecialPackage> getSpecials(IPlayer player) {
         return player.getSpecials();
     }
@@ -157,19 +172,28 @@ public class GameManager implements IGameManager {
     public boolean useSpecial(SpecialPackage special) {
         return false;
     }
-    
+
     /**
      * Add a player to the players list
      *
-     * @param player not null
-     * @return The added player, Null if not added.
+     * @param player not null or already in the list
+     * @return The added player or null if player is null.
+     * @exception IllegalArgumentException Player is already in the list.
      */
     public IPlayer addPlayer(IPlayer player) {
         if (player != null) {
+            if (this.players.size() != 0) {
+                for (IPlayer p : this.players) {
+                    if (p.equals(player)) {
+                        throw new IllegalArgumentException("The player you tried to add is already in the list.");
+                    }
+                }
+            }
+
             this.players.add(player);
             return player;
         }
-        return null;
+        throw new IllegalArgumentException("Unable to add a NULL player to the list..");
     }
 
     /**
@@ -200,34 +224,39 @@ public class GameManager implements IGameManager {
      */
     public int damageShip(IPlayer player, int[] location) {
         Ship ship = player.getPlayer().getShipOnLocation(location);
-        int damage = -1;
+        int damage = 1;
         int shipDamage = ship.changeAmountHit(damage);
+        
+        if(ship.isDestroyed()) {
+            return -1;
+        }
         return shipDamage;
     }
-    
+
     /**
      * Set the overviews per player.
+     *
      * @param player1
-     * @param player2 
+     * @param player2
      */
     public void buildOverviewsForPlayers(IPlayer player1, IPlayer player2) {
         // Set players own overviews.
         Overview player1OwnField = new Overview();
         Overview player2OwnField = new Overview();
-        
+
         player1.setPlayerOverview(player1OwnField);
         player2.setPlayerOverview(player2OwnField);
-        
+
         // Set players opponents overviews.
         Overview player1OpponentField = new Overview();
         player1OpponentField = player2OwnField;
-        
+
         player1.setOpponentOverview(player2OwnField);
         Overview player1OpponentFieldTemp = player1.getOpponent();
-        
+
         player2.setOpponentOverview(player1OwnField);
         Overview player2OpponentField = player2.getOpponent();
-        
+
         overviews.add(player1OwnField);
         overviews.add(player2OwnField);
         overviews.add(player1OpponentField);

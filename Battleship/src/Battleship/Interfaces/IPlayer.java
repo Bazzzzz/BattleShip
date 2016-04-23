@@ -15,6 +15,8 @@ import java.util.List;
  */
 public interface IPlayer {
 
+    public String getName();
+    
     public Overview getPlayer();
 
     public Overview getOpponent();
