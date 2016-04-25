@@ -85,19 +85,21 @@ public class GameManager implements IGameManager {
                     break;
                 }
             }
+            // TODO: Change all player.getOpponent() to opponentPlayer.getPlayer()
             if (torpedoName != null) {
-                if(player.getOpponent().locationHasTorpedo(firedLocation)) {
+                if (player.getOpponent().locationHasTorpedo(firedLocation)) {
                     return false;
                 }
                 torpedo = new Torpedo(torpedoName);
                 torpedo.updateFireLocation(firedLocation);
                 torpedos.add(torpedo);
                 if (player.getOpponent().locationHasShip(firedLocation)) {
-                    if(this.damageShip(opponentPlayer, firedLocation) == -1) {
+                    if (this.damageShip(opponentPlayer, firedLocation) == 1) {
                         // TODO: Animation of ship destruction?
-                        return true;
+                        
                     }
                     player.getOpponent().displayTorpedoShipHit(firedLocation);
+                    return true;
                 } else if (player.getOpponent().locationHasSpecial(firedLocation)) {
                     // TODO: Obtain Special.
                     return true;
@@ -148,8 +150,24 @@ public class GameManager implements IGameManager {
             overview.buildSpecialPackages();
         }
     }
+    /**
+     * Repairs the ship that's selected by the player.
+     * @param fix larger than 0
+     * @param player not NULL
+     * @param location
+     * @return True if a ship was fixed. False otherwise.
+     */
+    public boolean repairShip(int fix, IPlayer player, int[] location) {
+        if (player != null && fix > 0) {
+            Ship tempShip = player.getPlayer().getShipOnLocation(location);
+            if (tempShip != null) {
+                tempShip.changeAmountHit((-1) * fix);
+                if (player.getPlayer().fixShipOnLocation(location)) {
+                    return true;
+                }
+            }
+        }
 
-    public boolean repairShip(int fix, IPlayer player, Ship ship) {
         return false;
     }
 
@@ -226,8 +244,8 @@ public class GameManager implements IGameManager {
         Ship ship = player.getPlayer().getShipOnLocation(location);
         int damage = 1;
         int shipDamage = ship.changeAmountHit(damage);
-        
-        if(ship.isDestroyed()) {
+
+        if (ship.isDestroyed()) {
             return -1;
         }
         return shipDamage;

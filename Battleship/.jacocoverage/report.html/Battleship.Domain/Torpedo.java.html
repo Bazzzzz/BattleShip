@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Torpedo.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;Battleship&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">Battleship.Domain</a> &gt; <span class="el_source">Torpedo.java</span></div><h1>Torpedo.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Battleship.Domain;
+
+import java.io.Serializable;
+
+/**
+ *
+ * @author sebas
+ */
+public class Torpedo implements Serializable {
+
+    private String name;
+    private int[] firedLocation;
+
+    /**
+     * Constructs a Torpedo
+     * @param name not null
+     */
+<span class="fc" id="L23">    public Torpedo(String name) {</span>
+<span class="pc bpc" id="L24" title="1 of 2 branches missed.">        if (name != null) {</span>
+<span class="fc" id="L25">            this.name = name;</span>
+<span class="fc" id="L26">            this.firedLocation = null;</span>
+        }
+<span class="fc" id="L28">    }</span>
+    /**
+     * Constructs a Torpedo
+     * @param name not null
+     * @param firedLocation not null
+     */
+<span class="nc" id="L34">    public Torpedo(String name, int[] firedLocation) {</span>
+<span class="nc bnc" id="L35" title="All 4 branches missed.">        if (name != null &amp;&amp; firedLocation != null) {</span>
+<span class="nc" id="L36">            this.name = name;</span>
+<span class="nc" id="L37">            this.firedLocation = firedLocation;</span>
+        }
+<span class="nc" id="L39">    }</span>
+    /**
+     * Gives a torpedo it's fire location
+     * @param location 
+     */
+    public void updateFireLocation(int[] location) {
+<span class="fc" id="L45">        this.firedLocation = location;</span>
+<span class="fc" id="L46">    }</span>
+    public String getName() {
+<span class="nc" id="L48">        return name;</span>
+    }
+
+    public int[] getFiredLocation() {
+<span class="nc" id="L52">        return firedLocation;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        if (this.firedLocation == null) {</span>
+<span class="nc" id="L58">            return &quot;Torpedo: &quot; + name;</span>
+        }
+<span class="nc" id="L60">        return &quot;Torpedo: &quot; + name + &quot; fired at: &quot; + firedLocation + &quot;.&quot;;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

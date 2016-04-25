@@ -33,7 +33,7 @@ public interface IGameManager {
 
     public void placeSpecials(Overview overview);
 
-    public boolean repairShip(int fix, IPlayer player, Ship ship);
+    public boolean repairShip(int fix, IPlayer player, int[] location);
 
     public List<Torpedo> getAvailableTorpedos(IPlayer player);
 

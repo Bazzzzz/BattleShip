@@ -20,10 +20,7 @@ public class Overview implements Serializable {
     private List<SpecialPackage> specials;
     private List<Ship> ships;
     /**
-     * 0 = nothing is placed 
-     * 1 = ship location 
-     * 2 = SpecialPackage
-     * -1 = torpedo
+     * 0 = nothing is placed 1 = ship location 2 = SpecialPackage -1 = torpedo
      * -5 = torpedo hit ship
      */
     private int[][] board;
@@ -281,9 +278,27 @@ public class Overview implements Serializable {
                 }
             }
         } else {
+            return false;
+        }
+        return false;
+    }
+
+    /**
+     * Fixes a ship on target location.
+     *
+     * @param location
+     * @return True if fixed. False otherwise.
+     */
+    public boolean fixShipOnLocation(int[] location) {
+        if (location[0] > 0 && location[0] < BOARDWIDTH
+                && location[1] > 0 && location[1] < BOARDHEIGHT) {
+            int xIndex = location[0] - 1;
+            int yIndex = location[1] - 1;
+            if (board[xIndex][yIndex] == -5) {
+                board[xIndex][yIndex] = 1;
+            }
             return true;
         }
-
         return false;
     }
 
@@ -338,9 +353,11 @@ public class Overview implements Serializable {
         }
         return false;
     }
+
     /**
      * Updates the overview to indicate that a torpedo was fired.
-     * @param torpedoLocation 
+     *
+     * @param torpedoLocation
      */
     public void displayTorpedo(int[] torpedoLocation) {
         if (torpedoLocation.length == 2) {
@@ -349,9 +366,11 @@ public class Overview implements Serializable {
             board[xIndex][yIndex] = -1;
         }
     }
+
     /**
      * Updates the overview to indicate that a torpedo has hit a ship.
-     * @param torpedoLocation 
+     *
+     * @param torpedoLocation
      */
     public void displayTorpedoShipHit(int[] torpedoLocation) {
         if (torpedoLocation.length == 2) {

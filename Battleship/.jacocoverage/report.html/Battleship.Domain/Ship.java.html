@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Ship.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;Battleship&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">Battleship.Domain</a> &gt; <span class="el_source">Ship.java</span></div><h1>Ship.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Battleship.Domain;
+
+/**
+ *
+ * @author sebas
+ */
+public class Ship {
+
+    private int length;
+    private int[] locationStart;
+    private int[] locationEnd;
+<span class="fc" id="L17">    private int amountHit = 0;</span>
+    private String name;
+    private int direction;
+
+    /**
+     * Constructs a Ship.
+     * @param length Between 2 and 7
+     * @param locationStart must hold 2 elements
+     * @param direction 0 for vertical, 1 for horizontal
+     */
+<span class="fc" id="L27">    public Ship(int length, int[] locationStart, int direction) {</span>
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">        if (length &lt; 2) {</span>
+<span class="nc" id="L29">            throw new IllegalArgumentException(&quot;Ship can't be smaller than 2.&quot;);</span>
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">        } else if (length &gt; 7) {</span>
+<span class="nc" id="L31">            throw new IllegalArgumentException(&quot;Ship can't be larger than 7.&quot;);</span>
+        } else {
+<span class="fc" id="L33">            this.length = length;</span>
+        }
+        // direction 1 = horizontal
+        // direction 0 = vertical
+<span class="pc bpc" id="L37" title="1 of 4 branches missed.">        if (direction == 1 || direction == 0) {</span>
+<span class="fc" id="L38">            this.direction = direction;</span>
+        } else {
+<span class="nc" id="L40">            throw new IllegalArgumentException(&quot;Ships direction can't be anything but 0, 1.&quot;);</span>
+        }
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">        if (locationStart.length == 2) {</span>
+<span class="fc" id="L43">            this.locationEnd = calculateLocationEnd(length, locationStart, direction);</span>
+<span class="fc" id="L44">            this.locationStart = locationStart;</span>
+        } else {
+<span class="nc" id="L46">            throw new IllegalArgumentException(&quot;Ships start location invalid.&quot;);</span>
+        }
+<span class="fc" id="L48">        this.name = determineShipName(length);</span>
+
+<span class="fc" id="L50">    }</span>
+
+    public int getLength() {
+<span class="nc" id="L53">        return length;</span>
+    }
+
+    public int[] getLocationStart() {
+<span class="fc" id="L57">        return locationStart;</span>
+    }
+
+    public int[] getLocationEnd() {
+<span class="fc" id="L61">        return locationEnd;</span>
+    }
+
+    public int getAmountHit() {
+<span class="fc" id="L65">        return amountHit;</span>
+    }
+
+    public String getName() {
+<span class="nc" id="L69">        return name;</span>
+    }
+
+    public int getDirection() {
+<span class="fc" id="L73">        return direction;</span>
+    }
+    
+    
+    
+    /**
+     * Changes the damage a ship has taken from torpedos.
+     * @param number
+     * @return Damage taken.
+     */
+    public int changeAmountHit(int number) {
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">        if (number &gt; 0) {</span>
+<span class="fc" id="L85">            this.amountHit = this.increaseHitCounter(number);</span>
+        }
+        else {
+<span class="nc" id="L88">            this.amountHit = this.decreaseHitCounter(number);</span>
+        }
+<span class="fc" id="L90">        return this.amountHit;</span>
+    }
+    
+    private int increaseHitCounter(int number) {
+<span class="fc" id="L94">        return this.amountHit += number;</span>
+        
+    }
+    private int decreaseHitCounter(int number) {
+<span class="nc" id="L98">        return this.amountHit -= ((-1) * number);</span>
+    }
+    /**
+     * Determine whether a ship has been destroyed or not.
+     * @return 
+     */
+    public boolean isDestroyed() {
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        if(this.amountHit == this.length) {</span>
+<span class="fc" id="L106">            return true;</span>
+        }
+<span class="fc" id="L108">        return false;</span>
+    }
+    
+    /**
+     * Determines the name of the ship dependant on the size.
+     *
+     * @param length
+     * @return Name of the ship.
+     */
+    private String determineShipName(int length) {
+<span class="pc bpc" id="L118" title="3 of 6 branches missed.">        switch (length) {</span>
+            case 2:
+<span class="nc" id="L120">                return &quot;Patrol Boat&quot;;</span>
+            case 3:
+<span class="fc" id="L122">                return &quot;Cruiser&quot;;</span>
+            case 4:
+<span class="fc" id="L124">                return &quot;Submarine&quot;;</span>
+            case 5:
+<span class="nc" id="L126">                return &quot;Battleship&quot;;</span>
+            case 6:
+<span class="fc" id="L128">                return &quot;Aircraft Carrier&quot;;</span>
+            default:
+<span class="nc" id="L130">                return &quot;Destroyer&quot;;</span>
+        }
+    }
+
+    /**
+     * Calculates the end location of a ship.
+     * A ship can't be placed beyond the board, nor can it end or start in a corner.
+     *
+     * @param length
+     * @param locationStart
+     * @param direction
+     * @return
+     */
+    private int[] calculateLocationEnd(int length, int[] locationStart, int direction) {
+<span class="fc" id="L144">        int endXIndex = 0;</span>
+<span class="fc" id="L145">        int endYIndex = 0;</span>
+        int[] calculatedEndLocation;
+        // Check to see if a ship doesn't start in a corner.
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">        if (checkCorners(locationStart)) {</span>
+            // Check to see if a ship fits on the board.
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">            if (checkIfFits(locationStart, length, direction)) {</span>
+                // Horizontal ships
+<span class="fc bfc" id="L152" title="All 2 branches covered.">                if (direction == 1) {</span>
+<span class="fc" id="L153">                    endXIndex += locationStart[0] + length - 1;</span>
+<span class="fc" id="L154">                    endYIndex = locationStart[1];</span>
+                } // Vertical ships
+                else {
+<span class="fc" id="L157">                    endXIndex = locationStart[0];</span>
+<span class="fc" id="L158">                    endYIndex += locationStart[1] + length - 1;</span>
+                }
+<span class="fc" id="L160">                calculatedEndLocation = new int[2];</span>
+<span class="fc" id="L161">                calculatedEndLocation[0] = endXIndex;</span>
+<span class="fc" id="L162">                calculatedEndLocation[1] = endYIndex;</span>
+<span class="fc" id="L163">                return calculatedEndLocation;</span>
+            } else {
+<span class="nc" id="L165">                throw new IllegalArgumentException(&quot;Ship has to fit on the board.&quot;);</span>
+            }
+        } else {
+<span class="nc" id="L168">            throw new IllegalArgumentException(&quot;Ships can't be placed in a corner.&quot;);</span>
+        }
+    }
+
+    /**
+     * Checks if a ship can be placed in their respective horizontal or vertical
+     * placement.
+     *
+     * @param locationStart
+     * @param length
+     * @param direction
+     * @return True if placeable.
+     */
+    private boolean checkIfFits(int[] locationStart, int length, int direction) {
+        // Check horizontal ships
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        if (direction == 1) {</span>
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">            if (checkIfFitsIndex(locationStart[0], length, &quot;HORIZONTAL&quot;)) {</span>
+<span class="fc" id="L185">                return true;</span>
+            }
+        } // Check vertical ships
+        else {
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">            if (checkIfFitsIndex(locationStart[1], length, &quot;VERTICAL&quot;)) {</span>
+<span class="fc" id="L190">                return true;</span>
+            }
+        }
+<span class="nc" id="L193">        return false;</span>
+    }
+
+    /**
+     * Calculates if the index value of a ships location and the length of the
+     * ship don't pass the size of the board.
+     *
+     * @param value
+     * @param length
+     * @return True if a ship fits.
+     */
+    private boolean checkIfFitsIndex(int value, int length, String direction) {
+        int maxSize;
+<span class="pc bpc" id="L206" title="4 of 10 branches missed.">        switch(direction) {</span>
+<span class="fc" id="L207">            case &quot;HORIZONTAL&quot;: maxSize = Overview.BOARDWIDTH;</span>
+<span class="fc" id="L208">                break;</span>
+<span class="fc" id="L209">            case &quot;VERTICAL&quot;: maxSize = Overview.BOARDHEIGHT;</span>
+<span class="fc" id="L210">                break;</span>
+<span class="nc" id="L211">            default: maxSize = 0;</span>
+        }
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">        if (value + length &lt; maxSize) {</span>
+<span class="fc" id="L214">            return true;</span>
+        } else {
+<span class="nc" id="L216">            return false;</span>
+        }
+    }
+
+    /**
+     * Calculates if a ship doesn't start in a corner.
+     *
+     * @param locationStart
+     * @return True if it doesn't start in a corner.
+     */
+    private boolean checkCorners(int[] locationStart) {
+<span class="fc" id="L227">        int boardWidth = Overview.BOARDWIDTH;</span>
+<span class="fc" id="L228">        int boardHeight = Overview.BOARDHEIGHT;</span>
+<span class="pc bpc" id="L229" title="3 of 16 branches missed.">        if ((locationStart[0] &gt; 1 &amp;&amp; locationStart[1] &gt; 1) // Top left corner</span>
+                || (locationStart[0] &lt; boardWidth - 1 &amp;&amp; locationStart[1] &lt; boardHeight - 1) // Bottom right corner
+                || (locationStart[0] &gt; 1 &amp;&amp; locationStart[1] &lt; boardHeight - 1) // Bottom left corner
+                || locationStart[0] &lt; boardWidth - 1 &amp;&amp; locationStart[1] &gt; 1) // Top right corner
+        {
+<span class="fc" id="L234">            return true;</span>
+        }
+        
+        
+<span class="nc" id="L238">        return false;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

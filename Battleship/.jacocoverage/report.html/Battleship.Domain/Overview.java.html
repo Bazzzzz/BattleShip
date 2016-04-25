@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Overview.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;Battleship&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">Battleship.Domain</a> &gt; <span class="el_source">Overview.java</span></div><h1>Overview.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Battleship.Domain;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+/**
+ *
+ * @author sebas
+ */
+public class Overview implements Serializable {
+
+    private boolean isOpponentsBoard;
+    private List&lt;SpecialPackage&gt; specials;
+    private List&lt;Ship&gt; ships;
+    /**
+     * 0 = nothing is placed 1 = ship location 2 = SpecialPackage -1 = torpedo
+     * -5 = torpedo hit ship
+     */
+    private int[][] board;
+    public static final int BOARDWIDTH = 16;
+    public static final int BOARDHEIGHT = 16;
+
+<span class="fc" id="L30">    public Overview() {</span>
+<span class="fc" id="L31">        this.isOpponentsBoard = false;</span>
+<span class="fc" id="L32">        this.specials = new ArrayList&lt;SpecialPackage&gt;(4);</span>
+<span class="fc" id="L33">        this.ships = new ArrayList&lt;Ship&gt;(7);</span>
+<span class="fc" id="L34">        board = new int[BOARDWIDTH][BOARDHEIGHT];</span>
+<span class="fc" id="L35">    }</span>
+
+    public boolean isIsOpponentsBoard() {
+<span class="nc" id="L38">        return isOpponentsBoard;</span>
+    }
+
+    public List&lt;SpecialPackage&gt; getSpecials() {
+<span class="nc" id="L42">        return specials;</span>
+    }
+
+    /**
+     * Enables a board to become an opponents board.
+     *
+     * @return opponentsBoard field.
+     */
+    public boolean setOpponentsBoard() {
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">        this.isOpponentsBoard = !this.isOpponentsBoard;</span>
+<span class="fc" id="L52">        return this.isOpponentsBoard;</span>
+    }
+
+    /**
+     * Checks if the locations between the end and the start of a ship are
+     * available.
+     *
+     * @param locationStart has 2 elements
+     * @param locationEnd has 2 elements
+     * @param direction 0 for vertical, 1 for horizontal
+     * @return True if all locations for a ships length are available.
+     */
+    public boolean locationShipLengthAvailable(int[] locationStart, int[] locationEnd, int direction) {
+<span class="pc bpc" id="L65" title="2 of 4 branches missed.">        if (locationStart.length == 2 &amp;&amp; locationEnd.length == 2) {</span>
+            // Vertical means x-axis remains the same.
+<span class="fc" id="L67">            int xStart = locationStart[0];</span>
+<span class="fc" id="L68">            int yStart = locationStart[1];</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">            if (direction == 0) {</span>
+<span class="fc" id="L70">                int yEnd = locationEnd[1];</span>
+
+<span class="fc bfc" id="L72" title="All 2 branches covered.">                for (int i = yEnd; i &gt; yStart; i--) {</span>
+<span class="fc" id="L73">                    int[] tempLocation = new int[2];</span>
+<span class="fc" id="L74">                    tempLocation[0] = xStart;</span>
+<span class="fc" id="L75">                    tempLocation[1] = i;</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">                    if (!this.locationAvailable(tempLocation)) {</span>
+<span class="nc" id="L77">                        return false;</span>
+                    }
+                }
+<span class="fc" id="L80">                return true;</span>
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">            } else if (direction == 1) {</span>
+                // Horizontal means y-axis remains the same.
+<span class="fc" id="L83">                int xEnd = locationEnd[0];</span>
+
+<span class="fc bfc" id="L85" title="All 2 branches covered.">                for (int i = xEnd; i &gt; xStart; i--) {</span>
+<span class="fc" id="L86">                    int[] tempLocation = new int[2];</span>
+<span class="fc" id="L87">                    tempLocation[0] = i;</span>
+<span class="fc" id="L88">                    tempLocation[1] = yStart;</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">                    if (!this.locationAvailable(tempLocation)) {</span>
+<span class="fc" id="L90">                        return false;</span>
+                    }
+                }
+<span class="fc" id="L93">                return true;</span>
+            }
+        }
+<span class="nc" id="L96">        return false;</span>
+    }
+
+    /**
+     * Checks if a location on the overview is available for placement action.
+     *
+     * @param location has 2 elements First index holds x-axis, second index
+     * holds y-axis. Board location is available if location index holds 0.
+     * Board location has ship if location index holds 1. Board location has
+     * special if location index holds 2. Board location has torpedo if location
+     * index holds -1. Board location ship hit with torpedo if location index
+     * holds -5.
+     * @return True if the location is available, False if filled.
+     */
+    public boolean locationAvailable(int[] location) {
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">        if (location.length == 2) {</span>
+<span class="fc" id="L112">            int xLocationIndex = location[0] - 1;</span>
+<span class="fc" id="L113">            int yLocationIndex = location[1] - 1;</span>
+<span class="fc bfc" id="L114" title="All 8 branches covered.">            if ((xLocationIndex &gt;= 0 &amp;&amp; xLocationIndex &lt; BOARDWIDTH - 1)</span>
+                    &amp;&amp; (yLocationIndex &gt;= 0 &amp;&amp; yLocationIndex &lt; BOARDHEIGHT - 1)) {
+<span class="fc bfc" id="L116" title="All 2 branches covered.">                if (board[xLocationIndex][yLocationIndex] == 0) {</span>
+<span class="fc" id="L117">                    return true;</span>
+                }
+            }
+        }
+<span class="fc" id="L121">        return false;</span>
+    }
+
+    /**
+     * Checks if a location on the overview has a ship.
+     *
+     * @param location has 2 elements First index holds x-axis, second index
+     * holds y-axis. Board location is available if location index holds 0.
+     * Board location has ship if location index holds 1. Board location has
+     * special if location index holds 2. Board location has torpedo if location
+     * index holds -1. Board location ship hit with torpedo if location index
+     * holds -5.
+     * @return True if the location holds a piece of a ship, False if not.
+     */
+    public boolean locationHasShip(int[] location) {
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">        if (verifySpecificLocation(location)) {</span>
+<span class="fc" id="L137">            int xLocationIndex = location[0] - 1;</span>
+<span class="fc" id="L138">            int yLocationIndex = location[1] - 1;</span>
+
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            if (board[xLocationIndex][yLocationIndex] == 1) {</span>
+<span class="fc" id="L141">                return true;</span>
+            }
+        }
+<span class="fc" id="L144">        return false;</span>
+    }
+
+    /**
+     * Checks if a location on the overview has a torpedo.
+     *
+     * @param location has 2 elements First index holds x-axis, second index
+     * holds y-axis. Board location is available if location index holds 0.
+     * Board location has ship if location index holds 1. Board location has
+     * special if location index holds 2. Board location has torpedo if location
+     * index holds -1. Board location ship hit with torpedo if location index
+     * holds -5.
+     * @return True if the location holds a torpedo, False if not.
+     */
+    public boolean locationHasTorpedo(int[] location) {
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">        if (verifySpecificLocation(location)) {</span>
+<span class="fc" id="L160">            int xLocationIndex = location[0] - 1;</span>
+<span class="fc" id="L161">            int yLocationIndex = location[1] - 1;</span>
+
+<span class="fc bfc" id="L163" title="All 4 branches covered.">            if (board[xLocationIndex][yLocationIndex] == -1 || board[xLocationIndex][yLocationIndex] == -5) {</span>
+<span class="fc" id="L164">                return true;</span>
+            }
+        }
+<span class="fc" id="L167">        return false;</span>
+    }
+
+    /**
+     * Shows the amount of ships a player has on the overview.
+     *
+     * @return Size of ships.
+     */
+    public int amountOfShips() {
+<span class="fc" id="L176">        return ships.size();</span>
+    }
+
+    /**
+     * Checks if a location on the overview has a special package.
+     *
+     * @param location has 2 elements First index holds x-axis, second index
+     * holds y-axis. Board location is available if location index holds 0.
+     * Board location has ship if location index holds 1. Board location has
+     * special if location index holds 2. Board location has torpedo if location
+     * index holds -1. Board location ship hit with torpedo if location index
+     * holds -5.
+     * @return True if the location holds a special package, False if not.
+     */
+    public boolean locationHasSpecial(int[] location) {
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">        if (verifySpecificLocation(location)) {</span>
+<span class="fc" id="L192">            int xLocationIndex = location[0] - 1;</span>
+<span class="fc" id="L193">            int yLocationIndex = location[1] - 1;</span>
+
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">            if (board[xLocationIndex][yLocationIndex] == 2) {</span>
+<span class="nc" id="L196">                return true;</span>
+            }
+        }
+<span class="fc" id="L199">        return false;</span>
+    }
+
+    /**
+     * Add a ship to the board.
+     *
+     * @param ship
+     * @return True if placed.
+     */
+    public boolean addShip(Ship ship) {
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">        if (ship != null) {</span>
+<span class="fc" id="L210">            ships.add(ship);</span>
+<span class="fc" id="L211">            this.placeShipOnBoard(ship);</span>
+<span class="fc" id="L212">            return true;</span>
+        }
+<span class="nc" id="L214">        return false;</span>
+
+    }
+
+    /**
+     * Get the ship that's located on a certain location. Ship can be found by
+     * it's start and end location, as well as any location in between.
+     *
+     * @param location has to hold 2 elements.
+     * @return Ship that's located on a location.
+     */
+    public Ship getShipOnLocation(int[] location) {
+<span class="pc bpc" id="L226" title="1 of 10 branches missed.">        if (location.length == 2</span>
+                &amp;&amp; location[0] &gt; 0 &amp;&amp; location[0] &lt; BOARDWIDTH
+                &amp;&amp; location[1] &gt; 0 &amp;&amp; location[1] &lt; BOARDHEIGHT) {
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">            for (Ship ship : this.ships) {</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">                if (ship.getLocationStart()[0] == location[0]</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">                        &amp;&amp; ship.getLocationStart()[1] == location[1]) {</span>
+<span class="fc" id="L232">                    return ship;</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">                } else if (ship.getLocationEnd()[0] == location[0]</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">                        &amp;&amp; ship.getLocationEnd()[1] == location[1]) {</span>
+<span class="fc" id="L235">                    return ship;</span>
+<span class="pc bpc" id="L236" title="1 of 2 branches missed.">                } else if (checkForShipOnLocation(ship, location)) {</span>
+<span class="fc" id="L237">                    return ship;</span>
+                } else {
+                    continue;
+                }
+            }
+        }
+<span class="fc" id="L243">        return null;</span>
+    }
+
+    /**
+     * Calculates whether the given location holds a ship.
+     *
+     * @param ship
+     * @param location
+     * @return True if a ship is found. False if not.
+     */
+    private boolean checkForShipOnLocation(Ship ship, int[] location) {
+<span class="fc" id="L254">        int locationStart[] = ship.getLocationStart();</span>
+<span class="fc" id="L255">        int locationEnd[] = ship.getLocationEnd();</span>
+        // Vertical x-axis remains the same
+<span class="fc bfc" id="L257" title="All 2 branches covered.">        if (ship.getDirection() == 0) {</span>
+<span class="fc" id="L258">            int xIndex = locationStart[0];</span>
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">            for (int i = locationEnd[1]; i &gt; locationStart[1]; i--) {</span>
+<span class="fc" id="L260">                int[] tempLocation = new int[2];</span>
+<span class="fc" id="L261">                tempLocation[0] = xIndex;</span>
+<span class="fc" id="L262">                tempLocation[1] = i;</span>
+<span class="pc bpc" id="L263" title="1 of 4 branches missed.">                if (location[0] == tempLocation[0]</span>
+                        &amp;&amp; location[1] == tempLocation[1]) {
+<span class="fc" id="L265">                    return true;</span>
+                }
+            }
+<span class="nc" id="L268">        } // Horizontal y-axis remains the same</span>
+<span class="pc bpc" id="L269" title="1 of 2 branches missed.">        else if (ship.getDirection() == 1) {</span>
+<span class="fc" id="L270">            int yIndex = locationStart[1];</span>
+<span class="pc bpc" id="L271" title="1 of 2 branches missed.">            for (int i = locationEnd[0]; i &gt; locationStart[0]; i--) {</span>
+<span class="fc" id="L272">                int[] tempLocation = new int[2];</span>
+<span class="fc" id="L273">                tempLocation[0] = i;</span>
+<span class="fc" id="L274">                tempLocation[1] = yIndex;</span>
+<span class="pc bpc" id="L275" title="1 of 4 branches missed.">                if (location[0] == tempLocation[0]</span>
+                        &amp;&amp; location[1] == tempLocation[1]) {
+<span class="fc" id="L277">                    return true;</span>
+                }
+            }
+<span class="nc" id="L280">        } else {</span>
+<span class="nc" id="L281">            return false;</span>
+        }
+<span class="nc" id="L283">        return false;</span>
+    }
+
+    /**
+     * Place ship on the board.
+     *
+     * @param ship
+     */
+    private void placeShipOnBoard(Ship ship) {
+<span class="fc" id="L292">        this.defineLocationsForShipBody(ship);</span>
+<span class="fc" id="L293">    }</span>
+
+    /**
+     * Calculates the location of the ship on the board. Fills in a 1 to
+     * determine where a ship is located.
+     *
+     * @param ship
+     */
+    private void defineLocationsForShipBody(Ship ship) {
+<span class="fc" id="L302">        int[] locationStart = ship.getLocationStart();</span>
+<span class="fc" id="L303">        int[] locationEnd = ship.getLocationEnd();</span>
+<span class="fc" id="L304">        int direction = ship.getDirection();</span>
+        // Vertical x-axis remains the same
+<span class="fc bfc" id="L306" title="All 2 branches covered.">        if (direction == 0) {</span>
+<span class="fc" id="L307">            int xIndex = locationStart[0] - 1;</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">            for (int i = locationEnd[1] - 1; i &gt;= locationStart[1] - 1; i--) {</span>
+<span class="fc" id="L309">                board[xIndex][i] = 1;</span>
+            }
+<span class="fc" id="L311">        } // Horizontal y-axis remains the same</span>
+<span class="pc bpc" id="L312" title="1 of 2 branches missed.">        else if (direction == 1) {</span>
+<span class="fc" id="L313">            int yIndex = locationStart[1] - 1;</span>
+<span class="fc bfc" id="L314" title="All 2 branches covered.">            for (int i = locationEnd[0] - 1; i &gt;= locationStart[0] - 1; i--) {</span>
+<span class="fc" id="L315">                board[i][yIndex] = 1;</span>
+            }
+        }
+<span class="fc" id="L318">    }</span>
+
+    /**
+     * Verifies if the location given is reachable on the board.
+     *
+     * @param location has 2 elements
+     * @return True if reachable location, False if not.
+     */
+    private boolean verifySpecificLocation(int[] location) {
+<span class="pc bpc" id="L327" title="1 of 2 branches missed.">        if (location.length == 2) {</span>
+<span class="fc" id="L328">            int xLocationIndex = location[0] - 1;</span>
+<span class="fc" id="L329">            int yLocationIndex = location[1] - 1;</span>
+<span class="pc bpc" id="L330" title="4 of 8 branches missed.">            if ((xLocationIndex &gt;= 0 &amp;&amp; xLocationIndex &lt; BOARDWIDTH - 1)</span>
+                    &amp;&amp; (yLocationIndex &gt;= 0 &amp;&amp; yLocationIndex &lt; BOARDHEIGHT - 1)) {
+<span class="fc" id="L332">                return true;</span>
+            }
+        }
+<span class="nc" id="L335">        return false;</span>
+    }
+
+    /**
+     * Updates the overview to indicate that a torpedo was fired.
+     *
+     * @param torpedoLocation
+     */
+    public void displayTorpedo(int[] torpedoLocation) {
+<span class="pc bpc" id="L344" title="1 of 2 branches missed.">        if (torpedoLocation.length == 2) {</span>
+<span class="fc" id="L345">            int xIndex = torpedoLocation[0] - 1;</span>
+<span class="fc" id="L346">            int yIndex = torpedoLocation[1] - 1;</span>
+<span class="fc" id="L347">            board[xIndex][yIndex] = -1;</span>
+        }
+<span class="fc" id="L349">    }</span>
+
+    /**
+     * Updates the overview to indicate that a torpedo has hit a ship.
+     *
+     * @param torpedoLocation
+     */
+    public void displayTorpedoShipHit(int[] torpedoLocation) {
+<span class="pc bpc" id="L357" title="1 of 2 branches missed.">        if (torpedoLocation.length == 2) {</span>
+<span class="fc" id="L358">            int xIndex = torpedoLocation[0] - 1;</span>
+<span class="fc" id="L359">            int yIndex = torpedoLocation[1] - 1;</span>
+<span class="fc" id="L360">            board[xIndex][yIndex] = -5;</span>
+        }
+<span class="fc" id="L362">    }</span>
+
+    /**
+     * Builds and places random special packages on the overview.
+     */
+    public void buildSpecialPackages() {
+<span class="nc" id="L368">        int[] randomLocation = new int[2];</span>
+<span class="nc" id="L369">        int numberOfPackages = 0;</span>
+<span class="nc bnc" id="L370" title="All 2 branches missed.">        while (numberOfPackages &lt; 4) {</span>
+
+<span class="nc" id="L372">            int[] tempLocation = new int[2];</span>
+
+            // Set x-axis
+<span class="nc" id="L375">            Random randomX = new Random();</span>
+<span class="nc" id="L376">            int randomNumber = randomX.nextInt(BOARDWIDTH - 1);</span>
+<span class="nc" id="L377">            tempLocation[0] = randomNumber;</span>
+
+            // Set y-axis
+<span class="nc" id="L380">            Random randomY = new Random();</span>
+<span class="nc" id="L381">            randomNumber = randomY.nextInt(BOARDHEIGHT - 1);</span>
+<span class="nc" id="L382">            tempLocation[1] = randomNumber;</span>
+
+<span class="nc bnc" id="L384" title="All 2 branches missed.">            if (locationAvailable(tempLocation)) {</span>
+<span class="nc" id="L385">                numberOfPackages++;</span>
+<span class="nc" id="L386">                randomLocation = tempLocation;</span>
+<span class="nc" id="L387">                SpecialPackage special = new SpecialTorpedo(&quot;temp&quot;, randomLocation);</span>
+<span class="nc" id="L388">                specials.add(special);</span>
+            }
+<span class="nc" id="L390">        }</span>
+<span class="nc bnc" id="L391" title="All 2 branches missed.">        if (specials.size() == 4) {</span>
+<span class="nc bnc" id="L392" title="All 2 branches missed.">            for (SpecialPackage special : specials) {</span>
+<span class="nc" id="L393">                placeSpecialOnBoard(special);</span>
+<span class="nc" id="L394">            }</span>
+        }
+<span class="nc" id="L396">    }</span>
+
+    private void placeSpecialOnBoard(SpecialPackage special) {
+<span class="nc" id="L399">        board[special.getPlacedLocation()[0]][special.getPlacedLocation()[1]] = 2;</span>
+<span class="nc" id="L400">    }</span>
+
+    public void printBoard() {
+<span class="nc bnc" id="L403" title="All 2 branches missed.">        for (int i = BOARDHEIGHT; i &gt; 0; i--) {</span>
+<span class="nc bnc" id="L404" title="All 2 branches missed.">            for (int j = BOARDWIDTH; j &gt; 0; j--) {</span>
+<span class="nc" id="L405">                System.out.print(board[i - 1][j - 1]);</span>
+            }
+<span class="nc" id="L407">            System.out.print(&quot;\n&quot;);</span>
+        }
+<span class="nc" id="L409">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>
