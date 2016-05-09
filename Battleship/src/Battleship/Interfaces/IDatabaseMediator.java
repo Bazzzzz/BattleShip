@@ -5,12 +5,16 @@
  */
 package Battleship.Interfaces;
 
-import java.rmi.Remote;
+import Battleship.Domain.Account;
 
 /**
  *
  * @author sebas
  */
-public interface ILobby extends Remote {
+public interface IDatabaseMediator {
+    public boolean addNewPlayer(Account account);
     
+    public boolean login(String username, String password);
+    
+    public boolean logout();
 }

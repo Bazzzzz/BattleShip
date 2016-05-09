@@ -6,6 +6,7 @@
 package Battleship.Domain;
 
 import Battleship.Interfaces.IPlayer;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  *
  * @author sebas
  */
-public class Player implements IPlayer {
+public class Player implements IPlayer, Serializable {
     private String name;
     private boolean isTurn;
     private Overview player;

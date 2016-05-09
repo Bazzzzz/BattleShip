@@ -7,6 +7,8 @@ package Battleship.Domain;
 
 import Battleship.Interfaces.IGameManager;
 import Battleship.Interfaces.IPlayer;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,16 +16,16 @@ import java.util.List;
  *
  * @author sebas
  */
-public class GameManager implements IGameManager {
+public class GameManager extends UnicastRemoteObject implements IGameManager {
 
     List<Torpedo> torpedos;
     List<Overview> overviews;
     List<IPlayer> players;
 
-    public GameManager() {
-        torpedos = new ArrayList<Torpedo>();
-        overviews = new ArrayList<Overview>(4);
-        players = new ArrayList<IPlayer>(2);
+    public GameManager() throws RemoteException {
+        torpedos = new ArrayList<>();
+        overviews = new ArrayList<>(4);
+        players = new ArrayList<>(2);
     }
 
     /**
@@ -31,6 +33,7 @@ public class GameManager implements IGameManager {
      *
      * @return True if action can be performed.
      */
+    @Override
     public boolean confirmBoard() {
         return false;
     }
@@ -44,6 +47,7 @@ public class GameManager implements IGameManager {
      * @param direction 0 for vertical, 1 for horizontal
      * @return True if ship was placed.
      */
+    @Override
     public boolean placeShip(IPlayer player, int[] locationStart, int shipLength, int direction) {
         Ship ship = null;
         if (player != null) {
@@ -74,6 +78,7 @@ public class GameManager implements IGameManager {
      * @param firedLocation
      * @return True if torpedo was fired.
      */
+    @Override
     public boolean fireTorpedo(IPlayer player, String torpedoName, int[] firedLocation) {
         Torpedo torpedo = null;
         if (player != null) {
@@ -96,7 +101,7 @@ public class GameManager implements IGameManager {
                 if (player.getOpponent().locationHasShip(firedLocation)) {
                     if (this.damageShip(opponentPlayer, firedLocation) == 1) {
                         // TODO: Animation of ship destruction?
-                        
+
                     }
                     player.getOpponent().displayTorpedoShipHit(firedLocation);
                     return true;
@@ -112,8 +117,14 @@ public class GameManager implements IGameManager {
         return false;
     }
 
+    @Override
     public List<IPlayer> getPlayers() {
         return this.players;
+    }
+
+    @Override
+    public List<Torpedo> getTorpedos() {
+        return torpedos;
     }
 
     /**
@@ -123,6 +134,7 @@ public class GameManager implements IGameManager {
      * @param player not null
      * @return The claimed SpecialPackage or null.
      */
+    @Override
     public SpecialPackage claimSpecial(int[] location, IPlayer player) {
         if (player != null) {
             List<SpecialPackage> specials = player.getSpecials();
@@ -136,6 +148,7 @@ public class GameManager implements IGameManager {
         return null;
     }
 
+    @Override
     public void updateOverview() {
 
     }
@@ -145,18 +158,22 @@ public class GameManager implements IGameManager {
      *
      * @param overview not null
      */
+    @Override
     public void placeSpecials(Overview overview) {
         if (overview != null) {
             overview.buildSpecialPackages();
         }
     }
+
     /**
      * Repairs the ship that's selected by the player.
+     *
      * @param fix larger than 0
      * @param player not NULL
      * @param location
      * @return True if a ship was fixed. False otherwise.
      */
+    @Override
     public boolean repairShip(int fix, IPlayer player, int[] location) {
         if (player != null && fix > 0) {
             Ship tempShip = player.getPlayer().getShipOnLocation(location);
@@ -171,22 +188,22 @@ public class GameManager implements IGameManager {
         return false;
     }
 
+    @Override
     public List<Torpedo> getAvailableTorpedos(IPlayer player) {
         return null;
     }
 
+    @Override
     public List<Overview> getOverviews() {
         return this.overviews;
     }
 
-    public List<Torpedo> getTorpedos() {
-        return torpedos;
-    }
-
+    @Override
     public List<SpecialPackage> getSpecials(IPlayer player) {
         return player.getSpecials();
     }
 
+    @Override
     public boolean useSpecial(SpecialPackage special) {
         return false;
     }
@@ -198,6 +215,7 @@ public class GameManager implements IGameManager {
      * @return The added player or null if player is null.
      * @exception IllegalArgumentException Player is already in the list.
      */
+    @Override
     public IPlayer addPlayer(IPlayer player) {
         if (player != null) {
             if (this.players.size() != 0) {
@@ -220,6 +238,7 @@ public class GameManager implements IGameManager {
      * @param player not null
      * @return True if removed, False if not.
      */
+    @Override
     public boolean removePlayer(IPlayer player) {
         if (player != null) {
             List<IPlayer> playersTemp = this.getPlayers();
@@ -240,6 +259,7 @@ public class GameManager implements IGameManager {
      * @param location
      * @return Total damage the ship has taken.
      */
+    @Override
     public int damageShip(IPlayer player, int[] location) {
         Ship ship = player.getPlayer().getShipOnLocation(location);
         int damage = 1;
@@ -257,6 +277,7 @@ public class GameManager implements IGameManager {
      * @param player1
      * @param player2
      */
+    @Override
     public void buildOverviewsForPlayers(IPlayer player1, IPlayer player2) {
         // Set players own overviews.
         Overview player1OwnField = new Overview();

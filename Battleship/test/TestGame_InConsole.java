@@ -10,6 +10,7 @@ import Battleship.Domain.Player;
 import Battleship.Domain.Ship;
 import Battleship.Interfaces.IGameManager;
 import Battleship.Interfaces.IPlayer;
+import java.rmi.RemoteException;
 import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -24,7 +25,7 @@ public class TestGame_InConsole {
     IPlayer player1;
     IPlayer player2;
 
-    public TestGame_InConsole() {
+    public TestGame_InConsole() throws RemoteException {
         manager = new GameManager();
         player1 = new Player("Player1");
         player2 = new Player("Player2");
@@ -66,7 +67,7 @@ public class TestGame_InConsole {
 */
     
     @Test
-    public void testPrintBoardAfterTorpedoOnShip() {
+    public void testPrintBoardAfterTorpedoOnShip() throws RemoteException {
         int[] locationShip = new int[2];
         locationShip[0] = 4;
         locationShip[1] = 4;

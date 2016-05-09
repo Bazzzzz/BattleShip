@@ -5,11 +5,13 @@
  */
 package Battleship.Domain;
 
+import java.io.Serializable;
+
 /**
  *
  * @author sebas
  */
-public abstract class SpecialPackage {
+public abstract class SpecialPackage implements Serializable {
 
     private String name;
     private boolean claimed;

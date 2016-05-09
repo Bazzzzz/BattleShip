@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Battleship.RMI;
+package Battleship.Exceptions;
 
 /**
  *
  * @author sebas
  */
-public class Message {
-    
+public class BattleshipExceptions extends Exception {
+    public BattleshipExceptions(String message) {
+        super(message);
+    }
 }

@@ -5,13 +5,14 @@
  */
 package Battleship.Domain;
 
+import Battleship.Interfaces.ILobby;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
  *
  * @author sebas
  */
-public class Lobby extends UnicastRemoteObject {
+public class Lobby extends UnicastRemoteObject implements ILobby {
     public Lobby() throws Exception {
         
     }

@@ -5,11 +5,13 @@
  */
 package Battleship.Domain;
 
+import java.io.Serializable;
+
 /**
  *
  * @author sebas
  */
-public class Ship {
+public class Ship implements Serializable {
 
     private int length;
     private int[] locationStart;

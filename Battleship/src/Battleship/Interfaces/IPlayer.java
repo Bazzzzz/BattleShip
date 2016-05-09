@@ -7,6 +7,7 @@ package Battleship.Interfaces;
 
 import Battleship.Domain.Overview;
 import Battleship.Domain.SpecialPackage;
+import java.rmi.Remote;
 import java.util.List;
 
 /**

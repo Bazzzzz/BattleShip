@@ -5,11 +5,13 @@
  */
 package Battleship.Domain;
 
+import java.io.Serializable;
+
 /**
  *
  * @author sebas
  */
-public class Location {
+public class Location implements Serializable {
     private int xCoord;
     private int yCoord;
 
