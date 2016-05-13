@@ -5,6 +5,7 @@
  */
 
 import Battleship.Domain.Player;
+import Battleship.Exceptions.BattleshipExceptions;
 import Battleship.Interfaces.IGameManager;
 import Battleship.Interfaces.IPlayer;
 import Battleship.RMI.RMIClient;
@@ -27,23 +28,32 @@ public class RMIServerClientTest {
         client = null;
     }
     @Test
-    public void TestConnection() {
+    public void TestConnection() throws BattleshipExceptions {
         client = new RMIClient("localhost");
         assertTrue("Test connection of client to server", client.connectToServer());
     }
     @Test
-    public void TestGetGameManager() {
+    public void TestGetGameManager() throws BattleshipExceptions {
         client = new RMIClient("localhost");
         client.connectToServer();
         assertNotNull("Client retrieved a game manager.", client.getGameManager());
     }
     @Test
-    public void TestAddRemoveOnePlayerToGM() throws RemoteException {
+    public void TestAddRemoveOnePlayerToGM() throws RemoteException, BattleshipExceptions {
+        // First Client
         client = new RMIClient("localhost");
         client.connectToServer();
         IGameManager gm = client.getGameManager();
         int numberOfPlayers = gm.getPlayers().size();
-        assertTrue("Number of players on creation is 0.", numberOfPlayers == 0);
+        assertTrue("Number of players on creation client1 is 0.", numberOfPlayers == 0);
+        
+        // Second Client
+        RMIClient client2 = new RMIClient("localhost");
+        client2.connectToServer();
+        IGameManager gm2 = client2.getGameManager();
+        numberOfPlayers = gm2.getPlayers().size();
+        assertTrue("Number of players on creation client2 is 0.", numberOfPlayers == 0);  
+        
         
         IPlayer player = new Player("Bas");
         gm.addPlayer(player);
@@ -56,9 +66,10 @@ public class RMIServerClientTest {
         numberOfPlayers = gm.getPlayers().size();
         
         assertTrue("Number of players after remove is 0.", numberOfPlayers == 0);
+
     }
     @Test 
-    public void TestAddRemoveTwoPlayersToGM() throws RemoteException {
+    public void TestAddRemoveTwoPlayersToGM() throws RemoteException, BattleshipExceptions {
         client = new RMIClient("localhost");
         client.connectToServer();
         IGameManager gm = client.getGameManager();
@@ -84,13 +95,15 @@ public class RMIServerClientTest {
         numberOfPlayers = gm.getPlayers().size();
         assertTrue("Pplayer1 was removed from the list of players", result);
         assertTrue("Number of players 1 after removal of 1 player.", numberOfPlayers == 1);
+
     }
     
     @Test (expected=IllegalArgumentException.class)
-    public void TestAdd3PlayersToGM() throws RemoteException {
+    public void TestAdd3PlayersToGM() throws RemoteException, BattleshipExceptions {
         client = new RMIClient("localhost");
         client.connectToServer();
         IGameManager gm = client.getGameManager();
+        System.out.println("GM just received from RMIClient - Players should be 0. Actual size: " + gm.getPlayers().size());
         IPlayer player1 = new Player("Bas");
         gm.addPlayer(player1);
         
@@ -99,5 +112,6 @@ public class RMIServerClientTest {
         
         IPlayer player3 = new Player("Test");
         gm.addPlayer(player3);
+
     }
 }

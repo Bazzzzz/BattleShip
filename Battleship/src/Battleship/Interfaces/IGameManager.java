@@ -31,7 +31,7 @@ public interface IGameManager extends Remote {
     
     public SpecialPackage claimSpecial(int[] location, IPlayer player) throws RemoteException;
 
-    public void updateOverview() throws RemoteException;
+    public void updateOverview(IGameManager gamemanager) throws RemoteException;
 
     public void placeSpecials(Overview overview) throws RemoteException;
 

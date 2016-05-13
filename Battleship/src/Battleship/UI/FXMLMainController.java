@@ -60,14 +60,14 @@ public class FXMLMainController implements Initializable {
 
     @FXML
     public void handleRegisterButton(ActionEvent e) {
-        try {
-            RMIClient client = new RMIClient(tfServerIP.getText());
-            if (client.connectToServer()) {
-                this.handleRegisterAction();
-            }
-        } catch (BattleshipExceptions ex) {
-            lblError.setText(ex.getMessage());
-        }
+//        try {
+//            RMIClient client = new RMIClient(tfServerIP.getText());
+//            if (client.connectToServer()) {
+             this.handleRegisterAction();
+//            }
+//        } catch (BattleshipExceptions ex) {
+//            lblError.setText(ex.getMessage());
+//        }
     }
 
     private void handlePlayAction() {
@@ -75,6 +75,7 @@ public class FXMLMainController implements Initializable {
             if (!tfUsername.getText().equals("")) {
                 if (!tfPassword.getText().equals("")) {
                     Battleship.handler.loginPlayer(tfUsername.getText(), tfPassword.getText());
+                    System.out.println("Logged In.");
                     // TODO: Move into lobby
                 } else {
                     // TODO: Start game without saving account details.
@@ -91,8 +92,10 @@ public class FXMLMainController implements Initializable {
         if (tfUsername.getText() != null && tfPassword.getText() != null) {
             if (Battleship.handler.newPlayerToDB(tfUsername.getText(), tfPassword.getText())) {
                 // TODO: Confirmation message.
+                System.out.println("Player registered.");
             } else {
                 // TODO: Error message.
+                System.out.println("[ERROR] Player not registered.");
             }
         }
     }

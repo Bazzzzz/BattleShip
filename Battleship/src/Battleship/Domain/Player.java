@@ -70,8 +70,14 @@ public class Player implements IPlayer, Serializable {
      * @return 
      */
     public List<SpecialPackage> getSpecials() {
-        // TODO: Return special only when claimed.
-        return specials;
+        
+        for(SpecialPackage special : this.opponent.getSpecials()) {
+            if(special.isClaimed()) {
+                this.specials.add(special);
+            }
+        }
+        
+        return this.specials;
     }
     /**
      * Allows a player to use a special package.

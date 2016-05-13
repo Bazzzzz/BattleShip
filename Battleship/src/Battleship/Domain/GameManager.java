@@ -5,12 +5,17 @@
  */
 package Battleship.Domain;
 
+import fontys.observer.RemotePropertyListener;
 import Battleship.Interfaces.IGameManager;
 import Battleship.Interfaces.IPlayer;
+import fontys.observer.BasicPublisher;
+import java.beans.PropertyChangeEvent;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -18,16 +23,20 @@ import java.util.List;
  */
 public class GameManager extends UnicastRemoteObject implements IGameManager {
 
-    List<Torpedo> torpedos;
-    List<Overview> overviews;
-    List<IPlayer> players;
-
+    private List<Torpedo> torpedos;
+    private List<Overview> overviews;
+    private List<IPlayer> players;
+    
+    
     public GameManager() throws RemoteException {
         torpedos = new ArrayList<>();
         overviews = new ArrayList<>(4);
         players = new ArrayList<>(2);
+ 
     }
 
+    
+    
     /**
      * Confirm if action can be performed on the selected board.
      *
@@ -48,7 +57,7 @@ public class GameManager extends UnicastRemoteObject implements IGameManager {
      * @return True if ship was placed.
      */
     @Override
-    public boolean placeShip(IPlayer player, int[] locationStart, int shipLength, int direction) {
+    public synchronized boolean placeShip(IPlayer player, int[] locationStart, int shipLength, int direction) {
         Ship ship = null;
         if (player != null) {
             if (player.getPlayer().amountOfShips() < 7) {
@@ -79,7 +88,7 @@ public class GameManager extends UnicastRemoteObject implements IGameManager {
      * @return True if torpedo was fired.
      */
     @Override
-    public boolean fireTorpedo(IPlayer player, String torpedoName, int[] firedLocation) {
+    public synchronized boolean fireTorpedo(IPlayer player, String torpedoName, int[] firedLocation) {
         Torpedo torpedo = null;
         if (player != null) {
             IPlayer opponentPlayer = null;
@@ -90,26 +99,26 @@ public class GameManager extends UnicastRemoteObject implements IGameManager {
                     break;
                 }
             }
-            // TODO: Change all player.getOpponent() to opponentPlayer.getPlayer()
             if (torpedoName != null) {
-                if (player.getOpponent().locationHasTorpedo(firedLocation)) {
+                if (opponentPlayer.getPlayer().locationHasTorpedo(firedLocation)) {
                     return false;
                 }
                 torpedo = new Torpedo(torpedoName);
                 torpedo.updateFireLocation(firedLocation);
                 torpedos.add(torpedo);
-                if (player.getOpponent().locationHasShip(firedLocation)) {
+                if (opponentPlayer.getPlayer().locationHasShip(firedLocation)) {
                     if (this.damageShip(opponentPlayer, firedLocation) == 1) {
                         // TODO: Animation of ship destruction?
 
                     }
-                    player.getOpponent().displayTorpedoShipHit(firedLocation);
+                    opponentPlayer.getPlayer().displayTorpedoShipHit(firedLocation);
                     return true;
-                } else if (player.getOpponent().locationHasSpecial(firedLocation)) {
-                    // TODO: Obtain Special.
+                } else if (opponentPlayer.getPlayer().locationHasSpecial(firedLocation)) {
+                    // TODO: Obtain Special TESTING
+                    this.claimSpecial(firedLocation, player);
                     return true;
                 } else {
-                    player.getOpponent().displayTorpedo(firedLocation);
+                    opponentPlayer.getPlayer().displayTorpedo(firedLocation);
                     return true;
                 }
             }
@@ -135,13 +144,14 @@ public class GameManager extends UnicastRemoteObject implements IGameManager {
      * @return The claimed SpecialPackage or null.
      */
     @Override
-    public SpecialPackage claimSpecial(int[] location, IPlayer player) {
+    public synchronized SpecialPackage claimSpecial(int[] location, IPlayer player) {
         if (player != null) {
             List<SpecialPackage> specials = player.getSpecials();
             for (SpecialPackage special : specials) {
                 if (special.getPlacedLocation().equals(location)) {
                     special.claimSpecial();
                     return special;
+                    // TODO: claimSpecial TESTING
                 }
             }
         }
@@ -149,8 +159,8 @@ public class GameManager extends UnicastRemoteObject implements IGameManager {
     }
 
     @Override
-    public void updateOverview() {
-
+    public void updateOverview(IGameManager gameManager) {
+        Logger.getLogger(GameManager.class.getName()).log(Level.SEVERE, null, new Throwable());
     }
 
     /**
@@ -159,7 +169,7 @@ public class GameManager extends UnicastRemoteObject implements IGameManager {
      * @param overview not null
      */
     @Override
-    public void placeSpecials(Overview overview) {
+    public synchronized void placeSpecials(Overview overview) {
         if (overview != null) {
             overview.buildSpecialPackages();
         }
@@ -174,7 +184,7 @@ public class GameManager extends UnicastRemoteObject implements IGameManager {
      * @return True if a ship was fixed. False otherwise.
      */
     @Override
-    public boolean repairShip(int fix, IPlayer player, int[] location) {
+    public synchronized boolean repairShip(int fix, IPlayer player, int[] location) {
         if (player != null && fix > 0) {
             Ship tempShip = player.getPlayer().getShipOnLocation(location);
             if (tempShip != null) {
@@ -189,22 +199,22 @@ public class GameManager extends UnicastRemoteObject implements IGameManager {
     }
 
     @Override
-    public List<Torpedo> getAvailableTorpedos(IPlayer player) {
+    public synchronized List<Torpedo> getAvailableTorpedos(IPlayer player) {
         return null;
     }
 
     @Override
-    public List<Overview> getOverviews() {
+    public synchronized List<Overview> getOverviews() {
         return this.overviews;
     }
 
     @Override
-    public List<SpecialPackage> getSpecials(IPlayer player) {
+    public synchronized List<SpecialPackage> getSpecials(IPlayer player) {
         return player.getSpecials();
     }
 
     @Override
-    public boolean useSpecial(SpecialPackage special) {
+    public synchronized boolean useSpecial(SpecialPackage special) {
         return false;
     }
 
@@ -216,7 +226,7 @@ public class GameManager extends UnicastRemoteObject implements IGameManager {
      * @exception IllegalArgumentException Player is already in the list.
      */
     @Override
-    public IPlayer addPlayer(IPlayer player) {
+    public synchronized IPlayer addPlayer(IPlayer player) {
         if (player != null) {
             if (this.players.size() != 0) {
                 for (IPlayer p : this.players) {
@@ -239,7 +249,7 @@ public class GameManager extends UnicastRemoteObject implements IGameManager {
      * @return True if removed, False if not.
      */
     @Override
-    public boolean removePlayer(IPlayer player) {
+    public synchronized boolean removePlayer(IPlayer player) {
         if (player != null) {
             List<IPlayer> playersTemp = this.getPlayers();
             for (IPlayer p : playersTemp) {
@@ -260,7 +270,7 @@ public class GameManager extends UnicastRemoteObject implements IGameManager {
      * @return Total damage the ship has taken.
      */
     @Override
-    public int damageShip(IPlayer player, int[] location) {
+    public synchronized int damageShip(IPlayer player, int[] location) {
         Ship ship = player.getPlayer().getShipOnLocation(location);
         int damage = 1;
         int shipDamage = ship.changeAmountHit(damage);
@@ -278,7 +288,7 @@ public class GameManager extends UnicastRemoteObject implements IGameManager {
      * @param player2
      */
     @Override
-    public void buildOverviewsForPlayers(IPlayer player1, IPlayer player2) {
+    public synchronized void buildOverviewsForPlayers(IPlayer player1, IPlayer player2) {
         // Set players own overviews.
         Overview player1OwnField = new Overview();
         Overview player2OwnField = new Overview();
@@ -301,4 +311,5 @@ public class GameManager extends UnicastRemoteObject implements IGameManager {
         overviews.add(player1OpponentField);
         overviews.add(player2OpponentField);
     }
+
 }

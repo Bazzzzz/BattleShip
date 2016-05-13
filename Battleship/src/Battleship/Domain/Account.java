@@ -15,6 +15,7 @@ public class Account implements Serializable {
 
     private String loginName;
     private String password;
+    private int score;
 
     /**
      * Constructs an account.
@@ -34,6 +35,22 @@ public class Account implements Serializable {
         }
         this.loginName = loginName;
         this.password = password;
+        this.score = 0;
+    }
+
+    /**
+     * Constructs an account from the database.
+     *
+     * @param loginName not null
+     * @param score
+     */
+    public Account(String loginName, int score) {
+        if (loginName == null || loginName.equals("")) {
+            throw new IllegalArgumentException("Login name was null.");
+        }
+        this.loginName = loginName;
+        this.password = null;
+        this.score = score;
     }
 
     public String getLoginName() {
@@ -42,6 +59,10 @@ public class Account implements Serializable {
 
     public String getPassword() {
         return password;
+    }
+
+    public int getScore() {
+        return score;
     }
 
     /**
@@ -66,6 +87,10 @@ public class Account implements Serializable {
         }
 
         return false;
+    }
+
+    public void changeScore(int score) {
+        this.score = score;
     }
 
     @Override

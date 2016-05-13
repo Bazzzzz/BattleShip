@@ -6,6 +6,7 @@
 package Battleship.Interfaces;
 
 import Battleship.Domain.Account;
+import java.util.List;
 
 /**
  *
@@ -17,4 +18,6 @@ public interface IDatabaseMediator {
     public boolean login(String username, String password);
     
     public boolean logout();
+    
+    public List<Account> getHighschore();
 }
