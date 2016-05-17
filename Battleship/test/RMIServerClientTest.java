@@ -4,15 +4,20 @@
  * and open the template in the editor.
  */
 
+import Battleship.Domain.Lobby;
 import Battleship.Domain.Player;
 import Battleship.Exceptions.BattleshipExceptions;
+import Battleship.Interfaces.IClientManager;
 import Battleship.Interfaces.IGameManager;
+import Battleship.Interfaces.ILobby;
 import Battleship.Interfaces.IPlayer;
 import Battleship.RMI.RMIClient;
 import Battleship.Server.RMIServer;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -23,95 +28,152 @@ import static org.junit.Assert.*;
 public class RMIServerClientTest {
 
     private RMIClient client;
+    private IPlayer playerBas;
+    private IPlayer playerSukh;
+    private IPlayer playerRandom;
 
     public RMIServerClientTest() {
         client = null;
+        playerBas = new Player("Bas");
+        playerSukh = new Player("Sukh");
+        playerRandom = new Player("Random");
     }
+
     @Test
     public void TestConnection() throws BattleshipExceptions {
         client = new RMIClient("localhost");
         assertTrue("Test connection of client to server", client.connectToServer());
     }
+
     @Test
-    public void TestGetGameManager() throws BattleshipExceptions {
+    public void TestGetClientManager() throws BattleshipExceptions, RemoteException {
         client = new RMIClient("localhost");
         client.connectToServer();
-        assertNotNull("Client retrieved a game manager.", client.getGameManager());
+        String message = "[TestGetClientManager] ";
+        assertNotNull(message + "Client retrieved the client manager object", client.getClientManager());
     }
+
     @Test
-    public void TestAddRemoveOnePlayerToGM() throws RemoteException, BattleshipExceptions {
-        // First Client
+    public void TestAddLobbyToCM() throws BattleshipExceptions, RemoteException {
         client = new RMIClient("localhost");
         client.connectToServer();
-        IGameManager gm = client.getGameManager();
-        int numberOfPlayers = gm.getPlayers().size();
-        assertTrue("Number of players on creation client1 is 0.", numberOfPlayers == 0);
-        
-        // Second Client
-        RMIClient client2 = new RMIClient("localhost");
-        client2.connectToServer();
-        IGameManager gm2 = client2.getGameManager();
-        numberOfPlayers = gm2.getPlayers().size();
-        assertTrue("Number of players on creation client2 is 0.", numberOfPlayers == 0);  
-        
-        
-        IPlayer player = new Player("Bas");
-        gm.addPlayer(player);
-        IPlayer playerFound = gm.getPlayers().get(0);
-        boolean result = playerFound.getName().equals(player.getName());
-        numberOfPlayers = gm.getPlayers().size();
-        assertTrue("Player added to game.", result);
-        assertTrue("Number of players after add is 1.", numberOfPlayers == 1);
-        gm.removePlayer(player);
-        numberOfPlayers = gm.getPlayers().size();
-        
-        assertTrue("Number of players after remove is 0.", numberOfPlayers == 0);
+        String message = "[TestAddLobbyToCM] ";
 
+        IClientManager cm = client.getClientManager();
+        cm.removeAllLobbies();
+        int lobbyCount = cm.getLobbies().size();
+
+        assertTrue(message + "Initial Lobby count is 0.", lobbyCount == 0);
+
+        ILobby firstLobby = new Lobby("FirstLobby");
+        assertTrue(message + "First Lobby added", cm.addLobby(firstLobby));
+
+        lobbyCount = cm.getLobbies().size();
+
+        assertEquals(message + "After adding a first lobby count is 1.", 1, lobbyCount);
+
+        ILobby secondLobby = new Lobby("SecondLobby");
+        assertTrue(message + "Second Lobby added", cm.addLobby(secondLobby));
+
+        lobbyCount = cm.getLobbies().size();
+
+        assertEquals(message + "After adding a second lobby count is 2.", 2, lobbyCount);
     }
-    @Test 
-    public void TestAddRemoveTwoPlayersToGM() throws RemoteException, BattleshipExceptions {
+
+    @Test
+    public void TestAddPlayerToLobbyFromCM() throws BattleshipExceptions, RemoteException {
         client = new RMIClient("localhost");
         client.connectToServer();
-        IGameManager gm = client.getGameManager();
-        IPlayer player1 = new Player("Bas");
-        gm.addPlayer(player1);
-        
-        IPlayer player2 = new Player("Sukh");
-        gm.addPlayer(player2);
-        
-        int numberOfPlayers = gm.getPlayers().size();
-        assertTrue("Number of players 2 after adding 2 players.", numberOfPlayers == 2);
-        
-        gm.removePlayer(player1);
-        
-        boolean result = true;
-        Iterator<IPlayer> playersItr = gm.getPlayers().iterator();
-        while(playersItr.hasNext()) {
-            IPlayer tempPlayer = (IPlayer) playersItr.next();
-            if (tempPlayer.getName().equals(player1.getName())) {
-                result = false;
-            }
-        }
-        numberOfPlayers = gm.getPlayers().size();
-        assertTrue("Pplayer1 was removed from the list of players", result);
-        assertTrue("Number of players 1 after removal of 1 player.", numberOfPlayers == 1);
+        String message = "[TestAddPlayerToLobbyFromCM] ";
+        IClientManager cm = client.getClientManager();
+        cm.removeAllLobbies();
 
+        // Add player to first lobby.
+        ILobby firstLobby = new Lobby("FirstLobby");
+        firstLobby.addPlayer(playerBas);
+
+        cm.addLobby(firstLobby);
+        int playersCount = firstLobby.getPlayers().size();
+
+        assertEquals(message + "Players in first lobby after adding 1 should be 1.", 1, playersCount);
+        playersCount = 0; // Reset player count.
+
+        // Add player to second lobby.
+        ILobby secondLobby = new Lobby("SecondLobby");
+        secondLobby.addPlayer(playerRandom);
+
+        cm.addLobby(secondLobby);
+        playersCount = cm.findLobbyByPlayer(playerRandom.getName()).getPlayers().size();
+        assertEquals(message + "Players in the first lobby should still be 1, after adding a player to lobby 2.", 1, playersCount);
+
+        playersCount = secondLobby.getPlayers().size();
+        assertEquals(message + "Players in the second lobby after adding 1 should be 1.", 1, playersCount);
+
+        firstLobby.addPlayer(playerSukh);
+        cm.updateLobby(firstLobby);
+        playersCount = cm.findLobbyByPlayer(playerSukh.getName()).getPlayers().size();
+        assertEquals(message + "Player added to first lobby", 2, playersCount);
     }
-    
-    @Test (expected=IllegalArgumentException.class)
-    public void TestAdd3PlayersToGM() throws RemoteException, BattleshipExceptions {
+
+    @Test
+    public void TestRemovePlayerFromLobbyInCM() throws BattleshipExceptions, RemoteException {
         client = new RMIClient("localhost");
         client.connectToServer();
-        IGameManager gm = client.getGameManager();
-        System.out.println("GM just received from RMIClient - Players should be 0. Actual size: " + gm.getPlayers().size());
-        IPlayer player1 = new Player("Bas");
-        gm.addPlayer(player1);
-        
-        IPlayer player2 = new Player("Sukh");
-        gm.addPlayer(player2);
-        
-        IPlayer player3 = new Player("Test");
-        gm.addPlayer(player3);
+        String message = "[TestRemovePlayerFromLobbyInCM] ";
+        IClientManager cm = client.getClientManager();
+        cm.removeAllLobbies();
 
+        // Add player to first lobby.
+        ILobby firstLobby = new Lobby("FirstLobby");
+        firstLobby.addPlayer(playerBas);
+
+        cm.addLobby(firstLobby);  
+        
+        // Add player to second lobby.
+        ILobby secondLobby = new Lobby("SecondLobby");
+        secondLobby.addPlayer(playerRandom);
+
+        cm.addLobby(secondLobby);
+        
+        // Remove player from first lobby.
+        firstLobby.removePlayerFromLobby(playerBas);
+        int playersCount = firstLobby.getPlayers().size();
+        assertEquals(message + "Player removed from the first lobby.", 0, playersCount);
+        
+    }
+
+    @Test
+    public void TestCreateGameManagerFromLobby() throws BattleshipExceptions, RemoteException {
+        client = new RMIClient("localhost");
+        client.connectToServer();
+        String message = "[TestCreateGameManagerFromLobby] ";
+        
+        IClientManager cm = client.getClientManager();
+        cm.removeAllLobbies();
+
+        // Add player to first lobby.
+        ILobby firstLobby = new Lobby("FirstLobby");
+        firstLobby.addPlayer(playerBas);
+        cm.addLobby(firstLobby);  
+        
+        firstLobby.addPlayer(playerRandom);
+        cm.updateLobby(firstLobby);
+        
+        ILobby lobbyTest = cm.findLobbyByName(firstLobby.getName());
+        IGameManager gm = lobbyTest.createGameManager();
+        
+        int playersAmount = gm.getPlayers().size();
+        
+        assertEquals(message + "Players in the game manager 2.", 2, playersAmount);
+        
+        // Add player to second lobby and test createGameManager on 1 player.
+        ILobby secondLobby = new Lobby("SecondLobby");
+        secondLobby.addPlayer(playerSukh);
+        
+        cm.addLobby(secondLobby);
+        
+        gm = secondLobby.createGameManager();
+        assertNull(message + "Unable to make GM with only 1 player in lobby.", gm);
+        
     }
 }

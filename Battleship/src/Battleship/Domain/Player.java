@@ -88,6 +88,7 @@ public class Player implements IPlayer, Serializable {
         // TODO: Method.
         return true;
     }
+    @Override
     public boolean equals(Object o) {
         if(o instanceof IPlayer) {
             IPlayer player = (IPlayer)o;

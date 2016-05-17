@@ -46,4 +46,7 @@ public interface IPlayer {
      * @return True if used. False if not.
      */
     public boolean useSpecial(SpecialPackage special);
+    
+    @Override
+    public boolean equals(Object o);
 }

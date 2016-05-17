@@ -6,7 +6,9 @@
 package Battleship.RMI;
 
 import Battleship.Exceptions.BattleshipExceptions;
+import Battleship.Interfaces.IClientManager;
 import Battleship.Interfaces.IGameManager;
+import Battleship.Interfaces.ILobby;
 import fontys.observer.RemotePropertyListener;
 import java.beans.PropertyChangeEvent;
 import java.rmi.NotBoundException;
@@ -28,8 +30,9 @@ public class RMIClient {
 
     // References to registry and GameManager
     private Registry registry = null;
-    private IGameManager gameManager = null;
-
+    private IClientManager clientManager = null;
+    
+    
     // Port number and ip address.
     private final int portNumber = 9999;
     private final String ipAddress;
@@ -66,30 +69,24 @@ public class RMIClient {
         }
         if (registry != null) {
             try {
-                gameManager = (IGameManager) registry.lookup(bindingName);
-                System.out.println(clientMessage + " Registry lookup to: " + bindingName + " succesful. \n Item found: " + gameManager);
+                clientManager = (IClientManager) registry.lookup(bindingName);
+                System.out.println(clientMessage + " Registry lookup to: " + bindingName + " succesful. \n Item found: " + clientManager);
             } catch (RemoteException ex) {
                 System.out.println(clientMessage + " Error remote lookup.");
-                ex.printStackTrace();
+                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
             } catch (NotBoundException ex) {
                 System.out.println(clientMessage + " Error bind name.");
-                ex.printStackTrace();
+                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        if (gameManager != null) {
+        if (clientManager != null) {
             return true;
         }
+        
         return false;
     }
 
-    /**
-     * Get the GameManager that was found.
-     *
-     * @return
-     */
-    public IGameManager getGameManager() {
-        return this.gameManager;
+    public IClientManager getClientManager() {
+        return this.clientManager;
     }
-
-
 }

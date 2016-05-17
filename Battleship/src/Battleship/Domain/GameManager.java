@@ -10,6 +10,7 @@ import Battleship.Interfaces.IGameManager;
 import Battleship.Interfaces.IPlayer;
 import fontys.observer.BasicPublisher;
 import java.beans.PropertyChangeEvent;
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -21,14 +22,14 @@ import java.util.logging.Logger;
  *
  * @author sebas
  */
-public class GameManager extends UnicastRemoteObject implements IGameManager {
+public class GameManager implements IGameManager, Serializable {
 
     private List<Torpedo> torpedos;
     private List<Overview> overviews;
     private List<IPlayer> players;
     
     
-    public GameManager() throws RemoteException {
+    public GameManager() {
         torpedos = new ArrayList<>();
         overviews = new ArrayList<>(4);
         players = new ArrayList<>(2);
