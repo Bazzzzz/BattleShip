@@ -90,5 +90,8 @@ public class Lobby implements ILobby, Serializable {
             this.name = newName;
         }
     }
-    
+    @Override
+    public String toString() {
+        return String.format("%s ' lobby: ", this.name); // TODO: Find relation between account and player, add account score to the string format.
+    }
 }

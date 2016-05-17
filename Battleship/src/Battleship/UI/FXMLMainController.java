@@ -8,14 +8,19 @@ package Battleship.UI;
 import Battleship.Domain.Account;
 import Battleship.Exceptions.BattleshipExceptions;
 import Battleship.RMI.RMIClient;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -46,12 +51,12 @@ public class FXMLMainController implements Initializable {
     }
 
     @FXML
-    public void handlePlayButton(ActionEvent e) {
+    public void handlePlayButton(ActionEvent e) throws IOException {
         try {
             RMIClient client = new RMIClient(tfServerIP.getText());
-            //if (client.connectToServer()) {
-                this.handlePlayAction();
-            //}
+            if (client.connectToServer()) {
+                this.handlePlayAction(client);
+            }
         } catch (BattleshipExceptions ex) {
             lblError.setText(ex.getMessage());
         }
@@ -60,23 +65,31 @@ public class FXMLMainController implements Initializable {
 
     @FXML
     public void handleRegisterButton(ActionEvent e) {
-//        try {
-//            RMIClient client = new RMIClient(tfServerIP.getText());
-//            if (client.connectToServer()) {
-             this.handleRegisterAction();
-//            }
-//        } catch (BattleshipExceptions ex) {
-//            lblError.setText(ex.getMessage());
-//        }
+        try {
+            RMIClient client = new RMIClient(tfServerIP.getText());
+            if (client.connectToServer()) {
+                this.handleRegisterAction();
+            }
+        } catch (BattleshipExceptions ex) {
+            lblError.setText(ex.getMessage());
+        }
     }
 
-    private void handlePlayAction() {
+    private void handlePlayAction(RMIClient client) throws IOException {
         try {
             if (!tfUsername.getText().equals("")) {
                 if (!tfPassword.getText().equals("")) {
-                    Battleship.handler.loginPlayer(tfUsername.getText(), tfPassword.getText());
+                    //Battleship.handler.loginPlayer(tfUsername.getText(), tfPassword.getText());
                     System.out.println("Logged In.");
-                    // TODO: Move into lobby
+
+                    handleRMIConnection(client);
+                    // TODO: Move into lobby list screen
+                    Parent window;
+                    window = FXMLLoader.load(getClass().getResource("FXMLLobbyList.fxml"));
+                    Stage stage = new Stage();
+                    stage.setTitle("Lobbies");
+                    stage.setScene(new Scene(window));
+                    stage.show();
                 } else {
                     // TODO: Start game without saving account details.
                 }
@@ -98,5 +111,9 @@ public class FXMLMainController implements Initializable {
                 System.out.println("[ERROR] Player not registered.");
             }
         }
+    }
+
+    private void handleRMIConnection(RMIClient client) {
+        Battleship.handler.setRMIClient(client);
     }
 }
