@@ -25,10 +25,10 @@ public class Account implements Serializable {
      */
     public Account(String loginName, String password) {
         if (loginName == null || loginName.equals("")) {
-            throw new IllegalArgumentException("Login name was null.");
+            throw new IllegalArgumentException("Login name was not filled in.");
         }
         if (password == null || password.equals("")) {
-            throw new IllegalArgumentException("Password was null.");
+            throw new IllegalArgumentException("Password was not filled in.");
         }
         if (password.length() < 4) {
             throw new IllegalArgumentException("Password has to be larger than 4");

@@ -5,6 +5,7 @@
  */
 package Battleship.Domain;
 
+import Battleship.Exceptions.BattleshipExceptions;
 import Battleship.Interfaces.IGameManager;
 import Battleship.Interfaces.ILobby;
 import Battleship.Interfaces.IPlayer;
@@ -20,24 +21,28 @@ import java.util.List;
  * @author sebas
  */
 public class Lobby implements ILobby, Serializable {
+
     private String name;
     private List<IPlayer> players;
     private IGameManager gameManager;
-    
+
     public Lobby(String name) throws RemoteException {
         this.players = new ArrayList<>();
         this.gameManager = null;
         this.name = name;
-        
+
     }
+
     @Override
     public String getName() {
         return name;
-    } 
+    }
+
     @Override
     public IGameManager getGameManager() {
         return this.gameManager;
     }
+
     @Override
     public List<IPlayer> getPlayers() {
         return this.players;
@@ -45,34 +50,43 @@ public class Lobby implements ILobby, Serializable {
 
     @Override
     public IGameManager createGameManager() {
-        if(this.players.size() == 2) {
+        if (this.players.size() == 2) {
             gameManager = new GameManager();
             gameManager.addPlayer(this.players.get(0));
             gameManager.addPlayer(this.players.get(1));
-            
+
             return gameManager;
         }
         return null;
     }
+
     @Override
     public void addPlayer(IPlayer player) {
-        if(player != null) {
-            this.players.add(player);
+        try {
+            if (player != null && this.players.size() < 2) {
+                this.players.add(player);
+            } else {
+                throw new BattleshipExceptions("Lobby is full.");
+            }
+        } catch (BattleshipExceptions ex) {
+            System.out.println(ex.getMessage());
         }
+
     }
+
     @Override
     public void removePlayerFromLobby(IPlayer player) {
-        if(player != null) {
+        if (player != null) {
             Iterator<IPlayer> itrPlayer = this.players.iterator();
             IPlayer tempPlayer = null;
-            while(itrPlayer.hasNext()) {
+            while (itrPlayer.hasNext()) {
                 IPlayer playerFound = itrPlayer.next();
                 if (playerFound.equals(player)) {
                     tempPlayer = playerFound;
                     break;
                 }
             }
-            if(tempPlayer != null) {
+            if (tempPlayer != null) {
                 this.players.remove(tempPlayer);
                 if (this.gameManager != null) {
                     this.removePlayerFromGM(player);
@@ -80,18 +94,19 @@ public class Lobby implements ILobby, Serializable {
             }
         }
     }
-    
+
     private void removePlayerFromGM(IPlayer player) {
         this.gameManager.removePlayer(player);
     }
-    
+
     public void changeName(String newName) {
-        if(newName != null) {
+        if (newName != null) {
             this.name = newName;
         }
     }
+
     @Override
     public String toString() {
-        return String.format("%s ' lobby: ", this.name); // TODO: Find relation between account and player, add account score to the string format.
+        return String.format("%s' lobby: ", this.name); // TODO: Find relation between account and player, add account score to the string format.
     }
 }

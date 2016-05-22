@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Battleship.UI.FXMLLobbyVC">
-    
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Button fx:id="btnStart" layoutX="451.0" layoutY="355.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="135.0" text="Start" />
+      <Button fx:id="btnLeave" layoutX="14.0" layoutY="355.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="135.0" text="Leave Lobby" />
+      <Label fx:id="lblTitle" layoutX="286.0" layoutY="21.0" text="Title" />
+      <HBox layoutX="24.0" layoutY="80.0" prefHeight="110.0" prefWidth="250.0">
+         <children>
+            <Label fx:id="lblPlayer1Score" text="Label" />
+            <Label fx:id="lblPlayer1Name" text="Label" />
+         </children>
+      </HBox>
+      <HBox layoutX="326.0" layoutY="80.0" prefHeight="110.0" prefWidth="250.0">
+         <children>
+            <Label fx:id="lblPlayer2Name" text="Label" />
+            <Label fx:id="lblPlayer2Score" text="Label" />
+         </children>
+      </HBox>
+      <HBox layoutX="24.0" layoutY="190.0" prefHeight="142.0" prefWidth="550.0">
+         <children>
+            <Label layoutY="200.0" text="Options" />
+            <CheckBox fx:id="cbSpecials" mnemonicParsing="false" prefHeight="21.0" prefWidth="153.0" text="Specials Off" />
+            <TextField fx:id="tfMaxGameTime" />
+            <TextField fx:id="tfMaxShips" />
+            <TextField fx:id="tfFieldSize" />
+         </children>
+      </HBox>
+   </children>
 </AnchorPane>

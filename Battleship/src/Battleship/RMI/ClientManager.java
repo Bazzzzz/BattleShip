@@ -31,13 +31,6 @@ public class ClientManager extends UnicastRemoteObject implements IClientManager
         return lobbies;
     }
 
-    /**
-     * Add a lobby to the list of lobbies.
-     *
-     * @param lobby
-     * @return True if added, False if not.
-     * @throws java.rmi.RemoteException
-     */
     @Override
     public boolean addLobby(ILobby lobby) throws RemoteException {
         if (lobbies.isEmpty()) {
@@ -60,13 +53,6 @@ public class ClientManager extends UnicastRemoteObject implements IClientManager
         return false;
     }
 
-    /**
-     * Remove a lobby from the list.
-     *
-     * @param lobby
-     * @return True if removed, False if not.
-     * @throws java.rmi.RemoteException
-     */
     @Override
     public boolean removeLobby(ILobby lobby) throws RemoteException {
         if (!lobbies.isEmpty()) {
@@ -80,13 +66,6 @@ public class ClientManager extends UnicastRemoteObject implements IClientManager
         return false;
     }
 
-    /**
-     * Return the lobby which holds a certain player.
-     *
-     * @param playerName Not null or empty
-     * @return Lobby that holds the player or null.
-     * @throws RemoteException
-     */
     @Override
     public ILobby findLobbyByPlayer(String playerName) throws RemoteException {
         if (playerName != null && !playerName.equals("")) {
@@ -102,13 +81,6 @@ public class ClientManager extends UnicastRemoteObject implements IClientManager
         return null;
     }
 
-    /**
-     * Find a lobby by it's name.
-     *
-     * @param name Not null or empty
-     * @return Lobby that has the name.
-     * @throws java.rmi.RemoteException
-     */
     @Override
     public ILobby findLobbyByName(String name) throws RemoteException {
         if (name != null && !name.equals("")) {
@@ -121,23 +93,13 @@ public class ClientManager extends UnicastRemoteObject implements IClientManager
         return null;
     }
 
-    /**
-     * Remove all lobbies from the list.
-     *
-     * @throws java.rmi.RemoteException
-     */
     @Override
     public void removeAllLobbies() throws RemoteException {
         if (!this.lobbies.isEmpty()) {
             this.lobbies.clear();
         }
     }
-    /**
-     * Update a lobby when a player joins or leaves.
-     * @param lobby Not null.
-     * @return True if updated. False if not.
-     * @throws RemoteException 
-     */
+
     @Override
     public boolean updateLobby(ILobby lobby) throws RemoteException {
         if (lobby != null) {

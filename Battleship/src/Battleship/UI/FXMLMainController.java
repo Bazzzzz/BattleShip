@@ -11,6 +11,8 @@ import Battleship.RMI.RMIClient;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -77,12 +79,12 @@ public class FXMLMainController implements Initializable {
 
     private void handlePlayAction(RMIClient client) throws IOException {
         try {
-            if (!tfUsername.getText().equals("")) {
-                if (!tfPassword.getText().equals("")) {
-                    //Battleship.handler.loginPlayer(tfUsername.getText(), tfPassword.getText());
-                    System.out.println("Logged In.");
-
-                    handleRMIConnection(client);
+            String username = tfUsername.getText();
+            String password = tfPassword.getText();
+            if (!username.equals("")) {
+                if (!password.equals("")) {
+                    this.handleRMIConnection(client);
+                    this.loginPlayer(username, password);
                     // TODO: Move into lobby list screen
                     Parent window;
                     window = FXMLLoader.load(getClass().getResource("FXMLLobbyList.fxml"));
@@ -102,18 +104,26 @@ public class FXMLMainController implements Initializable {
     }
 
     private void handleRegisterAction() {
-        if (tfUsername.getText() != null && tfPassword.getText() != null) {
-            if (Battleship.handler.newPlayerToDB(tfUsername.getText(), tfPassword.getText())) {
-                // TODO: Confirmation message.
-                System.out.println("Player registered.");
-            } else {
-                // TODO: Error message.
-                System.out.println("[ERROR] Player not registered.");
+        try {
+            if (tfUsername.getText() != null && tfPassword.getText() != null) {
+                if (Battleship.handler.newPlayerToDB(tfUsername.getText(), tfPassword.getText())) {
+                    // TODO: Confirmation message.
+                    System.out.println("Player registered.");
+                    lblError.setText("Player registered.");
+                    
+                } else {
+                    throw new BattleshipExceptions("Fill in username and password.");
+                }
             }
+        } catch (BattleshipExceptions | IllegalArgumentException ex) {
+            lblError.setText(ex.getMessage());
         }
     }
 
     private void handleRMIConnection(RMIClient client) {
         Battleship.handler.setRMIClient(client);
+    }
+    private void loginPlayer(String username, String password) {
+        Battleship.handler.loginPlayer(username, password);
     }
 }
