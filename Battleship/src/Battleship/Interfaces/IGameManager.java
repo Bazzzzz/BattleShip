@@ -9,6 +9,9 @@ import Battleship.Domain.Overview;
 import Battleship.Domain.Ship;
 import Battleship.Domain.SpecialPackage;
 import Battleship.Domain.Torpedo;
+import Battleship.RMI.RMIClient;
+import fontys.observer.RemotePropertyListener;
+import fontys.observer.RemotePublisher;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -17,38 +20,43 @@ import java.util.List;
  *
  * @author sebas
  */
-public interface IGameManager {
+public interface IGameManager extends RemotePublisher {
 
-    public boolean confirmBoard();
+    public boolean confirmBoard() throws RemoteException;
 
-    public boolean placeShip(IPlayer player, int[] locationStart, int shipLength, int direction);
-    public boolean fireTorpedo(IPlayer player, String torpedoName, int[] firedLocation);
-
-    public List<IPlayer> getPlayers();
-
-    public List<Torpedo> getTorpedos();
+    public boolean placeShip(IPlayer player, int[] locationStart, int shipLength, int direction) throws RemoteException;
     
-    public SpecialPackage claimSpecial(int[] location, IPlayer player);
+    public boolean fireTorpedo(IPlayer player, String torpedoName, int[] firedLocation) throws RemoteException;
 
-    public void updateOverview(IGameManager gamemanager);
+    public List<IPlayer> getPlayers() throws RemoteException;
 
-    public void placeSpecials(Overview overview);
-
-    public boolean repairShip(int fix, IPlayer player, int[] location);
-
-    public List<Torpedo> getAvailableTorpedos(IPlayer player);
-
-    public List<Overview> getOverviews();
-
-    public List<SpecialPackage> getSpecials(IPlayer player);
-
-    public boolean useSpecial(SpecialPackage special);
-
-    public IPlayer addPlayer(IPlayer player);
-
-    public boolean removePlayer(IPlayer player);
-
-    public int damageShip(IPlayer player, int[] location);
+    public List<Torpedo> getTorpedos() throws RemoteException;
     
-    public void buildOverviewsForPlayers(IPlayer player1, IPlayer player2);
+    public SpecialPackage claimSpecial(int[] location, IPlayer player) throws RemoteException;
+
+    public void updateOverview(IGameManager gamemanager, IPlayer player) throws RemoteException;
+
+    public void placeSpecials(Overview overview) throws RemoteException;
+
+    public boolean repairShip(int fix, IPlayer player, int[] location) throws RemoteException;
+
+    public List<Torpedo> getAvailableTorpedos(IPlayer player) throws RemoteException;
+
+    public List<Overview> getOverviews() throws RemoteException;
+
+    public List<SpecialPackage> getSpecials(IPlayer player) throws RemoteException;
+
+    public boolean useSpecial(SpecialPackage special) throws RemoteException;
+
+    public IPlayer addPlayer(IPlayer player) throws RemoteException;
+
+    public boolean removePlayer(IPlayer player) throws RemoteException;
+
+    public int damageShip(IPlayer player, int[] location) throws RemoteException;
+    
+    public void buildOverviewsForPlayers(IPlayer player1, IPlayer player2) throws RemoteException;
+    
+    public void addListener(RemotePropertyListener listener, String property) throws RemoteException;
+    
+    public void removeListener(RemotePropertyListener listener, String property) throws RemoteException;
 }

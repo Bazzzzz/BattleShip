@@ -5,6 +5,8 @@
  */
 package Battleship.Interfaces;
 
+import fontys.observer.RemotePropertyListener;
+import fontys.observer.RemotePublisher;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -13,36 +15,43 @@ import java.util.List;
  *
  * @author sebas
  */
-public interface ILobby {
+public interface ILobby extends RemotePublisher {
     /**
      * Create a game manager object.
      * @return The created game manager object.
      */
-    public IGameManager createGameManager();
+    public IGameManager createGameManager() throws RemoteException;
     /**
      * Add a player to the game manager object.
      * @param player not null.
      */
-    public void addPlayer(IPlayer player);
+    public void addPlayer(IPlayer player) throws RemoteException;
     /**
      * Remove a player from the game manager object
      * @param player not null
      */
-    public void removePlayerFromLobby(IPlayer player);
+    public void removePlayerFromLobby(IPlayer player) throws RemoteException;
     /**
      * Get the game manager object.
      * @return The game manager object.
      */
-    public IGameManager getGameManager();
+    public IGameManager getGameManager() throws RemoteException;
     /**
      * Get the list of players in the lobby.
      * @return List of players.
      */
-    public List<IPlayer> getPlayers();
+    public List<IPlayer> getPlayers() throws RemoteException;
     
     /**
      * Get the name of the lobby
      * @return The name of the lobby.
      */
-    public String getName();
+    public String getName() throws RemoteException;
+    
+    public void updateLobby(IPlayer player, boolean joined) throws RemoteException;
+    
+    public void addListener(RemotePropertyListener listener, String property) throws RemoteException;
+    
+    public void removeListener(RemotePropertyListener listener, String property) throws RemoteException;
+    
 }

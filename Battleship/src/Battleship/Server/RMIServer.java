@@ -10,7 +10,8 @@ import Battleship.Domain.Lobby;
 import Battleship.Interfaces.IClientManager;
 import Battleship.Interfaces.IGameManager;
 import Battleship.Interfaces.ILobby;
-import Battleship.RMI.ClientManager;
+import Battleship.RMI.ClientManagerOld;
+import Battleship.RMI.ServerLobby;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
@@ -26,7 +27,6 @@ import java.util.logging.Logger;
 public class RMIServer {
 
     // Set port number
-
     private static final int portNumber = 9999;
 
     // Set binding name for battleship administration
@@ -35,18 +35,38 @@ public class RMIServer {
     // References to registry, game manager and lobby
     private Registry registry = null;
     private IClientManager clientManager = null;
+    private IGameManager gameManager = null;
+
+    private ILobby lobby = null;
 
     private final String serverMessage = "[SERVER MESSAGE]";
 
     public RMIServer() {
-        // Create Lobby
+        // Create Client Manager
         try {
-            clientManager = new ClientManager();
-            System.out.println(serverMessage + " Lobby created");
+            clientManager = new ClientManagerOld();
+            System.out.println(serverMessage + " CM created");
+        } catch (RemoteException ex) {
+            System.out.println(serverMessage + " Error creating CM.");
+            Logger.getLogger(RMIServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // Create Game Manager
+        try {
+            gameManager = new GameManager();
+            System.out.println(serverMessage + " GM created.");
+        } catch (RemoteException ex) {
+            System.out.println(serverMessage + " Error creating GM.");
+            Logger.getLogger(RMIServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try {
+            lobby = new ServerLobby("Test");
         } catch (RemoteException ex) {
             System.out.println(serverMessage + " Error creating lobby.");
             Logger.getLogger(RMIServer.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         // Create registry
         try {
             registry = LocateRegistry.createRegistry(portNumber);
@@ -55,17 +75,34 @@ public class RMIServer {
             System.out.println(serverMessage + " Error locating registry.");
             ex.printStackTrace();
         }
+        // Bind single CM.
         try {
             registry.rebind(bindingName, clientManager);
-            System.out.println(serverMessage + " Server bound to: " + bindingName + ", registry: " + registry + "\n Object in registry: " + clientManager);
-            System.out.println(serverMessage + " Server IP Address: ");
-            printIPAddresses();
-            System.out.println(serverMessage + " Server set, waiting for clients.");
+            System.out.println(serverMessage + " Server bound to: " + bindingName + ", registry: " + registry + "\n Object in registry: " + clientManager.toString());
         } catch (RemoteException ex) {
             System.out.println(serverMessage + " Error binding to registry.");
             ex.printStackTrace();
         }
 
+        // Bind GM.
+        try {
+            registry.rebind("games", gameManager);
+            System.out.println(serverMessage + " Server bound to: " + bindingName + ", registry: " + registry + "\n Object in registry: " + gameManager.toString());
+        } catch (RemoteException ex) {
+            System.out.println(serverMessage + " Error binding to registry.");
+            ex.printStackTrace();
+        }
+        // Bind lobby
+        try {
+            registry.rebind("lobbies", lobby);
+            System.out.println(serverMessage + " Server bound to: " + bindingName + ", registry: " + registry + "\n Object in registry: " + lobby.toString());
+        } catch (RemoteException ex) {
+            System.out.println(serverMessage + " Error binding to registry.");
+            ex.printStackTrace();
+        }
+        System.out.println(serverMessage + " Server IP Address: ");
+        printIPAddresses();
+        System.out.println(serverMessage + " Server set, waiting for clients.");
     }
 
     // Print IP addresses and network interfaces

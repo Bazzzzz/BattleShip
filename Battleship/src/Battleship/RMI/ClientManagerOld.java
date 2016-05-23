@@ -18,11 +18,11 @@ import java.util.List;
  *
  * @author sebas
  */
-public class ClientManager extends UnicastRemoteObject implements IClientManager {
+public class ClientManagerOld extends UnicastRemoteObject implements IClientManager {
 
     private List<ILobby> lobbies;
 
-    public ClientManager() throws RemoteException {
+    public ClientManagerOld() throws RemoteException {
         lobbies = new ArrayList<>();
     }
 
