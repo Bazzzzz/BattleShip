@@ -43,13 +43,14 @@ public class ServerLobby extends UnicastRemoteObject implements ILobby, RemotePu
         basicPublisher = new BasicPublisher(properties);
 
         basicPublisher.inform(this, "lobbies", null, this);
-        
+
         this.players = new ArrayList<>();
         this.gameManager = null;
-        this.name = name;
+        this.name = name + "' lobby";
+
     }
 
- @Override
+    @Override
     public String getName() throws RemoteException {
         return name;
     }
@@ -128,10 +129,12 @@ public class ServerLobby extends UnicastRemoteObject implements ILobby, RemotePu
             this.name = newName;
         }
     }
+
     @Override
     public String toString() {
-        return String.format("%s' lobby: ", this.name); // TODO: Find relation between account and player, add account score to the string format.
+        return String.format("%s", this.name); // TODO: Find relation between account and player, add account score to the string format.
     }
+
     @Override
     public void addListener(RemotePropertyListener listener, String property) throws RemoteException {
         basicPublisher.addListener(listener, property);

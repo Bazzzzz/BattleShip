@@ -28,6 +28,7 @@ import javafx.application.Platform;
  */
 public class GameManager extends UnicastRemoteObject implements IGameManager, RemotePropertyListener {
 
+    private String name;
     private List<Torpedo> torpedos;
     private List<Overview> overviews;
     private List<IPlayer> players;
@@ -37,6 +38,20 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
         overviews = new ArrayList<>(4);
         players = new ArrayList<>(2);
 
+    }
+
+    public GameManager(String name) throws RemoteException {
+        this();
+        if (name.endsWith("game")) {
+            this.name = name;
+        } else {
+            throw new IllegalArgumentException("Game name has to end with game.");
+        }
+
+    }
+
+    public String getName() throws RemoteException {
+        return name;
     }
 
     /**

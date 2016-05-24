@@ -22,6 +22,8 @@ import java.util.List;
  */
 public interface IGameManager extends RemotePublisher {
 
+    public String getName() throws RemoteException;
+    
     public boolean confirmBoard() throws RemoteException;
 
     public boolean placeShip(IPlayer player, int[] locationStart, int shipLength, int direction) throws RemoteException;

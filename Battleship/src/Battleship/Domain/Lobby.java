@@ -33,12 +33,11 @@ public class Lobby implements ILobby, Serializable, RemotePropertyListener {
     private String name;
     private List<IPlayer> players;
     private IGameManager gameManager;
-    
 
     public Lobby(String name) throws RemoteException {
         this.players = new ArrayList<>();
         this.gameManager = null;
-        this.name = name;
+        this.name = name + "' lobby";
     }
 
     @Override
@@ -123,7 +122,7 @@ public class Lobby implements ILobby, Serializable, RemotePropertyListener {
 
     @Override
     public String toString() {
-        return String.format("%s' lobby: ", this.name); // TODO: Find relation between account and player, add account score to the string format.
+        return String.format("%s", this.name); // TODO: Find relation between account and player, add account score to the string format
     }
 
     @Override
@@ -149,6 +148,30 @@ public class Lobby implements ILobby, Serializable, RemotePropertyListener {
                 }
             }
         });
+    }
+
+    /**
+     * Lobbies are equal if the name and amount of players list is equal.
+     *
+     * @param o
+     * @return True if equal.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o != null) {
+            try {
+                ILobby lobby = (ILobby) o;
+
+                if (lobby.getName().equals(this.getName())
+                        && lobby.getPlayers().equals(this.getPlayers())) {
+                    return true;
+                }
+                return false;
+            } catch (RemoteException ex) {
+                Logger.getLogger(Lobby.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return false;
     }
 
     @Override

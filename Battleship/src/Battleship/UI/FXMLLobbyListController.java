@@ -13,6 +13,7 @@ import Battleship.Interfaces.ILobby;
 import Battleship.Interfaces.IPlayer;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -101,10 +102,10 @@ public class FXMLLobbyListController implements Initializable {
             ILobby lobby = new Lobby(lobbyName);
             IPlayer player = new Player(Battleship.handler.getLoggedInPlayer().getLoginName());
             lobby.addPlayer(player);
-            
+
             Battleship.handler.getRMIClient().bindToServer("Lobby", lobby);
             //cm.addLobby(lobby);
-            
+
             this.updateLobbyList(lobby, true);
 
         } catch (RemoteException ex) {
@@ -121,14 +122,16 @@ public class FXMLLobbyListController implements Initializable {
                 //IClientManager cm = Battleship.handler.getRMIClient().getClientManager();
                 IPlayer player = new Player(Battleship.handler.getLoggedInPlayer().getLoginName());
                 //selectedLobby.addPlayer(player);
-                
+
                 //cm.updateLobby(selectedLobby);
                 //System.out.println(cm.findLobbyByPlayer(player.getName()));*/
-                ILobby lobby = Battleship.handler.getRMIClient().getLobby();
-                lobby.updateLobby(player, true);
-                this.updateLobbyList(selectedLobby, false);
-                this.updateLobbyList(lobby, true);
-                System.out.println("Joined Lobby: " + lobby.toString() + "\n As: " + player.toString());
+                ILobby lobby = Battleship.handler.getRMIClient().getSelectedLobby(selectedLobby);
+                if (lobby != null) {
+                    lobby.updateLobby(player, true);
+                    this.updateLobbyList(selectedLobby, false);
+                    this.updateLobbyList(lobby, true);
+                    System.out.println("Joined Lobby: " + lobby.toString() + "\n As: " + player.toString());
+                }
             } else {
                 throw new BattleshipExceptions("Error joining.");
             }
@@ -137,31 +140,37 @@ public class FXMLLobbyListController implements Initializable {
         } catch (RemoteException ex) {
             Logger.getLogger(FXMLLobbyListController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
 
     }
+
     /**
      * Initially fills the list of lobbies and on refresh.
-     * @throws RemoteException 
+     *
+     * @throws RemoteException
      */
     private void fillLobbyList() throws RemoteException {
         /*IClientManager cm = Battleship.handler.getRMIClient().getClientManager();
 
-        if (cm != null) {
-            this.obsLobbies.addAll(cm.getLobbies());
-        }*/
-        ILobby lobby = Battleship.handler.getRMIClient().getLobby();
-        System.out.println("Lobby found: " + lobby.toString());
-        this.obsLobbies.add(lobby);
+         if (cm != null) {
+         this.obsLobbies.addAll(cm.getLobbies());
+         }*/
+        //ILobby lobby = Battleship.handler.getRMIClient().getLobby();
+        if (Battleship.handler.getRMIClient() != null) {
+            Collection<ILobby> lobbyList = Battleship.handler.getRMIClient().getLobbyList();
+
+            System.out.println("Lobbies found: " + lobbyList.toString());
+            this.obsLobbies.addAll(lobbyList);
+        }
+
     }
-    
+
     private void updateLobbyList(ILobby lobby, boolean adding) {
         if (adding) {
             this.obsLobbies.add(lobby);
         } else {
             this.obsLobbies.remove(lobby);
         }
-        
+
     }
 
     private void dummyData() throws RemoteException {

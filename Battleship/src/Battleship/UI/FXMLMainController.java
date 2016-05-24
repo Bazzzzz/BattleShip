@@ -65,12 +65,7 @@ public class FXMLMainController implements Initializable {
 
     @FXML
     public void handleRegisterButton(ActionEvent e) {
-        try {
-            RMIClient client = new RMIClient(tfServerIP.getText());
-            this.handleRegisterAction();
-        } catch (BattleshipExceptions ex) {
-            lblError.setText(ex.getMessage());
-        }
+        this.handleRegisterAction();
     }
 
     private void handlePlayAction(RMIClient client) throws IOException {
@@ -79,15 +74,18 @@ public class FXMLMainController implements Initializable {
             String password = tfPassword.getText();
             if (!username.equals("")) {
                 if (!password.equals("")) {
-                    this.handleRMIConnection(client);
-                    this.loginPlayer(username, password);
-                    // TODO: Move into lobby list screen
-                    Parent window;
-                    window = FXMLLoader.load(getClass().getResource("FXMLLobbyList.fxml"));
-                    Stage stage = new Stage();
-                    stage.setTitle("Lobbies");
-                    stage.setScene(new Scene(window));
-                    stage.show();
+                    if (this.handleRMIConnection(client)) {
+                        this.loginPlayer(username, password);
+                        Parent window;
+                        window = FXMLLoader.load(getClass().getResource("FXMLLobbyList.fxml"));
+                        Stage stage = new Stage();
+                        stage.setTitle("Lobbies");
+                        stage.setScene(new Scene(window));
+                        stage.show();
+                    } else {
+                        throw new BattleshipExceptions("Unable to make connection.");
+                    }
+
                 } else {
                     // TODO: Start game without saving account details.
                 }
@@ -116,9 +114,12 @@ public class FXMLMainController implements Initializable {
         }
     }
 
-    private void handleRMIConnection(RMIClient client) {
-        client.connectToServer("lobbies");
-        Battleship.handler.setRMIClient(client);
+    private boolean handleRMIConnection(RMIClient client) {
+        if (client.connectToServer("lobbyList", null)) {
+            Battleship.handler.setRMIClient(client);
+            return true;
+        }
+        return false;
     }
 
     private void loginPlayer(String username, String password) {

@@ -42,14 +42,14 @@ public class RMIServerClientTest {
     @Test
     public void TestConnection() throws BattleshipExceptions {
         client = new RMIClient("localhost");
-        assertTrue("Test connection of client to server", client.connectToServer("games"));
-        assertTrue("Test connection of client to server", client.connectToServer("lobbies"));
+        assertTrue("Test connection of client to server", client.connectToServer("games", null));
+        assertTrue("Test connection of client to server", client.connectToServer("lobbies", null));
     }
 
     @Test
     public void TestGetClientManager() throws BattleshipExceptions, RemoteException {
         client = new RMIClient("localhost");
-        client.connectToServer("cm");
+        client.connectToServer("cm", null);
         String message = "[TestGetClientManager] ";
         assertNotNull(message + "Client retrieved the client manager object", client.getClientManager());
     }
@@ -57,7 +57,7 @@ public class RMIServerClientTest {
     @Test
     public void TestAddLobbyToCM() throws BattleshipExceptions, RemoteException {
         client = new RMIClient("localhost");
-        client.connectToServer("cm");
+        client.connectToServer("cm", null);
         String message = "[TestAddLobbyToCM] ";
 
         IClientManager cm = client.getClientManager();
@@ -84,7 +84,7 @@ public class RMIServerClientTest {
     @Test
     public void TestAddPlayerToLobbyFromCM() throws BattleshipExceptions, RemoteException {
         client = new RMIClient("localhost");
-        client.connectToServer("cm");
+        client.connectToServer("cm", null);
         String message = "[TestAddPlayerToLobbyFromCM] ";
         IClientManager cm = client.getClientManager();
         cm.removeAllLobbies();
@@ -119,7 +119,7 @@ public class RMIServerClientTest {
     @Test
     public void TestRemovePlayerFromLobbyInCM() throws BattleshipExceptions, RemoteException {
         client = new RMIClient("localhost");
-        client.connectToServer("cm");
+        client.connectToServer("cm", null);
         String message = "[TestRemovePlayerFromLobbyInCM] ";
         IClientManager cm = client.getClientManager();
         cm.removeAllLobbies();
@@ -146,7 +146,7 @@ public class RMIServerClientTest {
     @Test
     public void TestCreateGameManagerFromLobby() throws BattleshipExceptions, RemoteException {
         client = new RMIClient("localhost");
-        client.connectToServer("cm");
+        client.connectToServer("cm", null);
         String message = "[TestCreateGameManagerFromLobby] ";
 
         IClientManager cm = client.getClientManager();
@@ -181,7 +181,7 @@ public class RMIServerClientTest {
     @Test
     public void TestGetLobby() throws BattleshipExceptions {
         client = new RMIClient("localhost");
-        client.connectToServer("lobbies");
+        client.connectToServer("lobbies", null);
         String message = "[TestGetLobby] ";
 
         assertNotNull(message + "Client returned a remote lobby.", client.getLobby());
@@ -190,7 +190,7 @@ public class RMIServerClientTest {
     @Test
     public void TestAddPlayerToLobby() throws BattleshipExceptions, RemoteException {
         client = new RMIClient("localhost");
-        client.connectToServer("lobbies");
+        client.connectToServer("lobbies", null);
         String message = "[TestAddPlayerToLobby] ";
 
         client.getLobby().addPlayer(playerBas);
@@ -203,7 +203,7 @@ public class RMIServerClientTest {
     @Test
     public void TestCreateGameManagerFromLobbyObject() throws BattleshipExceptions, RemoteException {
         client = new RMIClient("localhost");
-        client.connectToServer("lobbies");
+        client.connectToServer("lobbies", null);
         String message = "[TestCreateGameManagerFromLobbyObject] ";
 
         client.getLobby().addPlayer(playerBas);
@@ -218,7 +218,7 @@ public class RMIServerClientTest {
     @Test
     public void TestUseGameManagerObjectFromLobbyObject() throws BattleshipExceptions, RemoteException {
         client = new RMIClient("localhost");
-        client.connectToServer("lobbies");
+        client.connectToServer("lobbies", null);
         String message = "[TestUseGameManagerObjectFromLobbyObject] ";
 
         client.getLobby().addPlayer(playerBas);

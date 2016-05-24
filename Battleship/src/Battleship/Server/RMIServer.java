@@ -43,14 +43,14 @@ public class RMIServer {
 
     public RMIServer() {
         // Create Client Manager
-        try {
+        /*try {
             clientManager = new ClientManagerOld();
             System.out.println(serverMessage + " CM created");
         } catch (RemoteException ex) {
             System.out.println(serverMessage + " Error creating CM.");
             Logger.getLogger(RMIServer.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+*/
         // Create Game Manager
         try {
             gameManager = new GameManager();
@@ -61,7 +61,7 @@ public class RMIServer {
         }
 
         try {
-            lobby = new ServerLobby("Test");
+            lobby = new ServerLobby("Test lobby");
         } catch (RemoteException ex) {
             System.out.println(serverMessage + " Error creating lobby.");
             Logger.getLogger(RMIServer.class.getName()).log(Level.SEVERE, null, ex);
@@ -76,6 +76,7 @@ public class RMIServer {
             ex.printStackTrace();
         }
         // Bind single CM.
+        /*
         try {
             registry.rebind(bindingName, clientManager);
             System.out.println(serverMessage + " Server bound to: " + bindingName + ", registry: " + registry + "\n Object in registry: " + clientManager.toString());
@@ -83,10 +84,10 @@ public class RMIServer {
             System.out.println(serverMessage + " Error binding to registry.");
             ex.printStackTrace();
         }
-
+*/
         // Bind GM.
         try {
-            registry.rebind("games", gameManager);
+            registry.rebind("game", gameManager);
             System.out.println(serverMessage + " Server bound to: " + bindingName + ", registry: " + registry + "\n Object in registry: " + gameManager.toString());
         } catch (RemoteException ex) {
             System.out.println(serverMessage + " Error binding to registry.");
@@ -94,7 +95,7 @@ public class RMIServer {
         }
         // Bind lobby
         try {
-            registry.rebind("lobbies", lobby);
+            registry.rebind("lobby", lobby);
             System.out.println(serverMessage + " Server bound to: " + bindingName + ", registry: " + registry + "\n Object in registry: " + lobby.toString());
         } catch (RemoteException ex) {
             System.out.println(serverMessage + " Error binding to registry.");
