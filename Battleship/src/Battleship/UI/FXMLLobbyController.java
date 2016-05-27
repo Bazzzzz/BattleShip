@@ -14,6 +14,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -51,7 +52,7 @@ public class FXMLLobbyController implements Initializable {
     @FXML
     private Label lblPlayer2Score;
 
-    private ILobby lobby;
+    private String joinedLobbyName;
 
     /**
      * Initializes the controller class.
@@ -59,11 +60,13 @@ public class FXMLLobbyController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-        lobby = Battleship.handler.getSelectedLobby();
+        joinedLobbyName = Battleship.handler.getJoinedLobbyName();
 
         try {
-            lblTitle.setText(lobby.getName());
-            IPlayer player1 = lobby.getPlayers().get(0);
+            Battleship.handler.getRMIClient().connectToServer("lobbyList", null);
+            ILobby tempLobby = Battleship.handler.getRMIClient().getSelectedLobbyRMI(joinedLobbyName);
+            lblTitle.setText(tempLobby.getName());
+            IPlayer player1 = tempLobby.getPlayers().get(0);
 
             if (player1 != null) {
                 this.lblPlayer1Name.setText(player1.getName());
@@ -72,8 +75,15 @@ public class FXMLLobbyController implements Initializable {
         } catch (RemoteException ex) {
             Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    @FXML
+    public void handleLeaveLobbyButton(ActionEvent e) {
         
+    }
 
-     }
-
+    @FXML
+    public void handleStartGameButton(ActionEvent e) {
+        
+    }
 }
