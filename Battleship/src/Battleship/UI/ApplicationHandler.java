@@ -7,6 +7,7 @@ package Battleship.UI;
 
 import Battleship.Domain.Account;
 import Battleship.Interfaces.IDatabaseMediator;
+import Battleship.Interfaces.ILobby;
 import Battleship.Persistence.DatabaseMediator;
 import Battleship.RMI.RMIClient;
 
@@ -19,10 +20,13 @@ public class ApplicationHandler {
     private IDatabaseMediator dbm;
     public static Account loggedInPlayer;
     private static RMIClient rmiClient;
-
+    private static String joinedLobbyName;
+    
     public ApplicationHandler() {
         dbm = new DatabaseMediator();
         loggedInPlayer = null;
+        rmiClient = null;
+        joinedLobbyName = null;
     }
 
     public Account getLoggedInPlayer() {
@@ -42,7 +46,20 @@ public class ApplicationHandler {
     public RMIClient getRMIClient() {
         return ApplicationHandler.rmiClient;
     }
-    
+    /**
+     * Set the joinedLobby object and enable usage over the application.
+     * @param lobby 
+     */
+    public void setJoinedLobby(String lobbyName) {
+        ApplicationHandler.joinedLobbyName = lobbyName;
+    }
+    /**
+     * Get the lobby a user clicked in the lobby list controller.
+     * @return Selected lobby.
+     */
+    public String getJoinedLobbyName() {
+        return ApplicationHandler.joinedLobbyName;
+    }
     /**
      * Add a new player to the database.
      * @param username
