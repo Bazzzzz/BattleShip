@@ -61,7 +61,7 @@ public class RMIServer {
         }
 
         try {
-            lobby = new ServerLobby("Test lobby");
+            lobby = new Lobby("Test lobby");
         } catch (RemoteException ex) {
             System.out.println(serverMessage + " Error creating lobby.");
             Logger.getLogger(RMIServer.class.getName()).log(Level.SEVERE, null, ex);

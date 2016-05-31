@@ -38,6 +38,8 @@ public class ServerLobby extends UnicastRemoteObject implements ILobby, RemotePu
 
     private BasicPublisher basicPublisher;
 
+    public ServerLobby() throws RemoteException {}
+    
     public ServerLobby(String name) throws RemoteException {
         String[] properties = {"lobbies"};
         basicPublisher = new BasicPublisher(properties);
@@ -96,13 +98,13 @@ public class ServerLobby extends UnicastRemoteObject implements ILobby, RemotePu
     }
 
     @Override
-    public void removePlayerFromLobby(IPlayer player) throws RemoteException {
-        if (player != null) {
+    public void removePlayerFromLobby(String playerName) throws RemoteException {
+        if (playerName != null) {
             Iterator<IPlayer> itrPlayer = this.players.iterator();
             IPlayer tempPlayer = null;
             while (itrPlayer.hasNext()) {
                 IPlayer playerFound = itrPlayer.next();
-                if (playerFound.equals(player)) {
+                if (playerFound.getName().equals(playerName)) {
                     tempPlayer = playerFound;
                     break;
                 }
@@ -110,7 +112,7 @@ public class ServerLobby extends UnicastRemoteObject implements ILobby, RemotePu
             if (tempPlayer != null) {
                 this.players.remove(tempPlayer);
                 if (this.gameManager != null) {
-                    this.removePlayerFromGM(player);
+                    this.removePlayerFromGM(tempPlayer);
                 }
             }
         }

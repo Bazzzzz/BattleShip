@@ -5,6 +5,8 @@
  */
 package Battleship.UI;
 
+import Battleship.Domain.Account;
+import Battleship.Interfaces.IGameManager;
 import Battleship.Interfaces.ILobby;
 import Battleship.Interfaces.IPlayer;
 import java.net.URL;
@@ -12,8 +14,12 @@ import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -58,22 +64,64 @@ public class FXMLLobbyController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-        lobby = Battleship.handler.getSelectedLobby();
+        this.lobby = Singleton.getInstance().getLobby();
 
+        System.out.println("LobbyController: " + this.lobby.toString());
+        this.loadData();
+
+        this.trackChanges();
+    }
+
+    @FXML
+    public void handleLeaveLobbyButton(ActionEvent e) {
+        Account player = Battleship.handler.getLoggedInPlayer();
         try {
-            lblTitle.setText(lobby.getName());
-            IPlayer player1 = lobby.getPlayers().get(0);
+            this.lobby.removePlayerFromLobby(player.getLoginName());
+        } catch (RemoteException ex) {
+            Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @FXML
+    public void handleStartButton(ActionEvent e) {
+        try {
+            IGameManager game = this.lobby.createGameManager();
+            Battleship.handler.getRMIClient().bindToServer("game", game);
+            Singleton.getInstance().setLobby(this.lobby);
+        } catch (RemoteException ex) {
+            Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void loadData() {
+        try {
+            lblTitle.setText(this.lobby.getName());
+            Account player1 = Battleship.handler.getLoggedInPlayer();
 
             if (player1 != null) {
-                this.lblPlayer1Name.setText(player1.getName());
+                this.lblPlayer1Name.setText(player1.getLoginName());
                 this.lblPlayer1Score.setText(player1.toString());
             }
         } catch (RemoteException ex) {
             Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private void trackChanges() {
+        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+        service.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                ILobby curLobby = lobby;
+                ILobby runLobby = Battleship.handler.getRMIClient().getSelectedLobby(lobby);
+                
+                if(!runLobby.equals(curLobby)) {
+                    lobby = runLobby;
+                    loadData();
+                }
+            }
+        }, 0, 10, TimeUnit.SECONDS);
         
 
-     }
-
+    }
 }

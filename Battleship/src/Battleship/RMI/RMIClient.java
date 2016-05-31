@@ -52,6 +52,7 @@ public class RMIClient {
     private final String clientMessage = "[CLIENT MESSAGE]";
 
     public RMIClient(String ipAddress) throws BattleshipExceptions {
+
         if (!ipAddress.equals("")) {
             this.ipAddress = ipAddress;
             this.lobbyList = new ArrayList<>();
@@ -93,21 +94,24 @@ public class RMIClient {
 
         return result;
     }
+
     /**
      * Retrieve a lobby from the registry.
+     *
      * @param selectedLobby lobby that was selected in the UI, not null.
      * @return THe lobby that was found or null.
      */
     public ILobby getSelectedLobby(ILobby selectedLobby) {
-        if(selectedLobby != null) {
-            for(ILobby tempLobby : this.lobbyList) {
-                if(tempLobby.equals(selectedLobby)) {
+        if (selectedLobby != null) {
+            for (ILobby tempLobby : this.lobbyList) {
+                if (tempLobby.equals(selectedLobby)) {
                     return tempLobby;
                 }
             }
         }
         return null;
     }
+
     /**
      * Connect to the registry where the binding name is equal to the name of
      * the lobby. Method produces 1 bound lobby or game manager.
@@ -210,7 +214,6 @@ public class RMIClient {
                     }
                 }
             }
-
             return false;
         } catch (RemoteException ex) {
             Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);

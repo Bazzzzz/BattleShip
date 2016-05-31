@@ -11,6 +11,7 @@ import Battleship.Exceptions.BattleshipExceptions;
 import Battleship.Interfaces.IClientManager;
 import Battleship.Interfaces.ILobby;
 import Battleship.Interfaces.IPlayer;
+import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -23,11 +24,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
  * FXML Controller class
@@ -131,6 +137,9 @@ public class FXMLLobbyListController implements Initializable {
                     this.updateLobbyList(selectedLobby, false);
                     this.updateLobbyList(lobby, true);
                     System.out.println("Joined Lobby: " + lobby.toString() + "\n As: " + player.toString());
+
+                    Singleton.getInstance().setLobby(lobby);
+                    this.loadLobbyWindow();
                 }
             } else {
                 throw new BattleshipExceptions("Error joining.");
@@ -138,6 +147,8 @@ public class FXMLLobbyListController implements Initializable {
         } catch (BattleshipExceptions ex) {
             System.out.println(ex.getMessage());
         } catch (RemoteException ex) {
+            Logger.getLogger(FXMLLobbyListController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(FXMLLobbyListController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -171,6 +182,16 @@ public class FXMLLobbyListController implements Initializable {
             this.obsLobbies.remove(lobby);
         }
 
+    }
+
+    private void loadLobbyWindow() throws IOException {
+        Parent window;
+
+        window = FXMLLoader.load(getClass().getResource("FXMLLobby.fxml"));
+        Stage stage = new Stage();
+        stage.setTitle("Lobby");
+        stage.setScene(new Scene(window));
+        stage.show();
     }
 
     private void dummyData() throws RemoteException {

@@ -98,4 +98,8 @@ public class Player implements IPlayer, Serializable {
         }
         return false;
     }
+    
+    public String toString() {
+        return String.format("Player information: \n %s", this.getName());
+    }
 }

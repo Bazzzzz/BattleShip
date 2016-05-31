@@ -86,13 +86,13 @@ public class Lobby implements ILobby, Serializable, RemotePropertyListener {
     }
 
     @Override
-    public void removePlayerFromLobby(IPlayer player) throws RemoteException {
-        if (player != null) {
+    public void removePlayerFromLobby(String playerName) throws RemoteException {
+        if (playerName != null) {
             Iterator<IPlayer> itrPlayer = this.players.iterator();
             IPlayer tempPlayer = null;
             while (itrPlayer.hasNext()) {
                 IPlayer playerFound = itrPlayer.next();
-                if (playerFound.equals(player)) {
+                if (playerFound.getName().equals(playerName)) {
                     tempPlayer = playerFound;
                     break;
                 }
@@ -100,7 +100,7 @@ public class Lobby implements ILobby, Serializable, RemotePropertyListener {
             if (tempPlayer != null) {
                 this.players.remove(tempPlayer);
                 if (this.gameManager != null) {
-                    this.removePlayerFromGM(player);
+                    this.removePlayerFromGM(tempPlayer);
                 }
             }
         }
@@ -142,7 +142,8 @@ public class Lobby implements ILobby, Serializable, RemotePropertyListener {
             @Override
             public void run() {
                 try {
-                    System.out.println(lobby.getName());
+                    System.out.println("PropertyChange: " + lobby.getName());
+                    
                 } catch (RemoteException ex) {
                     Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -162,8 +163,7 @@ public class Lobby implements ILobby, Serializable, RemotePropertyListener {
             try {
                 ILobby lobby = (ILobby) o;
 
-                if (lobby.getName().equals(this.getName())
-                        && lobby.getPlayers().equals(this.getPlayers())) {
+                if (lobby.getName().equals(this.getName())) {
                     return true;
                 }
                 return false;

@@ -30,7 +30,7 @@ public interface ILobby extends RemotePublisher {
      * Remove a player from the game manager object
      * @param player not null
      */
-    public void removePlayerFromLobby(IPlayer player) throws RemoteException;
+    public void removePlayerFromLobby(String playerName) throws RemoteException;
     /**
      * Get the game manager object.
      * @return The game manager object.

@@ -137,7 +137,7 @@ public class RMIServerClientTest {
         cm.addLobby(secondLobby);
 
         // Remove player from first lobby.
-        firstLobby.removePlayerFromLobby(playerBas);
+        firstLobby.removePlayerFromLobby(playerBas.getName());
         int playersCount = firstLobby.getPlayers().size();
         assertEquals(message + "Player removed from the first lobby.", 0, playersCount);
 

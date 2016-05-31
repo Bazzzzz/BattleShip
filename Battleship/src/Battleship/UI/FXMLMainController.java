@@ -77,6 +77,7 @@ public class FXMLMainController implements Initializable {
                     if (this.handleRMIConnection(client)) {
                         this.loginPlayer(username, password);
                         Parent window;
+
                         window = FXMLLoader.load(getClass().getResource("FXMLLobbyList.fxml"));
                         Stage stage = new Stage();
                         stage.setTitle("Lobbies");
