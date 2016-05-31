@@ -57,6 +57,8 @@ public class FXMLLobbyController implements Initializable {
     @FXML
     private Label lblPlayer2Score;
 
+    private String joinedLobbyName;
+
     private ILobby lobby;
 
     /**
@@ -65,7 +67,7 @@ public class FXMLLobbyController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         this.lobby = Singleton.getInstance().getLobby();
-
+        joinedLobbyName = Battleship.handler.getJoinedLobbyName();
         System.out.println("LobbyController: " + this.lobby.toString());
         this.loadData();
 
@@ -114,14 +116,12 @@ public class FXMLLobbyController implements Initializable {
             public void run() {
                 ILobby curLobby = lobby;
                 ILobby runLobby = Battleship.handler.getRMIClient().getSelectedLobby(lobby);
-                
-                if(!runLobby.equals(curLobby)) {
+
+                if (!runLobby.equals(curLobby)) {
                     lobby = runLobby;
                     loadData();
                 }
             }
         }, 0, 10, TimeUnit.SECONDS);
-        
-
     }
 }

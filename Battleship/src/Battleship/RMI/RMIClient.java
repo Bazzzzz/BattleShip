@@ -81,12 +81,12 @@ public class RMIClient {
         } else if (search.equals("lobbyList")) {
             result = this.connectRMIList(search);
             if (this.lobbyList.isEmpty()) {
-                return true;
+                return false;
             }
         } else if (search.equals("gamesList")) {
             result = this.connectRMIList(search);
             if (this.gamesList.isEmpty()) {
-                return true;
+                return false;
             }
         } else {
             result = connectRMI(search);
@@ -96,24 +96,35 @@ public class RMIClient {
     }
 
     /**
-     * Retrieve a lobby from the registry.
+     * Return the lobby which is searched for through RMI.
      *
-     * @param selectedLobby lobby that was selected in the UI, not null.
-     * @return THe lobby that was found or null.
+     * @param selectedLobbyName lobby name that was selected in the UI, not null
+     * or empty.
+     * @return Found lobby or null.
      */
-    public ILobby getSelectedLobby(ILobby selectedLobby) {
-        if (selectedLobby != null) {
-            for (ILobby tempLobby : this.lobbyList) {
-                if (tempLobby.equals(selectedLobby)) {
-                    return tempLobby;
+    public ILobby getSelectedLobbyRMI(String selectedLobbyName) {
+        if (selectedLobbyName != null && !selectedLobbyName.isEmpty()) {
+            try {
+                String[] registryList = registry.list();
+                for (String nameLoop : registryList) {
+                    if (nameLoop.endsWith("lobby")) {
+                        ILobby foundLobby = (ILobby) registry.lookup(nameLoop);
+                        if (foundLobby != null && foundLobby.getName().equals(selectedLobbyName)) {
+                            return foundLobby;
+                        }
+                    }
                 }
+            } catch (RemoteException ex) {
+                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NotBoundException ex) {
+                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return null;
     }
 
     /**
-     * Connect to the registry where the binding name is equal to the name of
+     * [DEPRICATED] Connect to the registry where the binding name is equal to the name of
      * the lobby. Method produces 1 bound lobby or game manager.
      *
      * @return True if game manager or lobby was found.
@@ -232,18 +243,18 @@ public class RMIClient {
     private boolean getLobbyListRMI() {
         try {
             String[] registryList = registry.list();
-            for (String nameLoop : registryList) {
-                if (nameLoop.endsWith("lobby")) {
-                    ILobby tempLobby = (ILobby) registry.lookup(nameLoop);
-                    if (tempLobby != null) {
-                        this.lobbyList.add(tempLobby);
+            if (registryList.length > 0) {
+                for (String nameLoop : registryList) {
+                    if (nameLoop.endsWith("lobby")) {
+                        ILobby tempLobby = (ILobby) registry.lookup(nameLoop);
+                        if (tempLobby != null) {
+                            this.lobbyList.add(tempLobby);
+                        }
                     }
                 }
-            }
-            if (this.lobbyList.size() > 0) {
-                return true;
-            } else {
-                return false;
+                if (this.lobbyList.size() > 0) {
+                    return true;
+                }
             }
         } catch (RemoteException ex) {
             Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
@@ -252,6 +263,7 @@ public class RMIClient {
             Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
+        return false;
     }
 
     /**
@@ -286,6 +298,11 @@ public class RMIClient {
         return false;
     }
 
+    /**
+     * [DEPRICATED] Connects to the ClientManager.
+     *
+     * @return True if connected. False if not.
+     */
     private boolean connectRMIClientManager() {
         try {
             registry = LocateRegistry.getRegistry(ipAddress, portNumber);
@@ -406,7 +423,7 @@ public class RMIClient {
     }
 
     /**
-     * Try to bind the lobby using the RemotePropertyListener.
+     * [DEPRICATED] Try to bind the lobby using the RemotePropertyListener.
      *
      * @param object
      */
@@ -426,7 +443,7 @@ public class RMIClient {
     }
 
     /**
-     * Try to bind game manager using the RemotePropertyListener.
+     * [DEPRICATED] Try to bind game manager using the RemotePropertyListener.
      *
      * @param object
      */
@@ -443,6 +460,23 @@ public class RMIClient {
             Logger.getLogger(RMIClient.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    /**
+     * [DEPRICATED] Retrieve a lobby from the registry.
+     *
+     * @param selectedLobby lobby that was selected in the UI, not null.
+     * @return THe lobby that was found or null.
+     */
+    public ILobby getSelectedLobby(ILobby selectedLobby) {
+        if (selectedLobby != null) {
+            for (ILobby tempLobby : this.lobbyList) {
+                if (tempLobby.equals(selectedLobby)) {
+                    return tempLobby;
+                }
+            }
+        }
+        return null;
     }
 
 }
