@@ -49,7 +49,8 @@ public class FXMLMainController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
+        this.tfServerIP.setText("localhost");
+        this.tfPassword.setText("test");
     }
 
     @FXML

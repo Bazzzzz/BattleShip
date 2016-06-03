@@ -13,21 +13,21 @@ import Battleship.Interfaces.ILobby;
  */
 public class Singleton {
     private static Singleton instance = new Singleton();
-    private ILobby lobby;
+    private String lobbyName;
     
     public static Singleton getInstance() {
         return Singleton.instance;
     }
     
     public Singleton(){
-        this.lobby = null;
+        this.lobbyName = null;
     }
     
-    public void setLobby(ILobby lobby) {
-        this.lobby = lobby;
+    public void setLobbyName(String lobbyName) {
+        this.lobbyName = lobbyName;
     }
-    public ILobby getLobby() {
-        return this.lobby;
+    public String getLobbyName() {
+        return this.lobbyName;
     }
     
 }

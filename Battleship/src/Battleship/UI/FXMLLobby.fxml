@@ -9,8 +9,8 @@
 
 <AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Battleship.UI.FXMLLobbyController">
    <children>
-      <Button fx:id="btnStart" layoutX="451.0" layoutY="355.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="135.0" text="Start" />
-      <Button fx:id="btnLeave" layoutX="14.0" layoutY="355.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="135.0" text="Leave Lobby" />
+      <Button fx:id="btnStart" layoutX="451.0" layoutY="355.0" mnemonicParsing="false" onAction="#handleStartButton" prefHeight="31.0" prefWidth="135.0" text="Start" />
+      <Button fx:id="btnLeave" layoutX="14.0" layoutY="355.0" mnemonicParsing="false" onAction="#handleLeaveLobbyButton" prefHeight="31.0" prefWidth="135.0" text="Leave Lobby" />
       <Label fx:id="lblTitle" layoutX="286.0" layoutY="21.0" text="Title" />
       <HBox layoutX="24.0" layoutY="190.0" prefHeight="37.0" prefWidth="550.0" />
       <GridPane layoutX="8.0" layoutY="61.0" prefHeight="104.0" prefWidth="585.0">

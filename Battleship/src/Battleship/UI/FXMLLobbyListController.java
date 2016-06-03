@@ -112,6 +112,9 @@ public class FXMLLobbyListController implements Initializable {
 
             this.updateLobbyList(lobby, true);
             try {
+                Singleton.getInstance().setLobbyName(lobby.getName());
+                System.out.println("New lobby Singleton: " + Singleton.getInstance().getLobbyName());
+
                 this.loadLobbyFXML();
             } catch (IOException ex) {
                 Logger.getLogger(FXMLLobbyListController.class.getName()).log(Level.SEVERE, null, ex);
@@ -137,9 +140,9 @@ public class FXMLLobbyListController implements Initializable {
                         this.updateLobbyList(lobby, true);
 
                         System.out.println("Joined Lobby: " + lobby.toString() + "\n As: " + player.toString());
-
-                    Singleton.getInstance().setLobby(lobby);
-                    this.loadLobbyWindow();
+                        System.out.println("Lobby players: " + lobby.getPlayers().size());
+                        Singleton.getInstance().setLobbyName(lobby.getName());
+                        System.out.println("Join lobby Singleton: " + Singleton.getInstance().getLobbyName());
                         try {
                             this.loadLobbyFXML();
                         } catch (IOException ex) {
@@ -181,12 +184,12 @@ public class FXMLLobbyListController implements Initializable {
      */
     private void fillLobbyList() throws RemoteException {
         if (Battleship.handler.getRMIClient() != null) {
-            if (Battleship.handler.getRMIClient().connectToServer("lobbyList", null)) {
+            //if (Battleship.handler.getRMIClient().connectToServer("lobbyList", null)) {
                 Collection<ILobby> lobbyList = Battleship.handler.getRMIClient().getLobbyList();
 
                 System.out.println("Lobbies found: " + lobbyList.toString());
                 this.obsLobbies.addAll(lobbyList);
-            }
+        //    }
         }
 
     }
@@ -198,16 +201,6 @@ public class FXMLLobbyListController implements Initializable {
             this.obsLobbies.remove(lobby);
         }
 
-    }
-
-    private void loadLobbyWindow() throws IOException {
-        Parent window;
-
-        window = FXMLLoader.load(getClass().getResource("FXMLLobby.fxml"));
-        Stage stage = new Stage();
-        stage.setTitle("Lobby");
-        stage.setScene(new Scene(window));
-        stage.show();
     }
 
     private void dummyData() throws RemoteException {

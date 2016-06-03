@@ -369,11 +369,19 @@ public class RMIClient {
             case "Game":
                 bindGame(object);
                 break;
+            case "LobbyUpdate":
+                bindUpdatedLobby(object);
             default:
                 return;
         }
     }
 
+    public ILobby getLobby(ILobby lobby) {
+        
+        
+        return null;
+    }
+    
     /**
      * Bind a lobby to the registry.
      *
@@ -390,6 +398,7 @@ public class RMIClient {
         if (registry != null) {
             try {
                 registry.bind(tempLobby.getName(), tempLobby);
+                System.out.println("[SERVER MESSAGE] Lobby bound:" + tempLobby);
             } catch (RemoteException ex) {
                 Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
             } catch (AlreadyBoundException ex) {
@@ -414,6 +423,7 @@ public class RMIClient {
         if (registry != null) {
             try {
                 registry.bind(tempGame.getName(), tempGame);
+                System.out.println("[SERVER MESSAGE] Game bound:" + tempGame);
             } catch (RemoteException ex) {
                 Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
             } catch (AlreadyBoundException ex) {
@@ -422,6 +432,23 @@ public class RMIClient {
         }
     }
 
+    private void bindUpdatedLobby(Object object) {
+        ILobby lobby = (ILobby) object;
+        try {
+            registry = LocateRegistry.getRegistry(ipAddress, portNumber);
+        } catch (RemoteException ex) {
+            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (registry != null) {
+            try {
+                registry.rebind(lobby.getName(), lobby);
+                System.out.println("[SERVER MESSAGE] Lobby rebound:" + lobby);
+            } catch (RemoteException ex) {
+                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }      
+    }
+    
     /**
      * [DEPRICATED] Try to bind the lobby using the RemotePropertyListener.
      *

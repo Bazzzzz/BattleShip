@@ -104,6 +104,11 @@ public class RMIServer {
         System.out.println(serverMessage + " Server IP Address: ");
         printIPAddresses();
         System.out.println(serverMessage + " Server set, waiting for clients.");
+        try {
+            System.out.println(registry.list().toString());
+        } catch (RemoteException ex) {
+            Logger.getLogger(RMIServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     // Print IP addresses and network interfaces

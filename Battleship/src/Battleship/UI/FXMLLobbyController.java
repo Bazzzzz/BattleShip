@@ -57,8 +57,6 @@ public class FXMLLobbyController implements Initializable {
     @FXML
     private Label lblPlayer2Score;
 
-    private String joinedLobbyName;
-
     private ILobby lobby;
 
     /**
@@ -66,12 +64,38 @@ public class FXMLLobbyController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        this.lobby = Singleton.getInstance().getLobby();
-        joinedLobbyName = Battleship.handler.getJoinedLobbyName();
+        
+        if(Battleship.handler.getRMIClient().connectToServer("lobbyList", null)) {
+            this.lobby = Battleship.handler.getRMIClient().getSelectedLobbyRMI(Singleton.getInstance().getLobbyName());
+        }
         System.out.println("LobbyController: " + this.lobby.toString());
         this.loadData();
 
-        this.trackChanges();
+        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+        service.scheduleAtFixedRate(new LobbyRunner(), 0, 10, TimeUnit.SECONDS);
+    }
+
+    private class LobbyRunner implements Runnable {
+
+        @Override
+        public void run() {
+            ILobby curLobby = lobby;
+            ILobby runLobby;
+            try {
+
+                runLobby = Battleship.handler.getRMIClient().getSelectedLobbyRMI(lobby.getName());
+                if (runLobby != null) {
+                    lobby = runLobby;
+                    loadData();
+                    System.out.println("New lobby data loaded." + lobby.getPlayers().size());
+                }
+
+            } catch (RemoteException ex) {
+                Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            System.out.println("Runnable Ran. Lobby information: " + lobby);
+        }
     }
 
     @FXML
@@ -79,6 +103,7 @@ public class FXMLLobbyController implements Initializable {
         Account player = Battleship.handler.getLoggedInPlayer();
         try {
             this.lobby.removePlayerFromLobby(player.getLoginName());
+
         } catch (RemoteException ex) {
             Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -88,8 +113,10 @@ public class FXMLLobbyController implements Initializable {
     public void handleStartButton(ActionEvent e) {
         try {
             IGameManager game = this.lobby.createGameManager();
-            Battleship.handler.getRMIClient().bindToServer("game", game);
-            Singleton.getInstance().setLobby(this.lobby);
+            Battleship.handler.getRMIClient().bindToServer("Game", game);
+            Battleship.handler.getRMIClient().bindToServer("LobbyUpdate", lobby);
+            Singleton.getInstance().setLobbyName(this.lobby.getName());
+
         } catch (RemoteException ex) {
             Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -98,30 +125,16 @@ public class FXMLLobbyController implements Initializable {
     private void loadData() {
         try {
             lblTitle.setText(this.lobby.getName());
-            Account player1 = Battleship.handler.getLoggedInPlayer();
-
-            if (player1 != null) {
-                this.lblPlayer1Name.setText(player1.getLoginName());
-                this.lblPlayer1Score.setText(player1.toString());
+            if (lobby.getPlayers().size() == 2) {
+                IPlayer player2 = this.lobby.getPlayers().get(1);
+                lblPlayer2Name.setText(player2.getName());
+                lblPlayer2Score.setText("0");
             }
+            IPlayer player1 = this.lobby.getPlayers().get(0);
+            lblPlayer1Name.setText(player1.getName());
+            lblPlayer1Score.setText("0");
         } catch (RemoteException ex) {
             Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    private void trackChanges() {
-        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                ILobby curLobby = lobby;
-                ILobby runLobby = Battleship.handler.getRMIClient().getSelectedLobby(lobby);
-
-                if (!runLobby.equals(curLobby)) {
-                    lobby = runLobby;
-                    loadData();
-                }
-            }
-        }, 0, 10, TimeUnit.SECONDS);
     }
 }
