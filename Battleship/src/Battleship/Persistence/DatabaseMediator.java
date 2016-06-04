@@ -32,8 +32,8 @@ public class DatabaseMediator implements IDatabaseMediator {
     private static String user;
     private static String password;
 
-    public DatabaseMediator() {
-        url = "jdbc:mysql://localhost:3306/battleship";
+    public DatabaseMediator(String ipAddress) {
+        url = "jdbc:mysql://" + ipAddress + ":3306/battleship";
         user = "root";
         password = "";
     }

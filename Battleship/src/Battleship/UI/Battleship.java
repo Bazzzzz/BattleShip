@@ -24,12 +24,16 @@ public class Battleship extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         currentStage = stage;
-        handler = new ApplicationHandler();
+        handler = null;
         Parent root = FXMLLoader.load(getClass().getResource("FXMLMain.fxml"));
         stage.setScene(new Scene(root));
         stage.show();
     }
 
+    public static void setApplicationHandler(String ipAddress) {
+        Battleship.handler = new ApplicationHandler(ipAddress);
+    }
+    
     /**
      * @param args the command line arguments
      */

@@ -57,6 +57,7 @@ public class FXMLMainController implements Initializable {
     public void handlePlayButton(ActionEvent e) throws IOException {
         try {
             RMIClient client = new RMIClient(tfServerIP.getText());
+            setApplicationHandler(tfServerIP.getText());
             this.handlePlayAction(client);
         } catch (BattleshipExceptions ex) {
             lblError.setText(ex.getMessage());
@@ -66,6 +67,7 @@ public class FXMLMainController implements Initializable {
 
     @FXML
     public void handleRegisterButton(ActionEvent e) {
+        setApplicationHandler(tfServerIP.getText());
         this.handleRegisterAction();
     }
 
@@ -126,5 +128,9 @@ public class FXMLMainController implements Initializable {
 
     private void loginPlayer(String username, String password) {
         Battleship.handler.loginPlayer(username, password);
+    }
+    
+    private void setApplicationHandler(String ipAddress) {
+        Battleship.setApplicationHandler(ipAddress);
     }
 }

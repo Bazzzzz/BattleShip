@@ -22,8 +22,8 @@ public class ApplicationHandler {
     private static RMIClient rmiClient;
     private static String joinedLobbyName;
     
-    public ApplicationHandler() {
-        dbm = new DatabaseMediator();
+    public ApplicationHandler(String ipAddress) {
+        dbm = new DatabaseMediator(ipAddress);
         loggedInPlayer = null;
         rmiClient = null;
         joinedLobbyName = null;
