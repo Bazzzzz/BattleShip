@@ -17,9 +17,9 @@ import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 /**
  *
  * @author sebas
@@ -109,6 +109,10 @@ public class RMIServer {
         } catch (RemoteException ex) {
             Logger.getLogger(RMIServer.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        TimerTask task = new TimerTask(new Runnable() {
+            System.out.println(registry.list().toString());
+        });
     }
 
     // Print IP addresses and network interfaces
