@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author sebas
  */
-public interface ILobby extends RemotePublisher {
+public interface ILobby extends Remote {
     /**
      * Create a game manager object.
      * @return The created game manager object.

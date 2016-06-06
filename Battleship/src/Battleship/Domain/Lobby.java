@@ -28,7 +28,7 @@ import javafx.application.Platform;
  *
  * @author sebas
  */
-public class Lobby implements ILobby, Serializable, RemotePropertyListener {
+public class Lobby extends UnicastRemoteObject implements ILobby {
 
     private String name;
     private List<IPlayer> players;
@@ -76,6 +76,7 @@ public class Lobby implements ILobby, Serializable, RemotePropertyListener {
         try {
             if (player != null && this.players.size() < 2) {
                 this.players.add(player);
+                System.out.println("PLayer added to lobby: " + player.toString());
             } else {
                 throw new BattleshipExceptions("Lobby is full.");
             }
@@ -133,7 +134,7 @@ public class Lobby implements ILobby, Serializable, RemotePropertyListener {
             this.players.remove(player);
         }
     }
-
+/*
     @Override
     public void propertyChange(PropertyChangeEvent evt) throws RemoteException {
         ILobby lobby = (ILobby) evt.getNewValue();
@@ -149,7 +150,7 @@ public class Lobby implements ILobby, Serializable, RemotePropertyListener {
                 }
             }
         });
-    }
+    }*/
 
     /**
      * Lobbies are equal if the name and amount of players list is equal.

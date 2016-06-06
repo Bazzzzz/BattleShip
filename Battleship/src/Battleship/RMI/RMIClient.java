@@ -104,6 +104,10 @@ public class RMIClient {
      */
     public ILobby getSelectedLobbyRMI(String selectedLobbyName) {
         if (selectedLobbyName != null && !selectedLobbyName.isEmpty()) {
+            /*try {
+                ILobby foundLobby = (ILobby) registry.lookup(selectedLobbyName);
+            }*/
+            
             try {
                 String[] registryList = registry.list();
                 for (String nameLoop : registryList) {

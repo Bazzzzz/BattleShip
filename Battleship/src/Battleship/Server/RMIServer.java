@@ -17,9 +17,11 @@ import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 /**
  *
  * @author sebas
@@ -44,13 +46,13 @@ public class RMIServer {
     public RMIServer() {
         // Create Client Manager
         /*try {
-            clientManager = new ClientManagerOld();
-            System.out.println(serverMessage + " CM created");
-        } catch (RemoteException ex) {
-            System.out.println(serverMessage + " Error creating CM.");
-            Logger.getLogger(RMIServer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-*/
+         clientManager = new ClientManagerOld();
+         System.out.println(serverMessage + " CM created");
+         } catch (RemoteException ex) {
+         System.out.println(serverMessage + " Error creating CM.");
+         Logger.getLogger(RMIServer.class.getName()).log(Level.SEVERE, null, ex);
+         }
+         */
         // Create Game Manager
         try {
             gameManager = new GameManager();
@@ -77,14 +79,14 @@ public class RMIServer {
         }
         // Bind single CM.
         /*
-        try {
-            registry.rebind(bindingName, clientManager);
-            System.out.println(serverMessage + " Server bound to: " + bindingName + ", registry: " + registry + "\n Object in registry: " + clientManager.toString());
-        } catch (RemoteException ex) {
-            System.out.println(serverMessage + " Error binding to registry.");
-            ex.printStackTrace();
-        }
-*/
+         try {
+         registry.rebind(bindingName, clientManager);
+         System.out.println(serverMessage + " Server bound to: " + bindingName + ", registry: " + registry + "\n Object in registry: " + clientManager.toString());
+         } catch (RemoteException ex) {
+         System.out.println(serverMessage + " Error binding to registry.");
+         ex.printStackTrace();
+         }
+         */
         // Bind GM.
         try {
             registry.rebind("game", gameManager);
@@ -104,15 +106,21 @@ public class RMIServer {
         System.out.println(serverMessage + " Server IP Address: ");
         printIPAddresses();
         System.out.println(serverMessage + " Server set, waiting for clients.");
-        try {
-            System.out.println(registry.list().toString());
-        } catch (RemoteException ex) {
-            Logger.getLogger(RMIServer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        TimerTask task = new TimerTask(new Runnable() {
-            System.out.println(registry.list().toString());
-        });
+
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    for(String stringLoop : registry.list()) {
+                        System.out.println(stringLoop.toString());
+                    }
+                } catch (RemoteException ex) {
+                    Logger.getLogger(RMIServer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+        Timer serverTimer = new Timer();
+        serverTimer.scheduleAtFixedRate(timerTask, 0, 30000);
     }
 
     // Print IP addresses and network interfaces

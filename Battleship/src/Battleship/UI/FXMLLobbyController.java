@@ -19,6 +19,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -64,8 +65,8 @@ public class FXMLLobbyController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
-        if(Battleship.handler.getRMIClient().connectToServer("lobbyList", null)) {
+
+        if (Battleship.handler.getRMIClient().connectToServer("lobbyList", null)) {
             this.lobby = Battleship.handler.getRMIClient().getSelectedLobbyRMI(Singleton.getInstance().getLobbyName());
         }
         System.out.println("LobbyController: " + this.lobby.toString());
@@ -83,11 +84,21 @@ public class FXMLLobbyController implements Initializable {
             ILobby runLobby;
             try {
 
-                runLobby = Battleship.handler.getRMIClient().getSelectedLobbyRMI(lobby.getName());
+                runLobby = Battleship.handler.getRMIClient().getSelectedLobbyRMI(curLobby.getName());
                 if (runLobby != null) {
                     lobby = runLobby;
-                    loadData();
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadData();
+                        }
+                    });
                     System.out.println("New lobby data loaded." + lobby.getPlayers().size());
+                    for (IPlayer p : lobby.getPlayers()) {
+                        String output = String.format("Lobby has players: %s", p.toString());
+                        System.out.println(output);
+                    }
+
                 }
 
             } catch (RemoteException ex) {
@@ -123,18 +134,37 @@ public class FXMLLobbyController implements Initializable {
     }
 
     private void loadData() {
+        IPlayer player1 = null;
+        IPlayer player2 = null;
+        String lobbyName = null;
         try {
-            lblTitle.setText(this.lobby.getName());
             if (lobby.getPlayers().size() == 2) {
-                IPlayer player2 = this.lobby.getPlayers().get(1);
-                lblPlayer2Name.setText(player2.getName());
-                lblPlayer2Score.setText("0");
+                player1 = this.lobby.getPlayers().get(0);
+                player2 = this.lobby.getPlayers().get(1);
             }
-            IPlayer player1 = this.lobby.getPlayers().get(0);
-            lblPlayer1Name.setText(player1.getName());
-            lblPlayer1Score.setText("0");
+            lobbyName = this.lobby.getName();
         } catch (RemoteException ex) {
             Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        final IPlayer finalPlayer1 = player1;
+        final IPlayer finalPlayer2 = player2;
+        final String finalLobbyName = lobbyName;
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if (finalPlayer1 != null
+                        && finalPlayer2 != null
+                        && (finalLobbyName != null || !finalLobbyName.isEmpty())) {
+                    lblTitle.setText(finalLobbyName);
+                    lblPlayer2Name.setText(finalPlayer2.getName());
+                    lblPlayer2Score.setText("0");
+
+                    lblPlayer1Name.setText(finalPlayer1.getName());
+                    lblPlayer1Score.setText("0");
+                }
+
+            }
+        }
+        );
     }
 }
