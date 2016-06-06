@@ -131,6 +131,7 @@ public class RMIClient {
      *
      * @return True if game manager or lobby was found.
      */
+    @Deprecated
     private boolean connectRMI(String search) {
 
         try {
@@ -306,6 +307,7 @@ public class RMIClient {
      *
      * @return True if connected. False if not.
      */
+    @Deprecated
     private boolean connectRMIClientManager() {
         try {
             registry = LocateRegistry.getRegistry(ipAddress, portNumber);
