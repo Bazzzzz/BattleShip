@@ -9,6 +9,7 @@ import Battleship.Domain.Account;
 import Battleship.Interfaces.IGameManager;
 import Battleship.Interfaces.ILobby;
 import Battleship.Interfaces.IPlayer;
+import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
@@ -22,11 +23,15 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -50,6 +55,8 @@ public class FXMLLobbyController implements Initializable {
     @FXML
     private TextField tfFieldSize;
     @FXML
+    private CheckBox cbReady;
+    @FXML
     private Label lblPlayer1Name;
     @FXML
     private Label lblPlayer1Score;
@@ -60,6 +67,7 @@ public class FXMLLobbyController implements Initializable {
 
     private ILobby lobby;
 
+    private ScheduledExecutorService service;
     /**
      * Initializes the controller class.
      */
@@ -70,9 +78,28 @@ public class FXMLLobbyController implements Initializable {
             this.lobby = Battleship.handler.getRMIClient().getSelectedLobbyRMI(Singleton.getInstance().getLobbyName());
         }
         System.out.println("LobbyController: " + this.lobby.toString());
+        btnStart.setDisable(false);
+
+        /*cbReady.setOnAction((event) -> {
+         if (!cbReady.isDisabled()) {
+         try {
+                    
+         for (IPlayer playerLoop : this.lobby.getPlayers()) {
+         if (playerLoop.getName().equals(Battleship.handler.getLoggedInPlayer().getLoginName())) {
+         int index = this.lobby.getPlayers().indexOf(playerLoop);
+         boolean check = cbReady.isSelected();
+         this.lobby.getPlayers().get(index).setPlayerReady(check);
+         System.out.println(this.lobby.getPlayers().get(index).isPlayerReady());
+         }
+         }
+         } catch (RemoteException ex) {
+         Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
+         }
+         }
+         });*/
         this.loadData();
 
-        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+        service = Executors.newSingleThreadScheduledExecutor();
         service.scheduleAtFixedRate(new LobbyRunner(), 0, 10, TimeUnit.SECONDS);
     }
 
@@ -83,7 +110,6 @@ public class FXMLLobbyController implements Initializable {
             ILobby curLobby = lobby;
             ILobby runLobby;
             try {
-
                 runLobby = Battleship.handler.getRMIClient().getSelectedLobbyRMI(curLobby.getName());
                 if (runLobby != null) {
                     lobby = runLobby;
@@ -98,13 +124,10 @@ public class FXMLLobbyController implements Initializable {
                         String output = String.format("Lobby has players: %s", p.toString());
                         System.out.println(output);
                     }
-
                 }
-
             } catch (RemoteException ex) {
                 Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
             }
-
             System.out.println("Runnable Ran. Lobby information: " + lobby);
         }
     }
@@ -114,7 +137,8 @@ public class FXMLLobbyController implements Initializable {
         Account player = Battleship.handler.getLoggedInPlayer();
         try {
             this.lobby.removePlayerFromLobby(player.getLoginName());
-
+            service.shutdownNow();
+            this.handleCloseWindow();
         } catch (RemoteException ex) {
             Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -123,32 +147,61 @@ public class FXMLLobbyController implements Initializable {
     @FXML
     public void handleStartButton(ActionEvent e) {
         try {
-            IGameManager game = this.lobby.createGameManager();
-            Battleship.handler.getRMIClient().bindToServer("Game", game);
+
+            //if (this.lobby.playersReady()) {
+            IGameManager tempGame = this.lobby.createGameManager();
+            System.out.println(tempGame.getName());
+            Battleship.handler.getRMIClient().bindToServer("Game", tempGame);
             Battleship.handler.getRMIClient().bindToServer("LobbyUpdate", lobby);
             Singleton.getInstance().setLobbyName(this.lobby.getName());
+            Singleton.getInstance().setGameName(tempGame.getName());
 
+            IGameManager gameManager = Battleship.handler.getRMIClient().getGameManager();
+            
+            Executors.newSingleThreadExecutor().execute(new Runnable() {
+                @Override
+                public void run() {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                handleOpenGameWindow();
+                            } catch (IOException ex) {
+                                Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    });
+                }
+            });
+            //}
         } catch (RemoteException ex) {
             Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     private void loadData() {
         IPlayer player1 = null;
         IPlayer player2 = null;
         String lobbyName = null;
+        boolean playersReady = false;
         try {
             if (lobby.getPlayers().size() == 2) {
                 player1 = this.lobby.getPlayers().get(0);
                 player2 = this.lobby.getPlayers().get(1);
             }
             lobbyName = this.lobby.getName();
+            playersReady = this.lobby.playersReady();
         } catch (RemoteException ex) {
-            Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FXMLLobbyController.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         final IPlayer finalPlayer1 = player1;
         final IPlayer finalPlayer2 = player2;
         final String finalLobbyName = lobbyName;
+        final boolean finalPlayersReady = playersReady;
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -161,10 +214,42 @@ public class FXMLLobbyController implements Initializable {
 
                     lblPlayer1Name.setText(finalPlayer1.getName());
                     lblPlayer1Score.setText("0");
-                }
+                    /*if (finalPlayersReady) {
+                     btnStart.setDisable(false);
+                     }*/
 
+                }
             }
         }
         );
+    }
+
+    private void handleCloseWindow() {
+        try {
+            if(this.lobby.getPlayers().size() == 1) {
+                Battleship.handler.getRMIClient().unbindFromServer("Lobby", this.lobby);
+            }
+        } catch (RemoteException ex) {
+            Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        Parent window;
+        try {
+            window = FXMLLoader.load(getClass().getResource("FXMLLobbyList.fxml"));
+            Battleship.currentStage.getScene().setRoot(window);
+        } catch (IOException ex) {
+            Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+
+    private void handleOpenGameWindow() throws IOException {
+        Parent window;
+
+        window = FXMLLoader.load(getClass().getResource("FXMLGame.fxml"));
+        Stage stage = new Stage();
+        stage.setTitle("Game: " + lobby.getName());
+        stage.setScene(new Scene(window));
+        stage.show();
     }
 }

@@ -226,7 +226,7 @@ public class RMIServerClientTest {
         
         client.getLobby().createGameManager();
         IGameManager gm = client.getLobby().getGameManager();
-        gm.buildOverviewsForPlayers(client.getLobby().getPlayers().get(0), client.getLobby().getPlayers().get(1));
+        //gm.buildOverviewsForPlayers(client.getLobby().getPlayers().get(0), client.getLobby().getPlayers().get(1));
         gm.getOverviews().get(0).printBoard();
     }
     

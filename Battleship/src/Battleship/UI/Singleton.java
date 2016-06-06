@@ -14,6 +14,7 @@ import Battleship.Interfaces.ILobby;
 public class Singleton {
     private static Singleton instance = new Singleton();
     private String lobbyName;
+    private String gameName;
     
     public static Singleton getInstance() {
         return Singleton.instance;
@@ -21,6 +22,7 @@ public class Singleton {
     
     public Singleton(){
         this.lobbyName = null;
+        this.gameName = null;
     }
     
     public void setLobbyName(String lobbyName) {
@@ -29,5 +31,14 @@ public class Singleton {
     public String getLobbyName() {
         return this.lobbyName;
     }
+
+    public String getGameName() {
+        return gameName;
+    }
+
+    public void setGameName(String gameName) {
+        this.gameName = gameName;
+    }
+    
     
 }

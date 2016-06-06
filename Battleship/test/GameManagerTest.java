@@ -86,7 +86,7 @@ public class GameManagerTest {
         int[] locationShip = new int[2];
         locationShip[0] = 4;
         locationShip[1] = 4;
-        manager.buildOverviewsForPlayers(player1, player2);
+        manager.buildOverviewsForPlayers();
 
         manager.placeShip(player1, locationShip, 3, 0);
         int actualAmountOfShips = manager.getPlayers().get(0).getPlayer().amountOfShips();
@@ -111,7 +111,7 @@ public class GameManagerTest {
         int[] locationShip = new int[2];
         locationShip[0] = 4;
         locationShip[1] = 4;
-        manager.buildOverviewsForPlayers(player1, player2);
+        manager.buildOverviewsForPlayers();
 
         manager.placeShip(player1, locationShip, 3, 1);
         int actualAmountOfShips = manager.getPlayers().get(0).getPlayer().amountOfShips();
@@ -158,7 +158,7 @@ public class GameManagerTest {
         int[] locationShip = new int[2];
         int shipLength = 3;
 
-        manager.buildOverviewsForPlayers(player1, player2);
+        manager.buildOverviewsForPlayers();
         for (int i = 0; i <= Overview.BOARDWIDTH; i++) {
             locationShip[0] = 0;
             locationShip[1] = i;
@@ -192,7 +192,7 @@ public class GameManagerTest {
         int[] locationShip = new int[2];
         locationShip[0] = 4;
         locationShip[1] = 4;
-        manager.buildOverviewsForPlayers(player1, player2);
+        manager.buildOverviewsForPlayers();
 
         manager.placeShip(player1, locationShip, 3, 0);
 
@@ -259,7 +259,7 @@ public class GameManagerTest {
         int[] locationShip = new int[2];
         locationShip[0] = 4;
         locationShip[1] = 4;
-        manager.buildOverviewsForPlayers(player1, player2);
+        manager.buildOverviewsForPlayers();
 
         manager.placeShip(player1, locationShip, 3, 0); // 1
 
@@ -348,7 +348,7 @@ public class GameManagerTest {
         int[] locationShip = new int[2];
         locationShip[0] = 4;
         locationShip[1] = 4;
-        manager.buildOverviewsForPlayers(player1, player2);
+        manager.buildOverviewsForPlayers();
 
         manager.placeShip(player2, locationShip, 3, 0);
 
@@ -413,7 +413,7 @@ public class GameManagerTest {
         int[] locationShip = new int[2];
         locationShip[0] = 4;
         locationShip[1] = 4;
-        manager.buildOverviewsForPlayers(player1, player2);
+        manager.buildOverviewsForPlayers();
 
         manager.placeShip(player2, locationShip, 3, 0);
 
@@ -442,7 +442,7 @@ public class GameManagerTest {
         int[] locationShip = new int[2];
         locationShip[0] = 4;
         locationShip[1] = 4;
-        manager.buildOverviewsForPlayers(player1, player2);
+        manager.buildOverviewsForPlayers();
 
         manager.placeShip(player1, locationShip, 3, 0);
 

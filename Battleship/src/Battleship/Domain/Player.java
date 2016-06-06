@@ -20,6 +20,7 @@ public class Player implements IPlayer, Serializable {
     private Overview player;
     private Overview opponent;
     private List<SpecialPackage> specials;
+    private boolean isReady;
 
     public String getName() {
         return name;
@@ -39,6 +40,7 @@ public class Player implements IPlayer, Serializable {
         player = null;
         opponent = null;
         specials = new ArrayList<SpecialPackage>();
+        this.isReady = false;
     }
 
     public Overview getPlayer() {
@@ -49,13 +51,15 @@ public class Player implements IPlayer, Serializable {
         return opponent;
     }
     
-    public void setPlayerOverview(Overview playerOverview) {
+    public Overview setPlayerOverview(Overview playerOverview) {
         this.player = playerOverview;
+        return this.player;
     }
     
-    public void setOpponentOverview(Overview opponentOverview) {
+    public Overview setOpponentOverview(Overview opponentOverview) {
         opponentOverview.setOpponentsBoard();
         this.opponent = opponentOverview;
+        return this.opponent;
     }
     /**
      * Changes the turn.
@@ -84,10 +88,20 @@ public class Player implements IPlayer, Serializable {
      * @param special not null
      * @return True if used. False if not.
      */
+    @Override
     public boolean useSpecial(SpecialPackage special) {
         // TODO: Method.
         return true;
     }
+    @Override
+    public boolean isPlayerReady() {
+        return this.isReady;
+    }
+    @Override
+    public void setPlayerReady(boolean isReady) {
+        this.isReady = isReady;
+    }
+    
     @Override
     public boolean equals(Object o) {
         if(o instanceof IPlayer) {

@@ -56,7 +56,7 @@ public interface IGameManager extends RemotePublisher {
 
     public int damageShip(IPlayer player, int[] location) throws RemoteException;
     
-    public void buildOverviewsForPlayers(IPlayer player1, IPlayer player2) throws RemoteException;
+    public void buildOverviewsForPlayers() throws RemoteException;
     
     public void addListener(RemotePropertyListener listener, String property) throws RemoteException;
     

@@ -52,6 +52,8 @@ public class FXMLLobbyListController implements Initializable {
     private Label lblGameHost;
     @FXML
     private TextArea taGameSettings;
+    @FXML
+    private Button btnHome;
 
     private ObservableList<ILobby> obsLobbies;
 
@@ -163,6 +165,17 @@ public class FXMLLobbyListController implements Initializable {
 
     }
 
+    @FXML
+    public void handleHomeButton(ActionEvent e) {
+        Parent window;
+        try {
+            window = FXMLLoader.load(getClass().getResource("FXMLMain.fxml"));
+            Battleship.currentStage.getScene().setRoot(window);
+        } catch (IOException ex) {
+            Logger.getLogger(FXMLLobbyListController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     /**
      * Loads the lobby FXML screen.
      *
@@ -171,10 +184,12 @@ public class FXMLLobbyListController implements Initializable {
     public void loadLobbyFXML() throws IOException {
         Parent window;
         window = FXMLLoader.load(getClass().getResource("FXMLLobby.fxml"));
-        Stage stage = new Stage();
-        stage.setTitle("Lobby");
-        stage.setScene(new Scene(window));
-        stage.show();
+
+        Battleship.currentStage.getScene().setRoot(window);
+        /*Stage stage = new Stage();
+         stage.setTitle("Lobby");
+         stage.setScene(new Scene(window));
+         stage.show();*/
     }
 
     /**
@@ -185,11 +200,11 @@ public class FXMLLobbyListController implements Initializable {
     private void fillLobbyList() throws RemoteException {
         if (Battleship.handler.getRMIClient() != null) {
             //if (Battleship.handler.getRMIClient().connectToServer("lobbyList", null)) {
-                Collection<ILobby> lobbyList = Battleship.handler.getRMIClient().getLobbyList();
+            Collection<ILobby> lobbyList = Battleship.handler.getRMIClient().getLobbyList();
 
-                System.out.println("Lobbies found: " + lobbyList.toString());
-                this.obsLobbies.addAll(lobbyList);
-        //    }
+            System.out.println("Lobbies found: " + lobbyList.toString());
+            this.obsLobbies.addAll(lobbyList);
+            //    }
         }
 
     }

@@ -22,9 +22,9 @@ public interface IPlayer {
 
     public Overview getOpponent();
 
-    public void setOpponentOverview(Overview opponentOverview);
+    public Overview setOpponentOverview(Overview opponentOverview);
     
-    public void setPlayerOverview(Overview playerOverview);
+    public Overview setPlayerOverview(Overview playerOverview);
     /**
      * Changes the turn.
      *
@@ -46,6 +46,18 @@ public interface IPlayer {
      * @return True if used. False if not.
      */
     public boolean useSpecial(SpecialPackage special);
+    
+    /**
+     * Checks if a player is ready for a game to start.
+     * @return 
+     */
+    public boolean isPlayerReady();
+    
+    /**
+     * Sets a player ready or unready. Has to be ready (true) for a game to start.
+     * @param isReady True if ready to start. False if not ready.
+     */
+    public void setPlayerReady(boolean isReady);
     
     @Override
     public boolean equals(Object o);

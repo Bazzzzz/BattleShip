@@ -82,10 +82,12 @@ public class FXMLMainController implements Initializable {
                         Parent window;
 
                         window = FXMLLoader.load(getClass().getResource("FXMLLobbyList.fxml"));
-                        Stage stage = new Stage();
+                        
+                        Battleship.currentStage.getScene().setRoot(window);
+                        /*Stage stage = new Stage();
                         stage.setTitle("Lobbies");
                         stage.setScene(new Scene(window));
-                        stage.show();
+                        stage.show();*/
                     } else {
                         throw new BattleshipExceptions("Unable to make connection.");
                     }

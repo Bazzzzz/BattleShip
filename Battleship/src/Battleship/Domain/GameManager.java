@@ -307,23 +307,21 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
      * @param player2
      */
     @Override
-    public synchronized void buildOverviewsForPlayers(IPlayer player1, IPlayer player2) throws RemoteException {
-        // Set players own overviews.
-        Overview player1OwnField = new Overview();
-        Overview player2OwnField = new Overview();
-
-        player1.setPlayerOverview(player1OwnField);
-        player2.setPlayerOverview(player2OwnField);
+    public synchronized void buildOverviewsForPlayers() throws RemoteException {      
+        IPlayer player1 = this.players.get(0);
+        IPlayer player2 = this.players.get(1);
+        
+        // Set players own overview.
+        Overview player1OwnField = player1.setPlayerOverview(new Overview());
+        Overview player2OwnField =player2.setPlayerOverview(new Overview());
 
         // Set players opponents overviews.
-        Overview player1OpponentField = new Overview();
-        player1OpponentField = player2OwnField;
-
-        player1.setOpponentOverview(player2OwnField);
-        Overview player1OpponentFieldTemp = player1.getOpponent();
-
-        player2.setOpponentOverview(player1OwnField);
-        Overview player2OpponentField = player2.getOpponent();
+        Overview player1OpponentField = player2OwnField;
+        player1.setOpponentOverview(player1OpponentField);
+        
+        Overview player2OpponentField = player1OwnField;
+        player2.setOpponentOverview(player2OpponentField);
+        
 
         overviews.add(player1OwnField);
         overviews.add(player2OwnField);

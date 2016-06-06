@@ -59,7 +59,8 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     public IGameManager createGameManager() throws RemoteException {
         if (this.players.size() == 2) {
             try {
-                gameManager = new GameManager();
+                String gameName = this.name.split("'")[0];
+                gameManager = new GameManager(gameName+"' game");
                 gameManager.addPlayer(this.players.get(0));
                 gameManager.addPlayer(this.players.get(1));
             } catch (RemoteException ex) {
@@ -134,6 +135,17 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
             this.players.remove(player);
         }
     }
+    
+    @Override
+    public boolean playersReady() throws RemoteException {
+        if (this.players.size() == 2) {
+            if(this.players.get(0).isPlayerReady() && this.players.get(1).isPlayerReady()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
 /*
     @Override
     public void propertyChange(PropertyChangeEvent evt) throws RemoteException {
@@ -184,5 +196,6 @@ public class Lobby extends UnicastRemoteObject implements ILobby {
     public void removeListener(RemotePropertyListener listener, String property) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
 
 }

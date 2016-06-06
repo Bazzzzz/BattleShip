@@ -155,4 +155,9 @@ public class ServerLobby extends UnicastRemoteObject implements ILobby, RemotePu
             this.players.remove(player);
         }
     }
+
+    @Override
+    public boolean playersReady() throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

@@ -71,10 +71,11 @@ public class TestGame_InConsole {
         int[] locationShip = new int[2];
         locationShip[0] = 4;
         locationShip[1] = 4;
-        manager.buildOverviewsForPlayers(player1, player2);
         manager.addPlayer(player1);
         //assertNull("[TEST] Add the same player to a game twice.", manager.addPlayer(player1));
         manager.addPlayer(player2);
+        manager.buildOverviewsForPlayers();
+        
         
         manager.placeShip(player2, locationShip, 3, 0);
         

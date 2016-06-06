@@ -47,6 +47,12 @@ public interface ILobby extends Remote {
      * @return The name of the lobby.
      */
     public String getName() throws RemoteException;
+    /**
+     * Checks if the players are ready to start the game.
+     * @return True if both players are ready.
+     * @throws RemoteException 
+     */
+    public boolean playersReady() throws RemoteException;
     
     public void updateLobby(IPlayer player, boolean joined) throws RemoteException;
     
