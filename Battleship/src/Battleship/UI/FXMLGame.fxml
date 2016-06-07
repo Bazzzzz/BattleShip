@@ -1,11 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
+<?import javafx.scene.canvas.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Battleship.UI.FXMLGameVC">
-    
+<AnchorPane id="AnchorPane" prefHeight="780.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Battleship.UI.FXMLGameVC">
+   <children>
+      <HBox prefHeight="496.0" prefWidth="1280.0">
+         <children>
+            <HBox prefHeight="400.0" prefWidth="440.0" HBox.hgrow="NEVER">
+               <children>
+                  <Canvas fx:id="canvasPlayer" height="501.0" width="441.0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="100.0" prefWidth="400.0" HBox.hgrow="NEVER">
+               <children>
+                  <Pane prefHeight="501.0" prefWidth="407.0">
+                     <children>
+                        <Button fx:id="btnPlaceShip" layoutX="101.0" layoutY="332.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="Place Ship" />
+                        <Label fx:id="lblTitle" layoutX="181.0" layoutY="4.0" text="Title" />
+                        <Label fx:id="lblGameTime" layoutX="181.0" layoutY="59.0" text="00:34" />
+                        <HBox layoutY="96.0" prefHeight="236.0" prefWidth="397.0">
+                           <children>
+                              <HBox prefWidth="200.0">
+                                 <children>
+                                    <Pane prefWidth="200.0">
+                                       <children>
+                                          <Label fx:id="lblPlayer1Name" layoutX="74.0" layoutY="14.0" text="Player 1" />
+                                          <Label fx:id="lblPlayer1Score" layoutX="82.0" layoutY="42.0" text="Score" />
+                                          <Label fx:id="lblPlayer1Turn" layoutX="52.0" layoutY="201.0" text="Player 1's Turn" />
+                                       </children>
+                                    </Pane>
+                                 </children>
+                              </HBox>
+                              <HBox prefWidth="200.0">
+                                 <children>
+                                    <Pane prefWidth="200.0">
+                                       <children>
+                                          <Label fx:id="lblPlayer2Name" layoutX="74.0" layoutY="14.0" text="Player 2" />
+                                          <Label fx:id="lblPlayer2Score" layoutX="82.0" layoutY="35.0" text="Score" />
+                                          <Label fx:id="lblPlayer2Turn" layoutX="52.0" layoutY="201.0" text="Player 2's Turn" />
+                                       </children>
+                                    </Pane>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                        <Button fx:id="btnFireTorpedo" layoutX="101.0" layoutY="372.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="Fire Torpedo" />
+                        <Button fx:id="btnUseSpecial" layoutX="99.0" layoutY="410.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="199.0" text="Use Special" />
+                        <Button fx:id="btnEndTurn" layoutX="99.0" layoutY="448.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="End Turn" />
+                     </children>
+                  </Pane>
+               </children>
+            </HBox>
+            <HBox prefHeight="400.0" prefWidth="440.0" HBox.hgrow="NEVER">
+               <children>
+                  <Canvas fx:id="canvasOpponent" height="501.0" width="442.0" />
+               </children>
+            </HBox>
+         </children>
+      </HBox>
+      <HBox layoutY="501.0" prefHeight="282.0" prefWidth="1280.0">
+         <children>
+            <TabPane prefHeight="282.0" prefWidth="1289.0" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab text="Inventory: Ships">
+                     <content>
+                        <ScrollPane prefHeight="200.0" prefWidth="200.0" />
+                     </content>
+                </Tab>
+                <Tab text="Inventory: Torpedoes">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  </content>
+                </Tab>
+                  <Tab text="Inventory: Specials">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                    </content>
+                  </Tab>
+              </tabs>
+            </TabPane>
+         </children>
+      </HBox>
+   </children>
 </AnchorPane>

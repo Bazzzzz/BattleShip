@@ -34,6 +34,13 @@ public class Overview implements Serializable {
         board = new int[BOARDWIDTH][BOARDHEIGHT];
     }
 
+    public int getBoardWidth() {
+        return BOARDWIDTH;
+    }
+    
+    public int getBoardHeight() {
+        return BOARDHEIGHT;
+    }
     public boolean isIsOpponentsBoard() {
         return isOpponentsBoard;
     }

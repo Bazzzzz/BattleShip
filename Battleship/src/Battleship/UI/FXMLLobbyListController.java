@@ -198,13 +198,13 @@ public class FXMLLobbyListController implements Initializable {
      * @throws RemoteException
      */
     private void fillLobbyList() throws RemoteException {
+        this.obsLobbies.clear();
         if (Battleship.handler.getRMIClient() != null) {
-            //if (Battleship.handler.getRMIClient().connectToServer("lobbyList", null)) {
-            Collection<ILobby> lobbyList = Battleship.handler.getRMIClient().getLobbyList();
-
-            System.out.println("Lobbies found: " + lobbyList.toString());
-            this.obsLobbies.addAll(lobbyList);
-            //    }
+            if (Battleship.handler.getRMIClient().connectToServer("lobbyList", null)) {
+                Collection<ILobby> lobbyList = Battleship.handler.getRMIClient().getLobbyList();
+                System.out.println("Lobbies found: " + lobbyList.toString());
+                this.obsLobbies.addAll(lobbyList);
+            }
         }
 
     }
@@ -219,6 +219,7 @@ public class FXMLLobbyListController implements Initializable {
     }
 
     private void dummyData() throws RemoteException {
+        this.obsLobbies.clear();
         this.obsLobbies.add(new Lobby("Bas"));
         this.obsLobbies.add(new Lobby("Ter"));
         this.obsLobbies.add(new Lobby("Hans"));

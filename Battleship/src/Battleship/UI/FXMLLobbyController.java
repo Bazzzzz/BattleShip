@@ -67,7 +67,7 @@ public class FXMLLobbyController implements Initializable {
 
     private ILobby lobby;
 
-    private ScheduledExecutorService service;
+    private ScheduledExecutorService serviceLobbyRunner;
     /**
      * Initializes the controller class.
      */
@@ -99,8 +99,8 @@ public class FXMLLobbyController implements Initializable {
          });*/
         this.loadData();
 
-        service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(new LobbyRunner(), 0, 10, TimeUnit.SECONDS);
+        serviceLobbyRunner = Executors.newSingleThreadScheduledExecutor();
+        serviceLobbyRunner.scheduleAtFixedRate(new LobbyRunner(), 0, 10, TimeUnit.SECONDS);
     }
 
     private class LobbyRunner implements Runnable {
@@ -137,7 +137,7 @@ public class FXMLLobbyController implements Initializable {
         Account player = Battleship.handler.getLoggedInPlayer();
         try {
             this.lobby.removePlayerFromLobby(player.getLoginName());
-            service.shutdownNow();
+            serviceLobbyRunner.shutdownNow();
             this.handleCloseWindow();
         } catch (RemoteException ex) {
             Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
@@ -150,14 +150,12 @@ public class FXMLLobbyController implements Initializable {
 
             //if (this.lobby.playersReady()) {
             IGameManager tempGame = this.lobby.createGameManager();
-            System.out.println(tempGame.getName());
             Battleship.handler.getRMIClient().bindToServer("Game", tempGame);
             Battleship.handler.getRMIClient().bindToServer("LobbyUpdate", lobby);
             Singleton.getInstance().setLobbyName(this.lobby.getName());
             Singleton.getInstance().setGameName(tempGame.getName());
 
-            IGameManager gameManager = Battleship.handler.getRMIClient().getGameManager();
-            
+            serviceLobbyRunner.shutdownNow();
             Executors.newSingleThreadExecutor().execute(new Runnable() {
                 @Override
                 public void run() {

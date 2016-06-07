@@ -67,7 +67,7 @@ public class RMIClient {
      * Connect a client to the server.
      *
      * @param search Type of what object we are looking for in the registry |
-     * "cm", "lobbyList", "gamesList", "games" or "lobbies".
+     * "cm", "lobbyList", "gamesList", "game" or "lobbies".
      * @param gameName Name of a specific game you are trying to look for. Null
      * if @param search is not "game".
      * @return True if connected.
@@ -84,6 +84,11 @@ public class RMIClient {
         } else if (search.equals("gamesList")) {
             result = this.connectRMIList(search);
             if (this.gamesList.isEmpty()) {
+                return false;
+            }
+        } else if(search.equals("game")) {
+            result = this.getGameManagerRMI(gameName);
+            if(this.gameManager == null) {
                 return false;
             }
         } else {
@@ -215,9 +220,26 @@ public class RMIClient {
      * @param name Name of the game manager we are looking for in the registry.
      * @return True if game manager was found.
      */
-    public boolean getGameManagerRMI(String name) {
-        // TODO: Use lookup.
+    private boolean getGameManagerRMI(String name) {
         try {
+            if (!name.isEmpty()) {
+                if (registry != null) {
+                   this.gameManager = (IGameManager) registry.lookup(name);
+                   return true;
+                }
+            }
+            return false;
+        } catch (RemoteException ex) {
+            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } catch (NotBoundException ex) {
+            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        
+        
+        // TODO: Use lookup.
+        /*try {
             if (!name.isEmpty()) {
                 String[] registryList = registry.list();
                 if (registryList.length > 0) {
@@ -236,7 +258,7 @@ public class RMIClient {
         } catch (NotBoundException ex) {
             Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
             return false;
-        }
+        }*/
     }
 
     /**
@@ -248,6 +270,7 @@ public class RMIClient {
         try {
             String[] registryList = registry.list();
             if (registryList.length > 0) {
+                this.lobbyList.clear();
                 for (String nameLoop : registryList) {
                     if (nameLoop.endsWith("lobby")) {
                         ILobby tempLobby = (ILobby) registry.lookup(nameLoop);
@@ -279,6 +302,7 @@ public class RMIClient {
         try {
             String[] registryList = registry.list();
             if (registryList.length > 0) {
+                this.gamesList.clear();
                 String nameEnding = "game";
                 for (String nameLoop : registryList) {
                     if (nameLoop.endsWith(nameEnding)) {
