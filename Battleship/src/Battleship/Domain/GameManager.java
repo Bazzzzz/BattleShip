@@ -78,6 +78,8 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
     public synchronized boolean placeShip(IPlayer player, int[] locationStart, int shipLength, int direction) throws RemoteException {
         Ship ship = null;
         if (player != null) {
+            System.out.println("Place ship in GameManager");
+            player.getPlayer().printBoard();
             if (player.getPlayer().amountOfShips() < 7) {
                 if (locationStart.length == 2) {
                     ship = new Ship(shipLength, locationStart, direction);
@@ -179,7 +181,11 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
 
     @Override
     public void updateOverview(IGameManager gameManager, IPlayer player) throws RemoteException {
-        Logger.getLogger(GameManager.class.getName()).log(Level.SEVERE, null, new Throwable());
+        for(Overview overview: gameManager.getOverviews()) {
+            if(overview.equals(player.getPlayer())) {
+                
+            }
+        }
     }
 
     /**

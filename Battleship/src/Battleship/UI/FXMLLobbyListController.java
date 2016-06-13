@@ -109,7 +109,7 @@ public class FXMLLobbyListController implements Initializable {
             ILobby lobby = new Lobby(lobbyName);
             IPlayer player = new Player(Battleship.handler.getLoggedInPlayer().getLoginName());
             lobby.addPlayer(player);
-
+            Battleship.handler.setPlayingPlayer(player);
             Battleship.handler.getRMIClient().bindToServer("Lobby", lobby);
 
             this.updateLobbyList(lobby, true);
@@ -133,6 +133,7 @@ public class FXMLLobbyListController implements Initializable {
             ILobby selectedLobby = (ILobby) this.lvLobbies.getSelectionModel().getSelectedItem();
             if (selectedLobby != null) {
                 IPlayer player = new Player(Battleship.handler.getLoggedInPlayer().getLoginName());
+                Battleship.handler.setPlayingPlayer(player);
 
                 if (Battleship.handler.getRMIClient().connectToServer("lobbyList", null)) {
                     ILobby lobby = Battleship.handler.getRMIClient().getSelectedLobbyRMI(selectedLobby.getName());

@@ -387,7 +387,7 @@ public class RMIClient {
      * Allows client to bind 2 types to the server registry.
      *
      * @param type Type of what the client wants to bind to the server. Type 1:
-     * "Lobby" | Type 2: "Game"
+     * "Lobby" | Type 2: "Game" | Type 3: "LobbyUpdate"
      * @param object Object that the client wants to bind to the server.
      */
     public void bindToServer(String type, Object object) {
@@ -492,7 +492,7 @@ public class RMIClient {
         if (registry != null) {
             try {
                 registry.rebind(lobby.getName(), lobby);
-                System.out.println("[SERVER MESSAGE] Lobby rebound:" + lobby);
+                System.out.println("[SERVER MESSAGE] Lobby rebound after update:" + lobby);
             } catch (RemoteException ex) {
                 Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
             }

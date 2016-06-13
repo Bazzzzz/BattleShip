@@ -21,7 +21,7 @@ public class Player implements IPlayer, Serializable {
     private Overview opponent;
     private List<SpecialPackage> specials;
     private boolean isReady;
-
+    
     public String getName() {
         return name;
     }

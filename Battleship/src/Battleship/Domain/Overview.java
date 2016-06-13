@@ -44,7 +44,9 @@ public class Overview implements Serializable {
     public boolean isIsOpponentsBoard() {
         return isOpponentsBoard;
     }
-
+    public int[][] getBoard() {
+        return this.board;
+    }
     public List<SpecialPackage> getSpecials() {
         return specials;
     }
@@ -426,6 +428,7 @@ public class Overview implements Serializable {
     }
 
     public void printBoard() {
+        System.out.println("PrintBoard");
         for (int i = BOARDHEIGHT; i > 0; i--) {
             for (int j = BOARDWIDTH; j > 0; j--) {
                 System.out.print(board[i - 1][j - 1]);

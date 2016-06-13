@@ -12,16 +12,18 @@
    <children>
       <HBox prefHeight="496.0" prefWidth="1280.0">
          <children>
-            <HBox prefHeight="400.0" prefWidth="440.0" HBox.hgrow="NEVER">
+            <HBox fx:id="hBoxPlayerView" prefHeight="400.0" prefWidth="440.0" HBox.hgrow="NEVER">
                <children>
-                  <Canvas fx:id="canvasPlayer" height="501.0" width="441.0" />
+                  <GridPane fx:id="gridPanePlayer" maxHeight="495.0" maxWidth="439.0" minHeight="75.0" minWidth="75.0" prefHeight="495.0" prefWidth="439.0">
+                    
+                  </GridPane>
                </children>
             </HBox>
             <HBox prefHeight="100.0" prefWidth="400.0" HBox.hgrow="NEVER">
                <children>
                   <Pane prefHeight="501.0" prefWidth="407.0">
                      <children>
-                        <Button fx:id="btnPlaceShip" layoutX="101.0" layoutY="332.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="Place Ship" />
+                        <Button fx:id="btnPlaceShip" layoutX="101.0" layoutY="332.0" mnemonicParsing="false" onAction="#handlePlaceShipButton" prefHeight="31.0" prefWidth="200.0" text="Place Ship" />
                         <Label fx:id="lblTitle" layoutX="181.0" layoutY="4.0" text="Title" />
                         <Label fx:id="lblGameTime" layoutX="181.0" layoutY="59.0" text="00:34" />
                         <HBox layoutY="96.0" prefHeight="236.0" prefWidth="397.0">
@@ -57,9 +59,19 @@
                   </Pane>
                </children>
             </HBox>
-            <HBox prefHeight="400.0" prefWidth="440.0" HBox.hgrow="NEVER">
+            <HBox fx:id="hBoxOpponentView" prefHeight="400.0" prefWidth="440.0" HBox.hgrow="NEVER">
                <children>
-                  <Canvas fx:id="canvasOpponent" height="501.0" width="442.0" />
+                  <GridPane fx:id="gridPaneOpponent">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                  </GridPane>
                </children>
             </HBox>
          </children>

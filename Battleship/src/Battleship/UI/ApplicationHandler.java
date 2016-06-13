@@ -8,6 +8,7 @@ package Battleship.UI;
 import Battleship.Domain.Account;
 import Battleship.Interfaces.IDatabaseMediator;
 import Battleship.Interfaces.ILobby;
+import Battleship.Interfaces.IPlayer;
 import Battleship.Persistence.DatabaseMediator;
 import Battleship.RMI.RMIClient;
 
@@ -21,12 +22,14 @@ public class ApplicationHandler {
     public static Account loggedInPlayer;
     private static RMIClient rmiClient;
     private static String joinedLobbyName;
+    private static IPlayer playingPlayer;
     
     public ApplicationHandler(String ipAddress) {
         dbm = new DatabaseMediator(ipAddress);
         loggedInPlayer = null;
         rmiClient = null;
         joinedLobbyName = null;
+        playingPlayer = null;
     }
 
     public Account getLoggedInPlayer() {
@@ -60,6 +63,15 @@ public class ApplicationHandler {
     public String getJoinedLobbyName() {
         return ApplicationHandler.joinedLobbyName;
     }
+    
+    public void setPlayingPlayer(IPlayer player) {
+        ApplicationHandler.playingPlayer = player;
+    }
+    
+    public IPlayer getPlayingPlayer() {
+        return ApplicationHandler.playingPlayer;
+    }
+    
     /**
      * Add a new player to the database.
      * @param username
