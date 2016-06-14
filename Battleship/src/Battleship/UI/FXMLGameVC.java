@@ -121,7 +121,8 @@ public class FXMLGameVC implements Initializable {
                 this.drawBoards(gameManager);
 
                 this.showGrids();
-
+                // TODO: Location on selection in gridview instead of random.
+                // TODO: Check display on ship hit.
                 // http://stackoverflow.com/questions/31095954/how-to-get-gridpane-row-and-column-ids-on-mouse-entered-in-each-cell-of-grid-in
                 serviceGameRunner = Executors.newSingleThreadScheduledExecutor();
                 serviceGameRunner.scheduleAtFixedRate(new GameRunner(), 0, 5, TimeUnit.SECONDS);
