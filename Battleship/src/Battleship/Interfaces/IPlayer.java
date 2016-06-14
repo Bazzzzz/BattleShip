@@ -25,6 +25,8 @@ public interface IPlayer {
     public Overview setOpponentOverview(Overview opponentOverview);
     
     public Overview setPlayerOverview(Overview playerOverview);
+    
+    public boolean isTurn();
     /**
      * Changes the turn.
      *

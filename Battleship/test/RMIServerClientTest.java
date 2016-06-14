@@ -36,9 +36,7 @@ public class RMIServerClientTest {
 
     public RMIServerClientTest() {
         client = null;
-        playerBas = new Player("Bas");
-        playerSukh = new Player("Sukh");
-        playerRandom = new Player("Random");
+
     }
 
     @Test
@@ -52,6 +50,9 @@ public class RMIServerClientTest {
     public void TestAddLobbyToServer() throws BattleshipExceptions, RemoteException {
         client = new RMIClient("localhost");
         ILobby lobby = new Lobby("TestLobby");
+        playerBas = new Player("Bas");
+        playerSukh = new Player("Sukh");
+        playerRandom = new Player("Random");
         lobby.addPlayer(playerBas);
         client.bindToServer("Lobby", lobby);
 
@@ -64,6 +65,9 @@ public class RMIServerClientTest {
     public void TestCreateGameMangerFromLobby() throws BattleshipExceptions, RemoteException {
         client = new RMIClient("localhost");
         ILobby lobby = new Lobby("TestLobby");
+        playerBas = new Player("Bas");
+        playerSukh = new Player("Sukh");
+        playerRandom = new Player("Random");
         lobby.addPlayer(playerBas);
         client.bindToServer("Lobby", lobby);
 
@@ -75,19 +79,22 @@ public class RMIServerClientTest {
         assertNotNull(message + "Client lobby created game manager on the server.", game);
 
         assertEquals(message + "Client lobby has 2 players in it.", 2, game.getPlayers().size());
-        
+
         client.bindToServer("LobbyUpdate", lobby);
-        
+        client.bindToServer("Game", game);
         client.connectToServer("game", game.getName());
-        
+
         assertNotNull(message + "Client can retrieve game after it has been bound", client.getGameManager());
-        
+
     }
-    
+
     @Test
     public void TestUseGameManagerFromServer() throws BattleshipExceptions, RemoteException {
         client = new RMIClient("localhost");
         ILobby lobby = new Lobby("TestLobby");
+        playerBas = new Player("Bas");
+        playerSukh = new Player("Sukh");
+        playerRandom = new Player("Random");
         lobby.addPlayer(playerBas);
         client.bindToServer("Lobby", lobby);
 
@@ -95,28 +102,39 @@ public class RMIServerClientTest {
         lobby.addPlayer(playerSukh);
 
         IGameManager game = lobby.createGameManager();
+        System.out.println(game.getPlayers().size() + " Game before binding.");
         client.bindToServer("Game", game);
+
+        client.connectToServer("game", game.getName());
+
+        IGameManager gameFromServer = client.getGameManager();
+        System.out.println(gameFromServer.getPlayers().size() + " Game after binding and retrieving");
+        gameFromServer.buildOverviewsForPlayers();
+
+//        System.out.println(gameFromServer.getPlayers().get(0).getPlayer() + " Overview of player 1 from server game.");
+//        System.out.println(gameFromServer.getPlayers().get(1).getPlayer() + " Overview of player 2 from server game.");
+//        System.out.println(gameFromServer.getPlayers().get(0).getOpponent()+ " Overview of the opponent of player 1 (player2) from server game.");
+//        System.out.println(gameFromServer.getPlayers().get(1).getOpponent()+ " Overview of the opponent of player 2 (player1) from server game.");
         
-        client.connectToServer("Game", game.getName());
-        
-        game.buildOverviewsForPlayers();
-        Overview overview = game.getOverviews().get(0);
-        
-        Overview overviewPlayer1 = game.getPlayers().get(0).getPlayer();
-        Overview overviewPlayer2 = game.getPlayers().get(1).getPlayer();
-        Overview overviewPlayer1Opp = game.getPlayers().get(0).getOpponent();
-        Overview overviewPlayer2Opp = game.getPlayers().get(1).getOpponent();
         int[] location = new int[2];
         location[0] = 5;
         location[1] = 4;
-        game.placeShip(playerBas, location, 3, 0);
-        game.placeShip(playerSukh, location, 4, 1);
         
-        int size = game.getPlayers().size();
-        Ship ship = game.getPlayers().get(0).getPlayer().getShipOnLocation(location);
+//        System.out.println("Player1 overview status before place ship: " + playerBas.getPlayer() + ", " + playerBas.getOpponent());
+//        System.out.println("Player2 overview status before place ship: " + playerSukh.getPlayer() + ", " + playerSukh.getOpponent());
+        
+        System.out.println("Player Overview from Player: " + gameFromServer.getPlayers().get(0).getPlayer().equals(gameFromServer.getOverviews().get(0)));
+        gameFromServer.placeShip(gameFromServer.getPlayers().get(0), location, 3, 0);
+        gameFromServer.placeShip(gameFromServer.getPlayers().get(1), location, 4, 1);
+        //gameFromServer.placeShip(playerBas, location, 3, 0);
+        //gameFromServer.placeShip(playerSukh, location, 4, 1);
+        gameFromServer.updateOverview(gameFromServer.getPlayers().get(0), gameFromServer.getPlayers().get(0).getPlayer());
+        gameFromServer.updateOverview(gameFromServer.getPlayers().get(0), gameFromServer.getPlayers().get(1).getPlayer());
+        
+        Ship ship = gameFromServer.getPlayers().get(0).getPlayer().getShipOnLocation(location);
         assertNotNull("Ship is found where expected after placement.", ship);
-        ship = game.getPlayers().get(1).getPlayer().getShipOnLocation(location);
-        
+        ship = gameFromServer.getPlayers().get(1).getPlayer().getShipOnLocation(location);
+
     }
     /*
      @Test

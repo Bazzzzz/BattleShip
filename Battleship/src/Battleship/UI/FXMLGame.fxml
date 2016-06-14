@@ -52,9 +52,9 @@
                               </HBox>
                            </children>
                         </HBox>
-                        <Button fx:id="btnFireTorpedo" layoutX="101.0" layoutY="372.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="Fire Torpedo" />
+                        <Button fx:id="btnFireTorpedo" layoutX="101.0" layoutY="372.0" mnemonicParsing="false" onAction="#handleFireTorpedoButton" prefHeight="31.0" prefWidth="200.0" text="Fire Torpedo" />
                         <Button fx:id="btnUseSpecial" layoutX="99.0" layoutY="410.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="199.0" text="Use Special" />
-                        <Button fx:id="btnEndTurn" layoutX="99.0" layoutY="448.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="End Turn" />
+                        <Button fx:id="btnEndTurn" layoutX="99.0" layoutY="448.0" mnemonicParsing="false" onAction="#handleEndPlayerTurnButton" prefHeight="31.0" prefWidth="200.0" text="End Turn" />
                      </children>
                   </Pane>
                </children>

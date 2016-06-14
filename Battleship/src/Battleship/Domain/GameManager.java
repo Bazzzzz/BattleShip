@@ -78,16 +78,24 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
     public synchronized boolean placeShip(IPlayer player, int[] locationStart, int shipLength, int direction) throws RemoteException {
         Ship ship = null;
         if (player != null) {
-            System.out.println("Place ship in GameManager");
-            player.getPlayer().printBoard();
-            if (player.getPlayer().amountOfShips() < 7) {
+            Overview playerOverview = null;
+            boolean notFound = true;
+
+            for (int i = 0; i < this.overviews.size() && notFound; i++) {
+                if (this.overviews.get(i).equals(player.getPlayer())) {
+                    playerOverview = this.overviews.get(i);
+                    notFound = false;
+                }
+            }
+            if (playerOverview.amountOfShips() < 7) {
                 if (locationStart.length == 2) {
                     ship = new Ship(shipLength, locationStart, direction);
                     // Confirm availability start and end.
-                    if (player.getPlayer().locationAvailable(ship.getLocationStart()) && player.getPlayer().locationAvailable(ship.getLocationEnd())) {
+                    if (playerOverview.locationAvailable(ship.getLocationStart()) && playerOverview.locationAvailable(ship.getLocationEnd())) {
                         // Confirm availability inbetween start and end.
-                        if (player.getPlayer().locationShipLengthAvailable(ship.getLocationStart(), ship.getLocationEnd(), direction)) {
-                            if (player.getPlayer().addShip(ship)) {
+                        if (playerOverview.locationShipLengthAvailable(ship.getLocationStart(), ship.getLocationEnd(), direction)) {
+                            if (playerOverview.addShip(ship)) {
+                                this.updateOverview(player, playerOverview);
                                 return true;
                             }
                         }
@@ -112,34 +120,39 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
     public synchronized boolean fireTorpedo(IPlayer player, String torpedoName, int[] firedLocation) throws RemoteException {
         Torpedo torpedo = null;
         if (player != null) {
-            IPlayer opponentPlayer = null;
-            List<IPlayer> players = this.getPlayers();
-            for (IPlayer p : players) {
-                if (!player.equals(p)) {
-                    opponentPlayer = p;
-                    break;
+            Overview playerOverview = null;
+            boolean notFound = true;
+
+            for (int i = 0; i < this.overviews.size() && notFound; i++) {
+                if (this.overviews.get(i).equals(player.getPlayer())) {
+                    playerOverview = this.overviews.get(i);
+                    notFound = false;
                 }
             }
             if (torpedoName != null) {
-                if (opponentPlayer.getPlayer().locationHasTorpedo(firedLocation)) {
+                if (playerOverview.locationHasTorpedo(firedLocation)) {
                     return false;
                 }
                 torpedo = new Torpedo(torpedoName);
                 torpedo.updateFireLocation(firedLocation);
                 torpedos.add(torpedo);
-                if (opponentPlayer.getPlayer().locationHasShip(firedLocation)) {
-                    if (this.damageShip(opponentPlayer, firedLocation) == 1) {
+                if (playerOverview.locationHasShip(firedLocation)) {
+                    
+                    if (this.damageShip(player, firedLocation) == 1) {
                         // TODO: Animation of ship destruction?
 
                     }
-                    opponentPlayer.getPlayer().displayTorpedoShipHit(firedLocation);
+                    playerOverview.displayTorpedoShipHit(firedLocation);
+                    this.updateOverview(player, playerOverview);
                     return true;
-                } else if (opponentPlayer.getPlayer().locationHasSpecial(firedLocation)) {
+                } else if (playerOverview.locationHasSpecial(firedLocation)) {
                     // TODO: Obtain Special TESTING
                     this.claimSpecial(firedLocation, player);
+                    this.updateOverview(player, playerOverview);
                     return true;
                 } else {
-                    opponentPlayer.getPlayer().displayTorpedo(firedLocation);
+                    playerOverview.displayTorpedo(firedLocation);
+                    this.updateOverview(player, playerOverview);
                     return true;
                 }
             }
@@ -180,11 +193,13 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
     }
 
     @Override
-    public void updateOverview(IGameManager gameManager, IPlayer player) throws RemoteException {
-        for(Overview overview: gameManager.getOverviews()) {
-            if(overview.equals(player.getPlayer())) {
-                
-            }
+    public void updateOverview(IPlayer player, Overview overview) throws RemoteException {
+        if (player.equals(this.players.get(0))) {
+            this.overviews.set(0, overview);
+            this.overviews.set(2, overview);
+        } else {
+            this.overviews.set(1, overview);
+            this.overviews.set(3, overview);
         }
     }
 
@@ -287,6 +302,26 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
         return false;
     }
 
+    public boolean changeTurn(IPlayer player) throws RemoteException {
+        for (IPlayer playerLoop : this.players) {
+            if (playerLoop.equals(player)) {
+                return playerLoop.changeTurn();
+            }
+        }
+        return false;
+    }
+
+    public boolean getPlayerTurn(IPlayer player) throws RemoteException {
+        for (IPlayer playerLoop : this.players) {
+            if (playerLoop.equals(playerLoop)) {
+                if (playerLoop.isTurn()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Inflicts damage to the ship from the player
      *
@@ -306,6 +341,14 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
         return shipDamage;
     }
 
+    public void changePlayerTurn(IPlayer player) {
+        if (player != null) {
+            for (IPlayer playerLoop : this.players) {
+                playerLoop.changeTurn();
+            }
+        }
+    }
+
     /**
      * Set the overviews per player.
      *
@@ -313,26 +356,25 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
      * @param player2
      */
     @Override
-    public synchronized void buildOverviewsForPlayers() throws RemoteException {      
+    public synchronized void buildOverviewsForPlayers() throws RemoteException {
         IPlayer player1 = this.players.get(0);
         IPlayer player2 = this.players.get(1);
-        
+
         // Set players own overview.
         Overview player1OwnField = player1.setPlayerOverview(new Overview());
-        Overview player2OwnField =player2.setPlayerOverview(new Overview());
+        Overview player2OwnField = player2.setPlayerOverview(new Overview());
 
         // Set players opponents overviews.
         Overview player1OpponentField = player2OwnField;
         player1.setOpponentOverview(player1OpponentField);
-        
+
         Overview player2OpponentField = player1OwnField;
         player2.setOpponentOverview(player2OpponentField);
-        
 
-        overviews.add(player1OwnField);
-        overviews.add(player2OwnField);
-        overviews.add(player1OpponentField);
-        overviews.add(player2OpponentField);
+        overviews.add(player1.getPlayer());
+        overviews.add(player2.getPlayer());
+        overviews.add(player1.getOpponent());
+        overviews.add(player2.getOpponent());
     }
 
     @Override

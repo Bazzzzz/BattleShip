@@ -67,7 +67,7 @@ public class RMIClient {
      * Connect a client to the server.
      *
      * @param search Type of what object we are looking for in the registry |
-     * "cm", "lobbyList", "gamesList", "game" or "lobbies".
+     * "cm", "lobbyList", "gamesList", "game".
      * @param gameName Name of a specific game you are trying to look for. Null
      * if @param search is not "game".
      * @return True if connected.
@@ -129,7 +129,33 @@ public class RMIClient {
         }
         return null;
     }
-
+    /**
+     * Return the game which is searched for through RMI.
+     *
+     * @param selectedGameName game name that was selected in the UI, not null
+     * or empty.
+     * @return Found game or null.
+     */
+    public IGameManager getSelectedGameRMI(String selectedGameName) {
+        if (selectedGameName != null && !selectedGameName.isEmpty()) {
+            try {
+                String[] registryList = registry.list();
+                for (String nameLoop : registryList) {
+                    if (nameLoop.endsWith("game")) {
+                        IGameManager foundGame = (IGameManager) registry.lookup(nameLoop);
+                        if (foundGame != null && foundGame.getName().equals(selectedGameName)) {
+                            return foundGame;
+                        }
+                    }
+                }
+            } catch (RemoteException ex) {
+                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NotBoundException ex) {
+                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return null;
+    }
     /**
      * [DEPRICATED] Connect to the registry where the binding name is equal to
      * the name of the lobby. Method produces 1 bound lobby or game manager.
@@ -387,7 +413,7 @@ public class RMIClient {
      * Allows client to bind 2 types to the server registry.
      *
      * @param type Type of what the client wants to bind to the server. Type 1:
-     * "Lobby" | Type 2: "Game" | Type 3: "LobbyUpdate"
+     * "Lobby" | Type 2: "Game" | Type 3: "LobbyUpdate" | Type 4: "GameUpdate"
      * @param object Object that the client wants to bind to the server.
      */
     public void bindToServer(String type, Object object) {
@@ -400,6 +426,10 @@ public class RMIClient {
                 break;
             case "LobbyUpdate":
                 bindUpdatedLobby(object);
+                break;
+            case "GameUpdate":
+                bindUpdatedGame(object);
+                break;
             default:
                 return;
         }
@@ -499,6 +529,23 @@ public class RMIClient {
         }
     }
 
+    private void bindUpdatedGame(Object object) {
+        IGameManager game = (IGameManager) object;
+        try {
+            registry = LocateRegistry.getRegistry(ipAddress, portNumber);
+        } catch (RemoteException ex) {
+            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (registry != null) {
+            try {
+                registry.rebind(game.getName(), game);
+                System.out.println("[SERVER MESSAGE] Game rebound after update:" + game);
+            } catch (RemoteException ex) {
+                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }    
+    
     /**
      * Unbind a lobby from the registry.
      *

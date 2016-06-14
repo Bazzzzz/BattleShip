@@ -23,20 +23,24 @@ import java.util.List;
 public interface IGameManager extends RemotePublisher {
 
     public String getName() throws RemoteException;
-    
+
     public boolean confirmBoard() throws RemoteException;
 
     public boolean placeShip(IPlayer player, int[] locationStart, int shipLength, int direction) throws RemoteException;
-    
+
     public boolean fireTorpedo(IPlayer player, String torpedoName, int[] firedLocation) throws RemoteException;
+
+    public boolean changeTurn(IPlayer player) throws RemoteException;
+    
+    public boolean getPlayerTurn(IPlayer player) throws RemoteException;
 
     public List<IPlayer> getPlayers() throws RemoteException;
 
     public List<Torpedo> getTorpedos() throws RemoteException;
-    
+
     public SpecialPackage claimSpecial(int[] location, IPlayer player) throws RemoteException;
 
-    public void updateOverview(IGameManager gamemanager, IPlayer player) throws RemoteException;
+    public void updateOverview(IPlayer player, Overview overview) throws RemoteException;
 
     public void placeSpecials(Overview overview) throws RemoteException;
 
@@ -55,10 +59,10 @@ public interface IGameManager extends RemotePublisher {
     public boolean removePlayer(IPlayer player) throws RemoteException;
 
     public int damageShip(IPlayer player, int[] location) throws RemoteException;
-    
+
     public void buildOverviewsForPlayers() throws RemoteException;
-    
+
     public void addListener(RemotePropertyListener listener, String property) throws RemoteException;
-    
+
     public void removeListener(RemotePropertyListener listener, String property) throws RemoteException;
 }

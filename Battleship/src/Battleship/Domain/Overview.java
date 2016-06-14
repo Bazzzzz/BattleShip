@@ -428,12 +428,23 @@ public class Overview implements Serializable {
     }
 
     public void printBoard() {
-        System.out.println("PrintBoard");
         for (int i = BOARDHEIGHT; i > 0; i--) {
             for (int j = BOARDWIDTH; j > 0; j--) {
                 System.out.print(board[i - 1][j - 1]);
             }
-            System.out.print("\n");
         }
+    }
+    @Override
+    public boolean equals(Object object) {
+        Overview overview = (Overview) object;
+        boolean result = false;
+        for(int i = 0; i < overview.getBoardWidth(); i++) {
+            for(int j = 0; j < overview.getBoardHeight(); j++) {
+                if(this.getBoard()[i][j] == overview.getBoard()[i][j]) {
+                    result = true;
+                }
+            }
+        }
+        return result;
     }
 }

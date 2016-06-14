@@ -61,6 +61,10 @@ public class Player implements IPlayer, Serializable {
         this.opponent = opponentOverview;
         return this.opponent;
     }
+    public boolean isTurn() {
+        return this.isTurn;
+    }
+    
     /**
      * Changes the turn.
      * @return True if it's the players turn. False if not.
