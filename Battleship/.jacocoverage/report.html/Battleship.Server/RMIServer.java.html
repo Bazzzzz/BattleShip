@@ -5,11 +5,146 @@
  */
 package Battleship.Server;
 
+import Battleship.Domain.GameManager;
+import Battleship.Domain.Lobby;
+import Battleship.Interfaces.IClientManager;
+import Battleship.Interfaces.IGameManager;
+import Battleship.Interfaces.ILobby;
+import Battleship.RMI.ClientManagerOld;
+import Battleship.RMI.ServerLobby;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author sebas
  */
-<span class="nc" id="L12">public class RMIServer {</span>
-    
+public class RMIServer {
+
+    // Set port number
+    private static final int portNumber = 9999;
+
+    // Set binding name for battleship administration
+    private static final String bindingName = &quot;BattleshipInfo&quot;;
+
+    // References to registry, game manager and lobby
+<span class="nc" id="L38">    private Registry registry = null;</span>
+<span class="nc" id="L39">    private IClientManager clientManager = null;</span>
+<span class="nc" id="L40">    private IGameManager gameManager = null;</span>
+
+<span class="nc" id="L42">    private ILobby lobby = null;</span>
+
+<span class="nc" id="L44">    private final String serverMessage = &quot;[SERVER MESSAGE]&quot;;</span>
+
+<span class="nc" id="L46">    public RMIServer() {</span>
+        // Create Client Manager
+        /*try {
+         clientManager = new ClientManagerOld();
+         System.out.println(serverMessage + &quot; CM created&quot;);
+         } catch (RemoteException ex) {
+         System.out.println(serverMessage + &quot; Error creating CM.&quot;);
+         Logger.getLogger(RMIServer.class.getName()).log(Level.SEVERE, null, ex);
+         }
+         */
+        // Create Game Manager
+        try {
+<span class="nc" id="L58">            gameManager = new GameManager();</span>
+<span class="nc" id="L59">            System.out.println(serverMessage + &quot; GM created.&quot;);</span>
+<span class="nc" id="L60">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L61">            System.out.println(serverMessage + &quot; Error creating GM.&quot;);</span>
+<span class="nc" id="L62">            Logger.getLogger(RMIServer.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L63">        }</span>
+
+        try {
+<span class="nc" id="L66">            lobby = new Lobby(&quot;Test lobby&quot;);</span>
+<span class="nc" id="L67">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L68">            System.out.println(serverMessage + &quot; Error creating lobby.&quot;);</span>
+<span class="nc" id="L69">            Logger.getLogger(RMIServer.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L70">        }</span>
+
+        // Create registry
+        try {
+<span class="nc" id="L74">            registry = LocateRegistry.createRegistry(portNumber);</span>
+<span class="nc" id="L75">            System.out.println(serverMessage + &quot; Server created on port: &quot; + portNumber);</span>
+<span class="nc" id="L76">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L77">            System.out.println(serverMessage + &quot; Error locating registry.&quot;);</span>
+<span class="nc" id="L78">            ex.printStackTrace();</span>
+<span class="nc" id="L79">        }</span>
+        // Bind single CM.
+        /*
+         try {
+         registry.rebind(bindingName, clientManager);
+         System.out.println(serverMessage + &quot; Server bound to: &quot; + bindingName + &quot;, registry: &quot; + registry + &quot;\n Object in registry: &quot; + clientManager.toString());
+         } catch (RemoteException ex) {
+         System.out.println(serverMessage + &quot; Error binding to registry.&quot;);
+         ex.printStackTrace();
+         }
+         */
+        // Bind GM.
+        try {
+<span class="nc" id="L92">            registry.rebind(&quot;game&quot;, gameManager);</span>
+<span class="nc" id="L93">            System.out.println(serverMessage + &quot; Server bound to: &quot; + bindingName + &quot;, registry: &quot; + registry + &quot;\n Object in registry: &quot; + gameManager.toString());</span>
+<span class="nc" id="L94">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L95">            System.out.println(serverMessage + &quot; Error binding to registry.&quot;);</span>
+<span class="nc" id="L96">            ex.printStackTrace();</span>
+<span class="nc" id="L97">        }</span>
+        // Bind lobby
+        try {
+<span class="nc" id="L100">            registry.rebind(&quot;lobby&quot;, lobby);</span>
+<span class="nc" id="L101">            System.out.println(serverMessage + &quot; Server bound to: &quot; + bindingName + &quot;, registry: &quot; + registry + &quot;\n Object in registry: &quot; + lobby.toString());</span>
+<span class="nc" id="L102">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L103">            System.out.println(serverMessage + &quot; Error binding to registry.&quot;);</span>
+<span class="nc" id="L104">            ex.printStackTrace();</span>
+<span class="nc" id="L105">        }</span>
+<span class="nc" id="L106">        System.out.println(serverMessage + &quot; Server IP Address: &quot;);</span>
+<span class="nc" id="L107">        printIPAddresses();</span>
+<span class="nc" id="L108">        System.out.println(serverMessage + &quot; Server set, waiting for clients.&quot;);</span>
+
+<span class="nc" id="L110">        TimerTask timerTask = new TimerTask() {</span>
+            @Override
+            public void run() {
+                try {
+<span class="nc bnc" id="L114" title="All 2 branches missed.">                    for(String stringLoop : registry.list()) {</span>
+<span class="nc" id="L115">                        System.out.println(stringLoop.toString());</span>
+                    }
+<span class="nc" id="L117">                } catch (RemoteException ex) {</span>
+<span class="nc" id="L118">                    Logger.getLogger(RMIServer.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L119">                }</span>
+<span class="nc" id="L120">            }</span>
+        };
+<span class="nc" id="L122">        Timer serverTimer = new Timer();</span>
+<span class="nc" id="L123">        serverTimer.scheduleAtFixedRate(timerTask, 0, 30000);</span>
+<span class="nc" id="L124">    }</span>
+
+    // Print IP addresses and network interfaces
+    private void printIPAddresses() {
+        try {
+<span class="nc" id="L129">            InetAddress localhost = InetAddress.getLocalHost();</span>
+<span class="nc" id="L130">            System.out.println(&quot;Server: IP Address: &quot; + localhost.getHostAddress());</span>
+            // Just in case this host has multiple IP addresses....
+<span class="nc" id="L132">            InetAddress[] allMyIps = InetAddress.getAllByName(localhost.getCanonicalHostName());</span>
+<span class="nc bnc" id="L133" title="All 4 branches missed.">            if (allMyIps != null &amp;&amp; allMyIps.length &gt; 1) {</span>
+<span class="nc" id="L134">                System.out.println(&quot;Server: Full list of IP addresses:&quot;);</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">                for (InetAddress allMyIp : allMyIps) {</span>
+<span class="nc" id="L136">                    System.out.println(&quot;    &quot; + allMyIp);</span>
+                }
+            }
+<span class="nc" id="L139">        } catch (UnknownHostException ex) {</span>
+<span class="nc" id="L140">            System.out.println(&quot;Server: Cannot get IP address of local host&quot;);</span>
+<span class="nc" id="L141">            System.out.println(&quot;Server: UnknownHostException: &quot; + ex.getMessage());</span>
+<span class="nc" id="L142">        }</span>
+<span class="nc" id="L143">    }</span>
+
+    public static void main(String[] args) {
+<span class="nc" id="L146">        RMIServer server = new RMIServer();</span>
+<span class="nc" id="L147">    }</span>
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

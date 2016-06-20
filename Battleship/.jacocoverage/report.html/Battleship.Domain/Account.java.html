@@ -15,6 +15,7 @@ public class Account implements Serializable {
 
     private String loginName;
     private String password;
+    private int score;
 
     /**
      * Constructs an account.
@@ -22,26 +23,46 @@ public class Account implements Serializable {
      * @param loginName not null
      * @param password not null, larger than 4
      */
-<span class="nc" id="L25">    public Account(String loginName, String password) {</span>
-<span class="nc bnc" id="L26" title="All 4 branches missed.">        if (loginName == null || loginName.equals(&quot;&quot;)) {</span>
-<span class="nc" id="L27">            throw new IllegalArgumentException(&quot;Login name was null.&quot;);</span>
+<span class="nc" id="L26">    public Account(String loginName, String password) {</span>
+<span class="nc bnc" id="L27" title="All 4 branches missed.">        if (loginName == null || loginName.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L28">            throw new IllegalArgumentException(&quot;Login name was not filled in.&quot;);</span>
         }
-<span class="nc bnc" id="L29" title="All 4 branches missed.">        if (password == null || password.equals(&quot;&quot;)) {</span>
-<span class="nc" id="L30">            throw new IllegalArgumentException(&quot;Password was null.&quot;);</span>
+<span class="nc bnc" id="L30" title="All 4 branches missed.">        if (password == null || password.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L31">            throw new IllegalArgumentException(&quot;Password was not filled in.&quot;);</span>
         }
-<span class="nc bnc" id="L32" title="All 2 branches missed.">        if (password.length() &lt; 4) {</span>
-<span class="nc" id="L33">            throw new IllegalArgumentException(&quot;Password has to be larger than 4&quot;);</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">        if (password.length() &lt; 4) {</span>
+<span class="nc" id="L34">            throw new IllegalArgumentException(&quot;Password has to be larger than 4&quot;);</span>
         }
-<span class="nc" id="L35">        this.loginName = loginName;</span>
-<span class="nc" id="L36">        this.password = password;</span>
-<span class="nc" id="L37">    }</span>
+<span class="nc" id="L36">        this.loginName = loginName;</span>
+<span class="nc" id="L37">        this.password = password;</span>
+<span class="nc" id="L38">        this.score = 0;</span>
+<span class="nc" id="L39">    }</span>
+
+    /**
+     * Constructs an account from the database.
+     *
+     * @param loginName not null
+     * @param score
+     */
+<span class="nc" id="L47">    public Account(String loginName, int score) {</span>
+<span class="nc bnc" id="L48" title="All 4 branches missed.">        if (loginName == null || loginName.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L49">            throw new IllegalArgumentException(&quot;Login name was null.&quot;);</span>
+        }
+<span class="nc" id="L51">        this.loginName = loginName;</span>
+<span class="nc" id="L52">        this.password = null;</span>
+<span class="nc" id="L53">        this.score = score;</span>
+<span class="nc" id="L54">    }</span>
 
     public String getLoginName() {
-<span class="nc" id="L40">        return loginName;</span>
+<span class="nc" id="L57">        return loginName;</span>
     }
 
     public String getPassword() {
-<span class="nc" id="L44">        return password;</span>
+<span class="nc" id="L61">        return password;</span>
+    }
+
+    public int getScore() {
+<span class="nc" id="L65">        return score;</span>
     }
 
     /**
@@ -53,24 +74,28 @@ public class Account implements Serializable {
      * @return True if changed, False if not.
      */
     public boolean changePassword(String originalPassword, String newPassword) {
-<span class="nc bnc" id="L56" title="All 4 branches missed.">        if (originalPassword != null &amp;&amp; newPassword != null) {</span>
-<span class="nc bnc" id="L57" title="All 2 branches missed.">            if (newPassword.length() &lt; 4) {</span>
-<span class="nc" id="L58">                throw new IllegalArgumentException(&quot;Password has to be larger than 4&quot;);</span>
+<span class="nc bnc" id="L77" title="All 4 branches missed.">        if (originalPassword != null &amp;&amp; newPassword != null) {</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">            if (newPassword.length() &lt; 4) {</span>
+<span class="nc" id="L79">                throw new IllegalArgumentException(&quot;Password has to be larger than 4&quot;);</span>
             }
-<span class="nc bnc" id="L60" title="All 2 branches missed.">            if (originalPassword.equals(this.password)) {</span>
-<span class="nc" id="L61">                this.password = newPassword;</span>
-<span class="nc" id="L62">                return true;</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">            if (originalPassword.equals(this.password)) {</span>
+<span class="nc" id="L82">                this.password = newPassword;</span>
+<span class="nc" id="L83">                return true;</span>
             }
         } else {
-<span class="nc" id="L65">            throw new IllegalArgumentException(&quot;Original password and original password can't be null.&quot;);</span>
+<span class="nc" id="L86">            throw new IllegalArgumentException(&quot;Original password and original password can't be null.&quot;);</span>
         }
 
-<span class="nc" id="L68">        return false;</span>
+<span class="nc" id="L89">        return false;</span>
     }
+
+    public void changeScore(int score) {
+<span class="nc" id="L93">        this.score = score;</span>
+<span class="nc" id="L94">    }</span>
 
     @Override
     public String toString() {
-<span class="nc" id="L73">        return &quot;Account login name: &quot; + this.loginName;</span>
+<span class="nc" id="L98">        return &quot;Account login name: &quot; + this.loginName;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

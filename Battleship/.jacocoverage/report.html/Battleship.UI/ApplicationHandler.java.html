@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ApplicationHandler.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;Battleship&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">Battleship.UI</a> &gt; <span class="el_source">ApplicationHandler.java</span></div><h1>ApplicationHandler.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Battleship.UI;
+
+import Battleship.Domain.Account;
+import Battleship.Interfaces.IDatabaseMediator;
+import Battleship.Interfaces.ILobby;
+import Battleship.Interfaces.IPlayer;
+import Battleship.Persistence.DatabaseMediator;
+import Battleship.RMI.RMIClient;
+
+/**
+ *
+ * @author sebas
+ */
+public class ApplicationHandler {
+
+    private IDatabaseMediator dbm;
+    public static Account loggedInPlayer;
+    private static RMIClient rmiClient;
+    private static String joinedLobbyName;
+    private static IPlayer playingPlayer;
+    
+<span class="nc" id="L27">    public ApplicationHandler(String ipAddress) {</span>
+<span class="nc" id="L28">        dbm = new DatabaseMediator(ipAddress);</span>
+<span class="nc" id="L29">        loggedInPlayer = null;</span>
+<span class="nc" id="L30">        rmiClient = null;</span>
+<span class="nc" id="L31">        joinedLobbyName = null;</span>
+<span class="nc" id="L32">        playingPlayer = null;</span>
+<span class="nc" id="L33">    }</span>
+
+    public Account getLoggedInPlayer() {
+<span class="nc" id="L36">        return loggedInPlayer;</span>
+    }
+    /**
+     * Set the RMIClient object and enable usage over the application. Object is remote.
+     * @param rmiClient 
+     */
+    public void setRMIClient(RMIClient rmiClient) {
+<span class="nc" id="L43">        ApplicationHandler.rmiClient = rmiClient;</span>
+<span class="nc" id="L44">    }</span>
+    /**
+     * Get the RMIClient object. This is the remote object.
+     * @return Remote object RMIClient.
+     */
+    public RMIClient getRMIClient() {
+<span class="nc" id="L50">        return ApplicationHandler.rmiClient;</span>
+    }
+    /**
+     * Set the joinedLobby object and enable usage over the application.
+     * @param lobby 
+     */
+    public void setJoinedLobby(String lobbyName) {
+<span class="nc" id="L57">        ApplicationHandler.joinedLobbyName = lobbyName;</span>
+<span class="nc" id="L58">    }</span>
+    /**
+     * Get the lobby a user clicked in the lobby list controller.
+     * @return Selected lobby.
+     */
+    public String getJoinedLobbyName() {
+<span class="nc" id="L64">        return ApplicationHandler.joinedLobbyName;</span>
+    }
+    
+    public void setPlayingPlayer(IPlayer player) {
+<span class="nc" id="L68">        ApplicationHandler.playingPlayer = player;</span>
+<span class="nc" id="L69">    }</span>
+    
+    public IPlayer getPlayingPlayer() {
+<span class="nc" id="L72">        return ApplicationHandler.playingPlayer;</span>
+    }
+    
+    /**
+     * Add a new player to the database.
+     * @param username
+     * @param password
+     * @return True if added, False if not.
+     */
+    public boolean newPlayerToDB(String username, String password) {
+<span class="nc" id="L82">        Account newAccount = new Account(username, password);</span>
+
+<span class="nc" id="L84">        return dbm.addNewPlayer(newAccount);</span>
+    }
+    /**
+     * Log a player into the application.
+     * @param username
+     * @param password 
+     */
+    public void loginPlayer(String username, String password) {
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        if (dbm.login(username, password)) {</span>
+<span class="nc" id="L93">            loggedInPlayer = new Account(username, password);</span>
+        }
+<span class="nc" id="L95">    }</span>
+
+    public boolean logoutPlayer() {
+<span class="nc" id="L98">        loggedInPlayer = null;</span>
+<span class="nc" id="L99">        return dbm.logout();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

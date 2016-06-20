@@ -28,7 +28,7 @@ public interface IGameManager extends RemotePublisher {
 
     public boolean placeShip(IPlayer player, int[] locationStart, int shipLength, int direction) throws RemoteException;
 
-    public boolean fireTorpedo(IPlayer player, String torpedoName, int[] firedLocation) throws RemoteException;
+    public boolean fireTorpedo(IPlayer player, IPlayer receiveingPlayer, String torpedoName, int[] firedLocation) throws RemoteException;
 
     public boolean changeTurn(IPlayer player) throws RemoteException;
     
@@ -47,7 +47,14 @@ public interface IGameManager extends RemotePublisher {
     public boolean repairShip(int fix, IPlayer player, int[] location) throws RemoteException;
 
     public List<Torpedo> getAvailableTorpedos(IPlayer player) throws RemoteException;
-
+    /**
+     * Index 0 = Player1 overview
+     * Index 1 = Player 2 overview
+     * Index 2 = Player1 opponent overview (Player 2 overview)
+     * Index 3 = Player2 opponent overview (Player1 overview)
+     * @return
+     * @throws RemoteException 
+     */
     public List<Overview> getOverviews() throws RemoteException;
 
     public List<SpecialPackage> getSpecials(IPlayer player) throws RemoteException;

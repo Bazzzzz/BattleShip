@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ClientManagerOld.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;Battleship&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">Battleship.RMI</a> &gt; <span class="el_source">ClientManagerOld.java</span></div><h1>ClientManagerOld.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Battleship.RMI;
+
+import Battleship.Interfaces.IClientManager;
+import Battleship.Interfaces.ILobby;
+import Battleship.Interfaces.IPlayer;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+/**
+ *
+ * @author sebas
+ */
+public class ClientManagerOld extends UnicastRemoteObject implements IClientManager {
+
+    private List&lt;ILobby&gt; lobbies;
+
+<span class="nc" id="L25">    public ClientManagerOld() throws RemoteException {</span>
+<span class="nc" id="L26">        lobbies = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L27">    }</span>
+
+    @Override
+    public List&lt;ILobby&gt; getLobbies() throws RemoteException {
+<span class="nc" id="L31">        return lobbies;</span>
+    }
+
+    @Override
+    public boolean addLobby(ILobby lobby) throws RemoteException {
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        if (lobbies.isEmpty()) {</span>
+<span class="nc" id="L37">            lobbies.add(lobby);</span>
+<span class="nc" id="L38">            return true;</span>
+        } else {
+<span class="nc" id="L40">            boolean isListed = false;</span>
+<span class="nc" id="L41">            Iterator&lt;ILobby&gt; itrLobby = lobbies.iterator();</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">            while (itrLobby.hasNext()) {</span>
+<span class="nc" id="L43">                ILobby tempLobby = itrLobby.next();</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">                if (tempLobby.equals(lobby)) {</span>
+<span class="nc" id="L45">                    isListed = true;</span>
+                }
+<span class="nc" id="L47">            }</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">            if (!isListed) {</span>
+<span class="nc" id="L49">                lobbies.add(lobby);</span>
+<span class="nc" id="L50">                return true;</span>
+            }
+        }
+<span class="nc" id="L53">        return false;</span>
+    }
+
+    @Override
+    public boolean removeLobby(ILobby lobby) throws RemoteException {
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        if (!lobbies.isEmpty()) {</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">            for (ILobby tempLobby : this.lobbies) {</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">                if (tempLobby.equals(lobby)) {</span>
+<span class="nc" id="L61">                    this.lobbies.remove(lobby);</span>
+<span class="nc" id="L62">                    return true;</span>
+                }
+<span class="nc" id="L64">            }</span>
+        }
+<span class="nc" id="L66">        return false;</span>
+    }
+
+    @Override
+    public ILobby findLobbyByPlayer(String playerName) throws RemoteException {
+<span class="nc bnc" id="L71" title="All 4 branches missed.">        if (playerName != null &amp;&amp; !playerName.equals(&quot;&quot;)) {</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">            for (ILobby tempLobby : this.lobbies) {</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">                for(IPlayer tempPlayer : tempLobby.getPlayers()) {</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">                    if(tempPlayer.getName().equals(playerName)) {</span>
+<span class="nc" id="L75">                        return tempLobby;</span>
+                    }
+<span class="nc" id="L77">                }</span>
+
+<span class="nc" id="L79">            }</span>
+        }
+<span class="nc" id="L81">        return null;</span>
+    }
+
+    @Override
+    public ILobby findLobbyByName(String name) throws RemoteException {
+<span class="nc bnc" id="L86" title="All 4 branches missed.">        if (name != null &amp;&amp; !name.equals(&quot;&quot;)) {</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">            for (ILobby tempLobby : this.lobbies) {</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">                if (tempLobby.getName().equals(name)) {</span>
+<span class="nc" id="L89">                    return tempLobby;</span>
+                }
+<span class="nc" id="L91">            }</span>
+        }
+<span class="nc" id="L93">        return null;</span>
+    }
+
+    @Override
+    public void removeAllLobbies() throws RemoteException {
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        if (!this.lobbies.isEmpty()) {</span>
+<span class="nc" id="L99">            this.lobbies.clear();</span>
+        }
+<span class="nc" id="L101">    }</span>
+
+    @Override
+    public boolean updateLobby(ILobby lobby) throws RemoteException {
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        if (lobby != null) {</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">            for(ILobby tempLobby : this.lobbies) {</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">                if(tempLobby.getName().equals(lobby.getName())) {</span>
+<span class="nc" id="L108">                    this.lobbies.remove(tempLobby);</span>
+<span class="nc" id="L109">                    this.lobbies.add(lobby);</span>
+<span class="nc" id="L110">                    return true;</span>
+                }
+<span class="nc" id="L112">            }</span>
+        }
+<span class="nc" id="L114">        return false;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

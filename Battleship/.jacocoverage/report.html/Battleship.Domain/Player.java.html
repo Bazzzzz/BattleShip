@@ -6,6 +6,7 @@
 package Battleship.Domain;
 
 import Battleship.Interfaces.IPlayer;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,82 +14,111 @@ import java.util.List;
  *
  * @author sebas
  */
-public class Player implements IPlayer {
+public class Player implements IPlayer, Serializable {
     private String name;
     private boolean isTurn;
     private Overview player;
     private Overview opponent;
     private List&lt;SpecialPackage&gt; specials;
-
+    private boolean isReady;
+    
     public String getName() {
-<span class="fc" id="L24">        return name;</span>
+<span class="fc" id="L26">        return name;</span>
     }
     
     /**
      * Constructs a player.
      * @param name not null
      */
-<span class="fc" id="L31">    public Player(String name) {</span>
-<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if(name != null) {</span>
-<span class="fc" id="L33">            this.name = name;</span>
+<span class="fc" id="L33">    public Player(String name) {</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">        if(name != null) {</span>
+<span class="fc" id="L35">            this.name = name;</span>
         } else {
-<span class="nc" id="L35">            throw new IllegalArgumentException(&quot;No player name filled in.&quot;);</span>
+<span class="nc" id="L37">            throw new IllegalArgumentException(&quot;No player name filled in.&quot;);</span>
         }
-<span class="fc" id="L37">        this.isTurn = false;</span>
-<span class="fc" id="L38">        player = null;</span>
-<span class="fc" id="L39">        opponent = null;</span>
-<span class="fc" id="L40">        specials = new ArrayList&lt;SpecialPackage&gt;();</span>
-<span class="fc" id="L41">    }</span>
+<span class="fc" id="L39">        this.isTurn = false;</span>
+<span class="fc" id="L40">        player = null;</span>
+<span class="fc" id="L41">        opponent = null;</span>
+<span class="fc" id="L42">        specials = new ArrayList&lt;SpecialPackage&gt;();</span>
+<span class="fc" id="L43">        this.isReady = false;</span>
+<span class="fc" id="L44">    }</span>
 
     public Overview getPlayer() {
-<span class="fc" id="L44">        return player;</span>
+<span class="fc" id="L47">        return player;</span>
     }
 
     public Overview getOpponent() {
-<span class="fc" id="L48">        return opponent;</span>
+<span class="fc" id="L51">        return opponent;</span>
     }
     
-    public void setPlayerOverview(Overview playerOverview) {
-<span class="fc" id="L52">        this.player = playerOverview;</span>
-<span class="fc" id="L53">    }</span>
+    public Overview setPlayerOverview(Overview playerOverview) {
+<span class="fc" id="L55">        this.player = playerOverview;</span>
+<span class="fc" id="L56">        return this.player;</span>
+    }
     
-    public void setOpponentOverview(Overview opponentOverview) {
-<span class="fc" id="L56">        opponentOverview.setOpponentsBoard();</span>
-<span class="fc" id="L57">        this.opponent = opponentOverview;</span>
-<span class="fc" id="L58">    }</span>
+    public Overview setOpponentOverview(Overview opponentOverview) {
+<span class="fc" id="L60">        opponentOverview.setOpponentsBoard();</span>
+<span class="fc" id="L61">        this.opponent = opponentOverview;</span>
+<span class="fc" id="L62">        return this.opponent;</span>
+    }
+    public boolean isTurn() {
+<span class="nc" id="L65">        return this.isTurn;</span>
+    }
+    
     /**
      * Changes the turn.
      * @return True if it's the players turn. False if not.
      */
     public boolean changeTurn() {
-<span class="nc bnc" id="L64" title="All 2 branches missed.">        this.isTurn = !this.isTurn;</span>
-<span class="nc" id="L65">        return this.isTurn;</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        this.isTurn = !this.isTurn;</span>
+<span class="nc" id="L74">        return this.isTurn;</span>
     }
     /**
      * Returns the claimed specials for a player.
      * @return 
      */
     public List&lt;SpecialPackage&gt; getSpecials() {
-        // TODO: Return special only when claimed.
-<span class="nc" id="L73">        return specials;</span>
+        
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        for(SpecialPackage special : this.opponent.getSpecials()) {</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">            if(special.isClaimed()) {</span>
+<span class="nc" id="L84">                this.specials.add(special);</span>
+            }
+<span class="nc" id="L86">        }</span>
+        
+<span class="nc" id="L88">        return this.specials;</span>
     }
     /**
      * Allows a player to use a special package.
      * @param special not null
      * @return True if used. False if not.
      */
+    @Override
     public boolean useSpecial(SpecialPackage special) {
         // TODO: Method.
-<span class="nc" id="L82">        return true;</span>
+<span class="nc" id="L98">        return true;</span>
     }
+    @Override
+    public boolean isPlayerReady() {
+<span class="nc" id="L102">        return this.isReady;</span>
+    }
+    @Override
+    public void setPlayerReady(boolean isReady) {
+<span class="nc" id="L106">        this.isReady = isReady;</span>
+<span class="nc" id="L107">    }</span>
+    
+    @Override
     public boolean equals(Object o) {
-<span class="pc bpc" id="L85" title="1 of 2 branches missed.">        if(o instanceof IPlayer) {</span>
-<span class="fc" id="L86">            IPlayer player = (IPlayer)o;</span>
-<span class="fc bfc" id="L87" title="All 2 branches covered.">            if(this.getName().equals(player.getName())) {</span>
-<span class="fc" id="L88">                return true;</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">        if(o instanceof IPlayer) {</span>
+<span class="fc" id="L112">            IPlayer player = (IPlayer)o;</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">            if(this.getName().equals(player.getName())) {</span>
+<span class="fc" id="L114">                return true;</span>
             }
         }
-<span class="fc" id="L91">        return false;</span>
+<span class="fc" id="L117">        return false;</span>
+    }
+    
+    public String toString() {
+<span class="fc" id="L121">        return String.format(&quot;Player information: \n %s&quot;, this.getName());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

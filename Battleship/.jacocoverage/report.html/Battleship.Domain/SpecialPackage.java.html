@@ -5,24 +5,26 @@
  */
 package Battleship.Domain;
 
+import java.io.Serializable;
+
 /**
  *
  * @author sebas
  */
-public abstract class SpecialPackage {
+public abstract class SpecialPackage implements Serializable {
 
     private String name;
     private boolean claimed;
     private int[] placedLocation;
 
-<span class="nc" id="L18">    public SpecialPackage(String name, int[] placedLocation) {</span>
-<span class="nc" id="L19">        this.name = name;</span>
-<span class="nc" id="L20">        this.claimed = false;</span>
-<span class="nc" id="L21">        this.placedLocation = placedLocation;</span>
-<span class="nc" id="L22">    }</span>
+<span class="nc" id="L20">    public SpecialPackage(String name, int[] placedLocation) {</span>
+<span class="nc" id="L21">        this.name = name;</span>
+<span class="nc" id="L22">        this.claimed = false;</span>
+<span class="nc" id="L23">        this.placedLocation = placedLocation;</span>
+<span class="nc" id="L24">    }</span>
 
     public int[] getPlacedLocation() {
-<span class="nc" id="L25">        return this.placedLocation;</span>
+<span class="nc" id="L27">        return this.placedLocation;</span>
     }
     /**
      * Claims a special package
@@ -30,10 +32,10 @@ public abstract class SpecialPackage {
      * @return boolean
      */
     public boolean isClaimed() {
-<span class="nc" id="L33">        return this.claimed;</span>
+<span class="nc" id="L35">        return this.claimed;</span>
     }
     public void claimSpecial() {
-<span class="nc bnc" id="L36" title="All 2 branches missed.">        this.claimed = !this.claimed;</span>
-<span class="nc" id="L37">    }</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        this.claimed = !this.claimed;</span>
+<span class="nc" id="L39">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

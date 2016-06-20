@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>RMIClient.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;Battleship&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">Battleship.RMI</a> &gt; <span class="el_source">RMIClient.java</span></div><h1>RMIClient.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Battleship.RMI;
+
+import Battleship.Exceptions.BattleshipExceptions;
+import Battleship.Interfaces.IClientManager;
+import Battleship.Interfaces.IGameManager;
+import Battleship.Interfaces.ILobby;
+import fontys.observer.BasicPublisher;
+import fontys.observer.RemotePropertyListener;
+import java.beans.PropertyChangeEvent;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
+import java.lang.Object;
+import java.rmi.AccessException;
+import java.rmi.AlreadyBoundException;
+import java.util.ArrayList;
+import java.util.Collection;
+
+/**
+ *
+ * @author sebas
+ */
+public class RMIClient {
+
+    private BasicPublisher basicPublisher;
+
+    // Binding name for a game.
+    private static final String bindingName = &quot;BattleshipInfo&quot;;
+
+    // References to registry and GameManager
+<span class="fc" id="L40">    private Registry registry = null;</span>
+<span class="fc" id="L41">    private IClientManager clientManager = null;</span>
+<span class="fc" id="L42">    private IGameManager gameManager = null;</span>
+<span class="fc" id="L43">    private ILobby lobby = null;</span>
+
+    private Collection&lt;ILobby&gt; lobbyList;
+    private Collection&lt;IGameManager&gt; gamesList;
+
+    // Port number and ip address.
+<span class="fc" id="L49">    private final int portNumber = 9999;</span>
+    private final String ipAddress;
+
+<span class="fc" id="L52">    private final String clientMessage = &quot;[CLIENT MESSAGE]&quot;;</span>
+
+<span class="fc" id="L54">    public RMIClient(String ipAddress) throws BattleshipExceptions {</span>
+
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        if (!ipAddress.equals(&quot;&quot;)) {</span>
+<span class="fc" id="L57">            this.ipAddress = ipAddress;</span>
+<span class="fc" id="L58">            this.lobbyList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L59">            this.gamesList = new ArrayList&lt;&gt;();</span>
+        } else {
+<span class="nc" id="L61">            throw new BattleshipExceptions(&quot;No server IP filled in.&quot;);</span>
+        }
+
+<span class="fc" id="L64">    }</span>
+
+    /**
+     * Connect a client to the server.
+     *
+     * @param search Type of what object we are looking for in the registry |
+     * &quot;cm&quot;, &quot;lobbyList&quot;, &quot;gamesList&quot;, &quot;game&quot;.
+     * @param gameName Name of a specific game you are trying to look for. Null
+     * if @param search is not &quot;game&quot;.
+     * @return True if connected.
+     */
+    public boolean connectToServer(String search, String gameName) {
+<span class="nc" id="L76">        boolean result = false;</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (search.equals(&quot;cm&quot;)) {</span>
+<span class="nc" id="L78">            result = this.connectRMIClientManager();</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        } else if (search.equals(&quot;lobbyList&quot;)) {</span>
+<span class="nc" id="L80">            result = this.connectRMIList(search);</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">            if (this.lobbyList.isEmpty()) {</span>
+<span class="nc" id="L82">                return false;</span>
+            }
+<span class="nc bnc" id="L84" title="All 2 branches missed.">        } else if (search.equals(&quot;gamesList&quot;)) {</span>
+<span class="nc" id="L85">            result = this.connectRMIList(search);</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">            if (this.gamesList.isEmpty()) {</span>
+<span class="nc" id="L87">                return false;</span>
+            }
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        } else if(search.equals(&quot;game&quot;)) {</span>
+<span class="nc" id="L90">            result = this.getGameManagerRMI(gameName);</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">            if(this.gameManager == null) {</span>
+<span class="nc" id="L92">                return false;</span>
+            }
+        } else {
+<span class="nc" id="L95">            result = connectRMI(search);</span>
+        }
+
+<span class="nc" id="L98">        return result;</span>
+    }
+
+    /**
+     * Return the lobby which is searched for through RMI.
+     *
+     * @param selectedLobbyName lobby name that was selected in the UI, not null
+     * or empty.
+     * @return Found lobby or null.
+     */
+    public ILobby getSelectedLobbyRMI(String selectedLobbyName) {
+<span class="pc bpc" id="L109" title="2 of 4 branches missed.">        if (selectedLobbyName != null &amp;&amp; !selectedLobbyName.isEmpty()) {</span>
+            /*try {
+             ILobby foundLobby = (ILobby) registry.lookup(selectedLobbyName);
+             }*/
+
+            try {
+<span class="nc" id="L115">                String[] registryList = registry.list();</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">                for (String nameLoop : registryList) {</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">                    if (nameLoop.endsWith(&quot;lobby&quot;)) {</span>
+<span class="nc" id="L118">                        ILobby foundLobby = (ILobby) registry.lookup(nameLoop);</span>
+<span class="nc bnc" id="L119" title="All 4 branches missed.">                        if (foundLobby != null &amp;&amp; foundLobby.getName().equals(selectedLobbyName)) {</span>
+<span class="nc" id="L120">                            return foundLobby;</span>
+                        }
+                    }
+                }
+<span class="fc" id="L124">            } catch (RemoteException ex) {</span>
+<span class="fc" id="L125">                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L126">            } catch (NotBoundException ex) {</span>
+<span class="nc" id="L127">                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="pc" id="L128">            }</span>
+        }
+<span class="fc" id="L130">        return null;</span>
+    }
+    /**
+     * Return the game which is searched for through RMI.
+     *
+     * @param selectedGameName game name that was selected in the UI, not null
+     * or empty.
+     * @return Found game or null.
+     */
+    public IGameManager getSelectedGameRMI(String selectedGameName) {
+<span class="nc bnc" id="L140" title="All 4 branches missed.">        if (selectedGameName != null &amp;&amp; !selectedGameName.isEmpty()) {</span>
+            try {
+<span class="nc" id="L142">                String[] registryList = registry.list();</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">                for (String nameLoop : registryList) {</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">                    if (nameLoop.endsWith(&quot;game&quot;)) {</span>
+<span class="nc" id="L145">                        IGameManager foundGame = (IGameManager) registry.lookup(nameLoop);</span>
+<span class="nc bnc" id="L146" title="All 4 branches missed.">                        if (foundGame != null &amp;&amp; foundGame.getName().equals(selectedGameName)) {</span>
+<span class="nc" id="L147">                            return foundGame;</span>
+                        }
+                    }
+                }
+<span class="nc" id="L151">            } catch (RemoteException ex) {</span>
+<span class="nc" id="L152">                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L153">            } catch (NotBoundException ex) {</span>
+<span class="nc" id="L154">                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L155">            }</span>
+        }
+<span class="nc" id="L157">        return null;</span>
+    }
+    /**
+     * [DEPRICATED] Connect to the registry where the binding name is equal to
+     * the name of the lobby. Method produces 1 bound lobby or game manager.
+     *
+     * @return True if game manager or lobby was found.
+     */
+    @Deprecated
+    private boolean connectRMI(String search) {
+
+        try {
+<span class="nc" id="L169">            registry = LocateRegistry.getRegistry(ipAddress, portNumber);</span>
+<span class="nc" id="L170">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L171">            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L172">        }</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">        if (registry != null) {</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">            if (search.equals(&quot;games&quot;)) {</span>
+                try {
+<span class="nc" id="L176">                    gameManager = (IGameManager) registry.lookup(&quot;games&quot;);</span>
+                    //gameManager.addListener(this, &quot;games&quot;);
+<span class="nc" id="L178">                    System.out.println(clientMessage + &quot; Registry lookup to: &quot; + &quot;games&quot; + &quot; succesful. \n Item found: &quot; + gameManager);</span>
+
+<span class="nc" id="L180">                } catch (RemoteException ex) {</span>
+<span class="nc" id="L181">                    System.out.println(clientMessage + &quot; Error remote lookup.&quot;);</span>
+<span class="nc" id="L182">                    Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L183">                } catch (NotBoundException ex) {</span>
+<span class="nc" id="L184">                    System.out.println(clientMessage + &quot; Error bind name.&quot;);</span>
+<span class="nc" id="L185">                    Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L186">                }</span>
+            }
+<span class="nc bnc" id="L188" title="All 2 branches missed.">            if (gameManager != null) {</span>
+<span class="nc" id="L189">                return true;</span>
+            }
+
+<span class="nc bnc" id="L192" title="All 2 branches missed.">            if (search.equals(&quot;lobbies&quot;)) {</span>
+                try {
+<span class="nc" id="L194">                    lobby = (ILobby) registry.lookup(&quot;lobbies&quot;);</span>
+                    //lobby.addListener(this, &quot;lobbies&quot;);
+<span class="nc" id="L196">                    System.out.println(clientMessage + &quot; Registry lookup to: &quot; + &quot;lobbies&quot; + &quot; succesful. \n Item found: &quot; + lobby);</span>
+
+<span class="nc" id="L198">                } catch (RemoteException ex) {</span>
+<span class="nc" id="L199">                    System.out.println(clientMessage + &quot; Error remote lookup.&quot;);</span>
+<span class="nc" id="L200">                    Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L201">                } catch (NotBoundException ex) {</span>
+<span class="nc" id="L202">                    System.out.println(clientMessage + &quot; Error bind name.&quot;);</span>
+<span class="nc" id="L203">                    Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L204">                }</span>
+            }
+<span class="nc bnc" id="L206" title="All 2 branches missed.">            if (lobby != null) {</span>
+<span class="nc" id="L207">                return true;</span>
+            }
+
+        }
+
+<span class="nc" id="L212">        return false;</span>
+    }
+
+    /**
+     * Connect to the registry where the binding name is in the binding list.
+     * Method produces a list of lobbies and game managers.
+     *
+     * @param search Type of what object we are looking for in the registry |
+     * &quot;lobbies&quot; or &quot;games&quot;
+     * @return True if
+     */
+    private boolean connectRMIList(String search) {
+
+        try {
+<span class="nc" id="L226">            registry = LocateRegistry.getRegistry(ipAddress, portNumber);</span>
+<span class="nc" id="L227">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L228">            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L229">        }</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">        if (registry != null) {</span>
+<span class="nc bnc" id="L231" title="All 10 branches missed.">            switch (search) {</span>
+                case &quot;gamesList&quot;:
+<span class="nc" id="L233">                    return this.getGamesListRMI();</span>
+
+                case &quot;lobbyList&quot;:
+<span class="nc" id="L236">                    return this.getLobbyListRMI();</span>
+            }
+        }
+
+<span class="nc" id="L240">        return false;</span>
+    }
+
+    /**
+     * Retrieve the game manager from the registry with @param name.
+     *
+     * @param name Name of the game manager we are looking for in the registry.
+     * @return True if game manager was found.
+     */
+    private boolean getGameManagerRMI(String name) {
+        try {
+<span class="nc bnc" id="L251" title="All 2 branches missed.">            if (!name.isEmpty()) {</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">                if (registry != null) {</span>
+<span class="nc" id="L253">                   this.gameManager = (IGameManager) registry.lookup(name);</span>
+<span class="nc" id="L254">                   return true;</span>
+                }
+            }
+<span class="nc" id="L257">            return false;</span>
+<span class="nc" id="L258">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L259">            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L260">            return false;</span>
+<span class="nc" id="L261">        } catch (NotBoundException ex) {</span>
+<span class="nc" id="L262">            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L263">            return false;</span>
+        }
+        
+        
+        // TODO: Use lookup.
+        /*try {
+            if (!name.isEmpty()) {
+                String[] registryList = registry.list();
+                if (registryList.length &gt; 0) {
+                    for (String nameLoop : registryList) {
+                        if (nameLoop.equals(name)) {
+                            this.gameManager = (IGameManager) registry.lookup(name);
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        } catch (RemoteException ex) {
+            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } catch (NotBoundException ex) {
+            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }*/
+    }
+
+    /**
+     * Retrieve a list of lobbies from the registry.
+     *
+     * @return True if list is filled.
+     */
+    private boolean getLobbyListRMI() {
+        try {
+<span class="nc" id="L297">            String[] registryList = registry.list();</span>
+<span class="nc bnc" id="L298" title="All 2 branches missed.">            if (registryList.length &gt; 0) {</span>
+<span class="nc" id="L299">                this.lobbyList.clear();</span>
+<span class="nc bnc" id="L300" title="All 2 branches missed.">                for (String nameLoop : registryList) {</span>
+<span class="nc bnc" id="L301" title="All 2 branches missed.">                    if (nameLoop.endsWith(&quot;lobby&quot;)) {</span>
+<span class="nc" id="L302">                        ILobby tempLobby = (ILobby) registry.lookup(nameLoop);</span>
+<span class="nc bnc" id="L303" title="All 2 branches missed.">                        if (tempLobby != null) {</span>
+<span class="nc" id="L304">                            this.lobbyList.add(tempLobby);</span>
+                        }
+                    }
+                }
+<span class="nc bnc" id="L308" title="All 2 branches missed.">                if (this.lobbyList.size() &gt; 0) {</span>
+<span class="nc" id="L309">                    return true;</span>
+                }
+            }
+<span class="nc" id="L312">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L313">            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L314">            return false;</span>
+<span class="nc" id="L315">        } catch (NotBoundException ex) {</span>
+<span class="nc" id="L316">            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L317">            return false;</span>
+<span class="nc" id="L318">        }</span>
+<span class="nc" id="L319">        return false;</span>
+    }
+
+    /**
+     * Retrieve a list of game managers from the registry
+     *
+     * @return True if list is filled.
+     */
+    private boolean getGamesListRMI() {
+        try {
+<span class="nc" id="L329">            String[] registryList = registry.list();</span>
+<span class="nc bnc" id="L330" title="All 2 branches missed.">            if (registryList.length &gt; 0) {</span>
+<span class="nc" id="L331">                this.gamesList.clear();</span>
+<span class="nc" id="L332">                String nameEnding = &quot;game&quot;;</span>
+<span class="nc bnc" id="L333" title="All 2 branches missed.">                for (String nameLoop : registryList) {</span>
+<span class="nc bnc" id="L334" title="All 2 branches missed.">                    if (nameLoop.endsWith(nameEnding)) {</span>
+<span class="nc" id="L335">                        IGameManager tempGameManager = (IGameManager) registry.lookup(nameEnding);</span>
+<span class="nc bnc" id="L336" title="All 2 branches missed.">                        if (tempGameManager != null) {</span>
+<span class="nc" id="L337">                            this.gamesList.add(tempGameManager);</span>
+                        }
+                    }
+                }
+<span class="nc bnc" id="L341" title="All 2 branches missed.">                if (this.gamesList.size() &gt; 0) {</span>
+<span class="nc" id="L342">                    return true;</span>
+                }
+            }
+<span class="nc" id="L345">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L346">            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L347">            return false;</span>
+<span class="nc" id="L348">        } catch (NotBoundException ex) {</span>
+<span class="nc" id="L349">            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L350">            return false;</span>
+<span class="nc" id="L351">        }</span>
+<span class="nc" id="L352">        return false;</span>
+    }
+
+    /**
+     * [DEPRICATED] Connects to the ClientManager.
+     *
+     * @return True if connected. False if not.
+     */
+    @Deprecated
+    private boolean connectRMIClientManager() {
+        try {
+<span class="nc" id="L363">            registry = LocateRegistry.getRegistry(ipAddress, portNumber);</span>
+<span class="nc" id="L364">            System.out.println(clientMessage + &quot; Connected to registry: &quot; + registry);</span>
+<span class="nc" id="L365">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L366">            System.out.println(clientMessage + &quot;Error cannot lcoate registry.&quot;);</span>
+<span class="nc" id="L367">            ex.printStackTrace();</span>
+<span class="nc" id="L368">        }</span>
+<span class="nc bnc" id="L369" title="All 2 branches missed.">        if (registry != null) {</span>
+            try {
+<span class="nc" id="L371">                clientManager = (IClientManager) registry.lookup(bindingName);</span>
+<span class="nc" id="L372">                System.out.println(clientMessage + &quot; Registry lookup to: &quot; + bindingName + &quot; succesful. \n Item found: &quot; + clientManager);</span>
+<span class="nc" id="L373">            } catch (RemoteException ex) {</span>
+<span class="nc" id="L374">                System.out.println(clientMessage + &quot; Error remote lookup.&quot;);</span>
+<span class="nc" id="L375">                Logger</span>
+<span class="nc" id="L376">                        .getLogger(RMIClient.class</span>
+<span class="nc" id="L377">                                .getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L378">            } catch (NotBoundException ex) {</span>
+<span class="nc" id="L379">                System.out.println(clientMessage + &quot; Error bind name.&quot;);</span>
+<span class="nc" id="L380">                Logger</span>
+<span class="nc" id="L381">                        .getLogger(RMIClient.class</span>
+<span class="nc" id="L382">                                .getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L383">            }</span>
+        }
+<span class="nc bnc" id="L385" title="All 2 branches missed.">        if (clientManager != null) {</span>
+<span class="nc" id="L386">            return true;</span>
+        }
+
+<span class="nc" id="L389">        return false;</span>
+    }
+
+    public IClientManager getClientManager() {
+<span class="nc" id="L393">        return this.clientManager;</span>
+    }
+
+    public IGameManager getGameManager() {
+<span class="nc" id="L397">        return this.gameManager;</span>
+    }
+
+    public ILobby getLobby() {
+<span class="nc" id="L401">        return this.lobby;</span>
+    }
+
+    public Collection&lt;ILobby&gt; getLobbyList() {
+<span class="nc" id="L405">        return this.lobbyList;</span>
+    }
+
+    public Collection&lt;IGameManager&gt; getGamesList() {
+<span class="nc" id="L409">        return this.gamesList;</span>
+    }
+
+    /**
+     * Allows client to bind 2 types to the server registry.
+     *
+     * @param type Type of what the client wants to bind to the server. Type 1:
+     * &quot;Lobby&quot; | Type 2: &quot;Game&quot; | Type 3: &quot;LobbyUpdate&quot; | Type 4: &quot;GameUpdate&quot;
+     * @param object Object that the client wants to bind to the server.
+     */
+    public void bindToServer(String type, Object object) {
+<span class="pc bpc" id="L420" title="15 of 18 branches missed.">        switch (type) {</span>
+            case &quot;Lobby&quot;:
+<span class="fc" id="L422">                bindLobby(object);</span>
+<span class="fc" id="L423">                break;</span>
+            case &quot;Game&quot;:
+<span class="nc" id="L425">                bindGame(object);</span>
+<span class="nc" id="L426">                break;</span>
+            case &quot;LobbyUpdate&quot;:
+<span class="nc" id="L428">                bindUpdatedLobby(object);</span>
+<span class="nc" id="L429">                break;</span>
+            case &quot;GameUpdate&quot;:
+<span class="nc" id="L431">                bindUpdatedGame(object);</span>
+<span class="nc" id="L432">                break;</span>
+            default:
+<span class="nc" id="L434">                return;</span>
+        }
+<span class="fc" id="L436">    }</span>
+
+    /**
+     * Allows client to unbind 2 types from the server registry.
+     *
+     * @param type Type of what the client wants to unbind from the server. Type
+     * 1: &quot;Lobby&quot; | Type 2: &quot;Game&quot;
+     * @param object Object that the client wants to unbind from the server.
+     */
+    public void unbindFromServer(String type, Object object) {
+<span class="nc bnc" id="L446" title="All 10 branches missed.">        switch (type) {</span>
+            case &quot;Lobby&quot;:
+<span class="nc" id="L448">                unbindLobby(object);</span>
+<span class="nc" id="L449">                break;</span>
+            case &quot;Game&quot;:
+<span class="nc" id="L451">                unbindGame(object);</span>
+<span class="nc" id="L452">                break;</span>
+            default:
+<span class="nc" id="L454">                return;</span>
+        }
+<span class="nc" id="L456">    }</span>
+
+    @Deprecated
+    public ILobby getLobby(ILobby lobby) {
+
+<span class="nc" id="L461">        return null;</span>
+    }
+
+    /**
+     * Bind a lobby to the registry.
+     *
+     * @param object Must be an ILobby object.
+     */
+    private void bindLobby(Object object) {
+<span class="fc" id="L470">        ILobby tempLobby = (ILobby) object;</span>
+        try {
+<span class="fc" id="L472">            registry = LocateRegistry.getRegistry(ipAddress, portNumber);</span>
+<span class="nc" id="L473">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L474">            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="fc" id="L475">        }</span>
+
+<span class="pc bpc" id="L477" title="1 of 2 branches missed.">        if (registry != null) {</span>
+            try {
+<span class="nc" id="L479">                registry.rebind(tempLobby.getName(), tempLobby);</span>
+<span class="nc" id="L480">                System.out.println(&quot;[SERVER MESSAGE] Lobby bound:&quot; + tempLobby);</span>
+<span class="fc" id="L481">            } catch (RemoteException ex) {</span>
+<span class="fc" id="L482">                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L483">            }</span>
+        }
+<span class="fc" id="L485">    }</span>
+
+    /**
+     * Bind a game manager to the registry.
+     *
+     * @param object Must be an IGameManager object.
+     */
+    private void bindGame(Object object) {
+<span class="nc" id="L493">        IGameManager tempGame = (IGameManager) object;</span>
+        try {
+<span class="nc" id="L495">            registry = LocateRegistry.getRegistry(ipAddress, portNumber);</span>
+<span class="nc" id="L496">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L497">            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L498">        }</span>
+
+<span class="nc bnc" id="L500" title="All 2 branches missed.">        if (registry != null) {</span>
+            try {
+<span class="nc" id="L502">                registry.rebind(tempGame.getName(), tempGame);</span>
+<span class="nc" id="L503">                System.out.println(&quot;[SERVER MESSAGE] Game bound:&quot; + tempGame);</span>
+<span class="nc" id="L504">            } catch (RemoteException ex) {</span>
+<span class="nc" id="L505">                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L506">            }</span>
+        }
+<span class="nc" id="L508">    }</span>
+
+    /**
+     * Bind a lobby to the registry.
+     *
+     * @param object Muse be an ILobby object.
+     */
+    private void bindUpdatedLobby(Object object) {
+<span class="nc" id="L516">        ILobby lobby = (ILobby) object;</span>
+        try {
+<span class="nc" id="L518">            registry = LocateRegistry.getRegistry(ipAddress, portNumber);</span>
+<span class="nc" id="L519">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L520">            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L521">        }</span>
+<span class="nc bnc" id="L522" title="All 2 branches missed.">        if (registry != null) {</span>
+            try {
+<span class="nc" id="L524">                registry.rebind(lobby.getName(), lobby);</span>
+<span class="nc" id="L525">                System.out.println(&quot;[SERVER MESSAGE] Lobby rebound after update:&quot; + lobby);</span>
+<span class="nc" id="L526">            } catch (RemoteException ex) {</span>
+<span class="nc" id="L527">                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L528">            }</span>
+        }
+<span class="nc" id="L530">    }</span>
+
+    private void bindUpdatedGame(Object object) {
+<span class="nc" id="L533">        IGameManager game = (IGameManager) object;</span>
+        try {
+<span class="nc" id="L535">            registry = LocateRegistry.getRegistry(ipAddress, portNumber);</span>
+<span class="nc" id="L536">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L537">            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L538">        }</span>
+<span class="nc bnc" id="L539" title="All 2 branches missed.">        if (registry != null) {</span>
+            try {
+<span class="nc" id="L541">                registry.rebind(game.getName(), game);</span>
+<span class="nc" id="L542">                System.out.println(&quot;[SERVER MESSAGE] Game rebound after update:&quot; + game);</span>
+<span class="nc" id="L543">            } catch (RemoteException ex) {</span>
+<span class="nc" id="L544">                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L545">            }</span>
+        }
+<span class="nc" id="L547">    }    </span>
+    
+    /**
+     * Unbind a lobby from the registry.
+     *
+     * @param object Must be an ILobby object
+     */
+    private void unbindLobby(Object object) {
+<span class="nc" id="L555">        ILobby lobby = (ILobby) object;</span>
+        try {
+<span class="nc" id="L557">            registry = LocateRegistry.getRegistry(ipAddress, portNumber);</span>
+<span class="nc" id="L558">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L559">            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L560">        }</span>
+<span class="nc bnc" id="L561" title="All 2 branches missed.">        if (registry != null) {</span>
+            try {
+<span class="nc" id="L563">                registry.unbind(lobby.getName());</span>
+<span class="nc" id="L564">            } catch (RemoteException ex) {</span>
+<span class="nc" id="L565">                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L566">            } catch (NotBoundException ex) {</span>
+<span class="nc" id="L567">                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L568">            }</span>
+        }
+<span class="nc" id="L570">    }</span>
+
+    /**
+     * Unbind a game from the registry.
+     *
+     * @param object Must be an IGameManager object
+     */
+    private void unbindGame(Object object) {
+<span class="nc" id="L578">        IGameManager game = (IGameManager) object;</span>
+        try {
+<span class="nc" id="L580">            registry = LocateRegistry.getRegistry(ipAddress, portNumber);</span>
+<span class="nc" id="L581">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L582">            Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L583">        }</span>
+<span class="nc bnc" id="L584" title="All 2 branches missed.">        if (registry != null) {</span>
+            try {
+<span class="nc" id="L586">                registry.unbind(game.getName());</span>
+<span class="nc" id="L587">            } catch (RemoteException ex) {</span>
+<span class="nc" id="L588">                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L589">            } catch (NotBoundException ex) {</span>
+<span class="nc" id="L590">                Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L591">            }</span>
+        }
+<span class="nc" id="L593">    }</span>
+
+    /**
+     * [DEPRICATED] Try to bind the lobby using the RemotePropertyListener.
+     *
+     * @param object
+     */
+    @Deprecated
+    private void bindToLobby(Object object) {
+        try {
+<span class="nc" id="L603">            lobby = (ILobby) registry.lookup(&quot;lobbies&quot;);</span>
+<span class="nc" id="L604">            RemotePropertyListener rpl = (RemotePropertyListener) object;</span>
+<span class="nc" id="L605">            lobby.addListener(rpl, &quot;lobbies&quot;);</span>
+
+<span class="nc" id="L607">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L608">            Logger.getLogger(RMIClient.class</span>
+<span class="nc" id="L609">                    .getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L610">        } catch (NotBoundException ex) {</span>
+<span class="nc" id="L611">            Logger.getLogger(RMIClient.class</span>
+<span class="nc" id="L612">                    .getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L613">        }</span>
+<span class="nc" id="L614">    }</span>
+
+    /**
+     * [DEPRICATED] Try to bind game manager using the RemotePropertyListener.
+     *
+     * @param object
+     */
+    @Deprecated
+    private void bindToGame(Object object) {
+        try {
+<span class="nc" id="L624">            gameManager = (IGameManager) registry.lookup(&quot;games&quot;);</span>
+<span class="nc" id="L625">            RemotePropertyListener rpl = (RemotePropertyListener) object;</span>
+<span class="nc" id="L626">            gameManager.addListener(rpl, &quot;games&quot;);</span>
+
+<span class="nc" id="L628">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L629">            Logger.getLogger(RMIClient.class</span>
+<span class="nc" id="L630">                    .getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L631">        } catch (NotBoundException ex) {</span>
+<span class="nc" id="L632">            Logger.getLogger(RMIClient.class</span>
+<span class="nc" id="L633">                    .getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L634">        }</span>
+<span class="nc" id="L635">    }</span>
+
+    /**
+     * [DEPRICATED] Retrieve a lobby from the registry.
+     *
+     * @param selectedLobby lobby that was selected in the UI, not null.
+     * @return THe lobby that was found or null.
+     */
+    @Deprecated
+    public ILobby getSelectedLobby(ILobby selectedLobby) {
+<span class="nc bnc" id="L645" title="All 2 branches missed.">        if (selectedLobby != null) {</span>
+<span class="nc bnc" id="L646" title="All 2 branches missed.">            for (ILobby tempLobby : this.lobbyList) {</span>
+<span class="nc bnc" id="L647" title="All 2 branches missed.">                if (tempLobby.equals(selectedLobby)) {</span>
+<span class="nc" id="L648">                    return tempLobby;</span>
+                }
+<span class="nc" id="L650">            }</span>
+        }
+<span class="nc" id="L652">        return null;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

@@ -87,7 +87,7 @@ public class TestGame_InConsole {
         int[] locationTorpedo = new int[2];
         locationTorpedo[0] = 4;
         locationTorpedo[1] = 4;
-        manager.fireTorpedo(player1, "TorpedoNormal", locationTorpedo);
+        manager.fireTorpedo(player1, player2, "TorpedoNormal", locationTorpedo);
         
         System.out.println("Players own board. After Torpedo Fire.");
         player1.getPlayer().printBoard();

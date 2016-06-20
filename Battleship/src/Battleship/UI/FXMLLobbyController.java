@@ -68,6 +68,7 @@ public class FXMLLobbyController implements Initializable {
     private ILobby lobby;
 
     private ScheduledExecutorService serviceLobbyRunner;
+
     /**
      * Initializes the controller class.
      */
@@ -224,21 +225,23 @@ public class FXMLLobbyController implements Initializable {
 
     private void handleCloseWindow() {
         try {
-            if(this.lobby.getPlayers().size() == 1) {
+            if (this.lobby.getPlayers().size() == 1) {
                 Battleship.handler.getRMIClient().unbindFromServer("Lobby", this.lobby);
             }
         } catch (RemoteException ex) {
             Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         Parent window;
         try {
+            serviceLobbyRunner.shutdownNow();
+
             window = FXMLLoader.load(getClass().getResource("FXMLLobbyList.fxml"));
             Battleship.currentStage.getScene().setRoot(window);
         } catch (IOException ex) {
             Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
 
     private void handleOpenGameWindow() throws IOException {

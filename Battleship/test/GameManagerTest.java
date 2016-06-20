@@ -146,8 +146,8 @@ public class GameManagerTest {
         // Player 2
         manager.placeShip(player2, locationShip, 3, 1);
 
-        actualAmountOfShips = manager.getPlayers().get(1).getPlayer().amountOfShips();
-
+        //actualAmountOfShips = manager.getPlayers().get(1).getPlayer().amountOfShips();
+        actualAmountOfShips = manager.getOverviews().get(1).amountOfShips();
         assertEquals("Amount of ships increased after place ship.", 1, actualAmountOfShips);
         tempLocation = new int[2];
         locatedShip = null;
@@ -159,7 +159,7 @@ public class GameManagerTest {
                     && locatedShip.getLocationStart()[1] == locationShip[1]);
         }
         tempLocation = new int[2];
-        locatedShip = manager.getPlayers().get(0).getPlayer().getShipOnLocation(tempLocation);
+        locatedShip = manager.getPlayers().get(1).getPlayer().getShipOnLocation(tempLocation);
         assertNull("Unable to located ship without location.", locatedShip);
 
         tempLocation[0] = 16;
@@ -389,52 +389,52 @@ public class GameManagerTest {
         locationTorpedo[0] = 8;
         locationTorpedo[1] = 8;
 
-        manager.fireTorpedo(player1, "Normal Torpedo", locationTorpedo);
+        manager.fireTorpedo(player1, player2, "Normal Torpedo", locationTorpedo);
         int expected = 1;
         int actual = manager.getTorpedos().size();
 
         assertEquals("Torpedo added to list.", expected, actual);
-
-        boolean torpedoLocated = manager.getPlayers().get(0).getOpponent().locationHasTorpedo(locationTorpedo);
+        boolean torpedoLocated = manager.getOverviews().get(1).locationHasTorpedo(locationTorpedo);
+        //boolean torpedoLocated = manager.getPlayers().get(0).getOpponent().locationHasTorpedo(locationTorpedo);
         assertTrue("Torpedo is located on the players opponents board where expected.", torpedoLocated);
 
         // Fire torpedo at ship.
         locationTorpedo[0] = 4;
         locationTorpedo[1] = 4;
 
-        manager.fireTorpedo(player1, "Normal Torpedo", locationTorpedo);
+        manager.fireTorpedo(player1, player2, "Normal Torpedo", locationTorpedo);
         expected++;
         actual = manager.getTorpedos().size();
         assertEquals("Second torpedo added to the list.", expected, actual);
 
         int expectedDamage = 1;
-        Ship damagedShip = manager.getPlayers().get(0).getOpponent().getShipOnLocation(locationTorpedo);
+        Ship damagedShip = manager.getPlayers().get(1).getPlayer().getShipOnLocation(locationTorpedo);
         assertEquals("Ship should be damaged after first torpedo hit", expectedDamage, damagedShip.getAmountHit());
 
         // Fire torpedo at ship second time.
         locationTorpedo[0] = 4;
         locationTorpedo[1] = 5;
 
-        manager.fireTorpedo(player1, "Normal Torpedo", locationTorpedo);
+        manager.fireTorpedo(player1, player2, "Normal Torpedo", locationTorpedo);
         expected++;
         actual = manager.getTorpedos().size();
         assertEquals("Third torpedo added to the list.", expected, actual);
 
         expectedDamage = 2;
-        damagedShip = manager.getPlayers().get(0).getOpponent().getShipOnLocation(locationTorpedo);
+        damagedShip = manager.getPlayers().get(1).getPlayer().getShipOnLocation(locationTorpedo);
         assertEquals("Ship should be damaged after first torpedo hit", expectedDamage, damagedShip.getAmountHit());
 
         // Fire torpedo at ship and destroy it.
         locationTorpedo[0] = 4;
         locationTorpedo[1] = 6;
 
-        manager.fireTorpedo(player1, "Normal Torpedo", locationTorpedo);
+        manager.fireTorpedo(player1, player2, "Normal Torpedo", locationTorpedo);
         expected++;
         actual = manager.getTorpedos().size();
         assertEquals("Third torpedo added to the list.", expected, actual);
 
         expectedDamage = 3;
-        damagedShip = manager.getPlayers().get(0).getOpponent().getShipOnLocation(locationTorpedo);
+        damagedShip = manager.getPlayers().get(1).getPlayer().getShipOnLocation(locationTorpedo);
         assertEquals("Ship should be damaged after first torpedo hit", expectedDamage, damagedShip.getAmountHit());
     }
 
@@ -454,15 +454,15 @@ public class GameManagerTest {
         locationTorpedo[0] = 4;
         locationTorpedo[1] = 4;
 
-        manager.fireTorpedo(player1, "Normal Torpedo", locationTorpedo);
+        manager.fireTorpedo(player1, player2, "Normal Torpedo", locationTorpedo);
 
-        boolean actual = manager.fireTorpedo(player1, "Torpedo", locationTorpedo);
+        boolean actual = manager.fireTorpedo(player1, player2, "Torpedo", locationTorpedo);
         assertFalse("Already fired a torpedo at this location", actual);
 
         locationTorpedo[0] = 6;
         locationTorpedo[1] = 5;
 
-        actual = manager.fireTorpedo(player1, "Normal Torpedo", locationTorpedo);
+        actual = manager.fireTorpedo(player1, player2, "Normal Torpedo", locationTorpedo);
         assertTrue("New torpedo fired at location", actual);
 
     }
@@ -484,7 +484,7 @@ public class GameManagerTest {
         locationTorpedo[1] = 4;
 
         // Repair first damage.
-        manager.fireTorpedo(player2, "Normal Torpedo", locationTorpedo);
+        manager.fireTorpedo(player2, player1,"Normal Torpedo", locationTorpedo);
         boolean result = manager.repairShip(1, player1, locationShip);
 
         assertTrue("Ship repaired on start location.", result);
@@ -493,7 +493,7 @@ public class GameManagerTest {
         locationTorpedo[1] = 5;
 
         // Repair second damage.
-        manager.fireTorpedo(player2, "Normal Torpedo", locationTorpedo);
+        manager.fireTorpedo(player2, player1, "Normal Torpedo", locationTorpedo);
         result = manager.repairShip(1, player1, locationTorpedo);
 
         assertTrue("Ship repaired on ship deck location.", result);
@@ -502,7 +502,7 @@ public class GameManagerTest {
         locationTorpedo[1] = 6;
 
         // Repair third damage.
-        manager.fireTorpedo(player2, "Normal Torpedo", locationTorpedo);
+        manager.fireTorpedo(player2, player1, "Normal Torpedo", locationTorpedo);
         result = manager.repairShip(1, player1, locationTorpedo);
 
         assertTrue("Ship repaired on end location.", result);

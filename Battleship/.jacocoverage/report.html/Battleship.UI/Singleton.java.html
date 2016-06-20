@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Singleton.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;Battleship&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">Battleship.UI</a> &gt; <span class="el_source">Singleton.java</span></div><h1>Singleton.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Battleship.UI;
+
+import Battleship.Interfaces.ILobby;
+
+/**
+ *
+ * @author sebas
+ */
+public class Singleton {
+<span class="nc" id="L15">    private static Singleton instance = new Singleton();</span>
+    private String lobbyName;
+    private String gameName;
+    
+    public static Singleton getInstance() {
+<span class="nc" id="L20">        return Singleton.instance;</span>
+    }
+    
+<span class="nc" id="L23">    public Singleton(){</span>
+<span class="nc" id="L24">        this.lobbyName = null;</span>
+<span class="nc" id="L25">        this.gameName = null;</span>
+<span class="nc" id="L26">    }</span>
+    
+    public void setLobbyName(String lobbyName) {
+<span class="nc" id="L29">        this.lobbyName = lobbyName;</span>
+<span class="nc" id="L30">    }</span>
+    public String getLobbyName() {
+<span class="nc" id="L32">        return this.lobbyName;</span>
+    }
+
+    public String getGameName() {
+<span class="nc" id="L36">        return gameName;</span>
+    }
+
+    public void setGameName(String gameName) {
+<span class="nc" id="L40">        this.gameName = gameName;</span>
+<span class="nc" id="L41">    }</span>
+    
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

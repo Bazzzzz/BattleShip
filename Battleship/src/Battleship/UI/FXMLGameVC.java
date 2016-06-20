@@ -10,6 +10,7 @@ import Battleship.Interfaces.IGameManager;
 import Battleship.Interfaces.IPlayer;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
@@ -49,6 +50,9 @@ public class FXMLGameVC implements Initializable {
     IGameManager gameManager;
 
     IPlayer playingPlayer;
+
+    IPlayer opponentPlayer;
+
     @FXML
     private Button btnPlaceShip;
     @FXML
@@ -95,48 +99,60 @@ public class FXMLGameVC implements Initializable {
 
         this.drawBackground();
 
-        playingPlayer = Battleship.handler.getPlayingPlayer();
+        gridPanePlayer = new GridPane();
+        gridPaneOpponent = new GridPane();
+
         String gameName = Singleton.getInstance().getGameName();
         if (Battleship.handler.getRMIClient().connectToServer("game", gameName)) {
             try {
                 IGameManager game = Battleship.handler.getRMIClient().getGameManager();
                 if (game != null) {
                     this.gameManager = game;
-                    this.gameManager.buildOverviewsForPlayers();
+                    
+                    if (Battleship.handler.getPlayingPlayer().equals(gameManager.getPlayers().get(0))) {
+                        playingPlayer = gameManager.getPlayers().get(0);
+                    }
+                    if (Battleship.handler.getPlayingPlayer().equals(gameManager.getPlayers().get(1))) {
+                        playingPlayer = gameManager.getPlayers().get(1);
+                    }
+                    if (playingPlayer.equals(this.gameManager.getPlayers().get(0))) {
+                        opponentPlayer = this.gameManager.getPlayers().get(1);
+                    } else {
+                        opponentPlayer = this.gameManager.getPlayers().get(0);
+                    }
 
+                    if (playingPlayer.equals(this.gameManager.getPlayers().get(0)) && opponentPlayer != null) {
+                        this.drawStart();
+                    }
                     System.out.println("Print player1's board");
                     this.gameManager.getPlayers().get(0).getPlayer().printBoard();
-
-                    System.out.println("Print playe1's opponent board");
-                    this.gameManager.getPlayers().get(0).getOpponent().printBoard();
 
                     System.out.println("Print player2's board");
                     this.gameManager.getPlayers().get(1).getPlayer().printBoard();
 
-                    System.out.println("Print player2's opponent board");
-                    this.gameManager.getPlayers().get(1).getOpponent().printBoard();
-                }
-                this.drawStart(gameManager);
-
-                this.drawBoards(gameManager);
-
-                this.showGrids();
+                }   
+                System.out.println("RMI call to game name: " + Battleship.handler.getRMIClient().getSelectedGameRMI(gameName).getName());
+                
                 // TODO: Location on selection in gridview instead of random.
                 // TODO: Check display on ship hit.
                 // http://stackoverflow.com/questions/31095954/how-to-get-gridpane-row-and-column-ids-on-mouse-entered-in-each-cell-of-grid-in
                 serviceGameRunner = Executors.newSingleThreadScheduledExecutor();
-                serviceGameRunner.scheduleAtFixedRate(new GameRunner(), 0, 5, TimeUnit.SECONDS);
+                serviceGameRunner.scheduleAtFixedRate(new GameRunner(), 0, 10, TimeUnit.SECONDS);
 
+                // Set player 1 as first turn.
                 if (!this.gameManager.getPlayers().get(0).isTurn()) {
                     for (int i = 0; i < this.gameManager.getPlayers().size(); i++) {
-                        if (i == 0) {
+                        if (this.playingPlayer.equals(this.gameManager.getPlayers().get(i))) {
                             this.gameManager.changeTurn(this.gameManager.getPlayers().get(i));
                             System.out.println(this.gameManager.getPlayerTurn(this.gameManager.getPlayers().get(i)));
                             Battleship.handler.getRMIClient().bindToServer("GameUpdate", this.gameManager);
+                            lblPlayer2Turn.setVisible(false);
                         }
                     }
                 }
 
+                drawBoards(gameManager);
+                this.showGrids();
             } catch (RemoteException ex) {
                 Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -149,12 +165,29 @@ public class FXMLGameVC implements Initializable {
         @Override
         public void run() {
             IGameManager curGame = gameManager;
-            IGameManager runGame;
+            System.out.println("GameRunner run.");
             try {
-                runGame = Battleship.handler.getRMIClient().getSelectedGameRMI(curGame.getName());
-                if (runGame != null) {
-                    gameManager = runGame;
-                }
+                gameManager = Battleship.handler.getRMIClient().getSelectedGameRMI(curGame.getName());
+                System.out.println("\nRunner Thread: " + gameManager.getName() + ", overview player 1: \n");
+                
+                gameManager.getPlayers().get(0).getPlayer().printBoard();
+                System.out.println("\nRunner Thread: " + gameManager.getName() + ", overview player 2: \n");
+                Overview overviewP2 = gameManager.getPlayers().get(1).getPlayer();
+                overviewP2.printBoard();
+//                if (runGame != null) {
+//                    gameManager = runGame;
+//                    Platform.runLater(new Runnable() {
+//                        public void run() {
+//                            drawBoards(gameManager);
+//                        }
+//                    }
+//                    );
+//                    System.out.println(
+//                            "Runner Thread: " + runGame.getName() + ", overview player 1: " + runGame.getPlayers().get(0).getPlayer());
+//                    System.out.println(
+//                            "Runner Thread: " + runGame.getName() + ", overview player 2: " + runGame.getPlayers().get(1).getPlayer());
+//
+//                }
             } catch (RemoteException ex) {
                 Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -165,22 +198,29 @@ public class FXMLGameVC implements Initializable {
     public void handlePlaceShipButton(ActionEvent e) {
 
         Random random = new Random();
-        int x = random.nextInt(16);
-        int y = random.nextInt(16);
+        int x = random.nextInt(14);
+        int y = random.nextInt(14);
         int[] location = new int[2];
-        location[0] = x;
-        location[1] = y;
+        location[0] = x+1;
+        location[1] = y+1;
 
         try {
             for (IPlayer playerLoop : this.gameManager.getPlayers()) {
                 if (playerLoop.equals(playingPlayer)) {
                     if (this.gameManager.getPlayerTurn(playerLoop)) {
-                        this.gameManager.placeShip(playerLoop, location, 3, 0);
-                        this.drawBoards(this.gameManager);
-                        if (this.gameManager.getOverviews().get(0).amountOfShips() < 7) {
-                            this.gameManager.changeTurn(playerLoop);
+                        if (this.gameManager.placeShip(playerLoop, location, 3, 0)) {
+                            this.drawBoards(this.gameManager);
+                            if (playerLoop.getPlayer().amountOfShips() < 7) {
+                                this.gameManager.changeTurn(playerLoop);
+                            }
+                            
+                            //Battleship.handler.getRMIClient().bindToServer("GameUpdate", this.gameManager);
+                            System.out.println("Print player1's board");
+                            this.gameManager.getPlayers().get(0).getPlayer().printBoard();
+
+                            System.out.println("Print player2's board");
+                            this.gameManager.getPlayers().get(1).getPlayer().printBoard();
                         }
-                        Battleship.handler.getRMIClient().bindToServer("GameUpdate", this.gameManager);
                     }
                 }
             }
@@ -198,18 +238,25 @@ public class FXMLGameVC implements Initializable {
         location[0] = x;
         location[1] = y;
         try {
+            IPlayer opponentPlayer = null;
             for (IPlayer playerLoop : this.gameManager.getPlayers()) {
-                if (playerLoop.equals(playingPlayer)) {
-                    if (this.gameManager.getPlayerTurn(playerLoop)) {
-                        this.gameManager.fireTorpedo(playerLoop, "TorpedoTemp", location);
-                        this.drawBoards(this.gameManager);
-
-                        this.gameManager.changeTurn(playerLoop);
-                        Battleship.handler.getRMIClient().bindToServer("GameUpdate", this.gameManager);
-                    }
+                if (!playerLoop.equals(playerLoop)) {
+                    opponentPlayer = playerLoop;
                 }
             }
+            if (this.gameManager.getPlayerTurn(playingPlayer) && opponentPlayer != null) {
+                this.gameManager.fireTorpedo(playingPlayer, opponentPlayer, "TorpedoTemp", location);
+                this.drawBoards(this.gameManager);
 
+                this.gameManager.changeTurn(playingPlayer);
+                //Battleship.handler.getRMIClient().bindToServer("GameUpdate", this.gameManager);
+
+                System.out.println("Print player1's board");
+                this.gameManager.getPlayers().get(0).getPlayer().printBoard();
+
+                System.out.println("Print player2's board");
+                this.gameManager.getPlayers().get(1).getPlayer().printBoard();
+            }
         } catch (RemoteException ex) {
             Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -220,7 +267,7 @@ public class FXMLGameVC implements Initializable {
         try {
             for (IPlayer playerLoop : this.gameManager.getPlayers()) {
                 this.gameManager.changeTurn(playerLoop);
-                Battleship.handler.getRMIClient().bindToServer("GameUpdate", this.gameManager);
+                //Battleship.handler.getRMIClient().bindToServer("GameUpdate", this.gameManager);
             }
         } catch (RemoteException ex) {
             Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);
@@ -237,48 +284,77 @@ public class FXMLGameVC implements Initializable {
     }
 
     private void drawBoards(IGameManager game) {
-//        double canvasHeight = this.canvasPlayer.getHeight();
-//        double canvasWidth = this.canvasPlayer.getWidth();
+        //        double canvasHeight = this.canvasPlayer.getHeight();
+        //        double canvasWidth = this.canvasPlayer.getWidth();
 
         try {
-            for (int i = 0; i < game.getOverviews().size(); i++) {
-                if (game.getPlayers().get(0).equals(this.playingPlayer)) {
-                    if (i == 0) { // Overview of Player1
-                        Overview overview = game.getOverviews().get(i);
-                        if (game.getPlayers().get(0).getPlayer().equals(overview)) {
-                            System.out.println("DrawBoards after action | Player 1 board");
-                            overview.printBoard();
-                            drawBoard(overview, true);
-                        }
-                    }
-                    if (i == 2) {
-                        Overview overview = game.getOverviews().get(i);
-                        if (game.getPlayers().get(0).getOpponent().equals(overview)) {
-                            drawBoard(overview, false);
-                        }
-                    }
-                }
-                if (game.getPlayers().get(1).equals(this.playingPlayer)) {
-                    if (i == 1) {
-                        Overview overview = game.getOverviews().get(i);
-                        if (game.getPlayers().get(1).getPlayer().equals(overview)) {
-                            drawBoard(overview, true);
-                        }
-                    }
-                    if (i == 3) {
-                        Overview overview = game.getOverviews().get(i);
-                        if (game.getPlayers().get(1).getOpponent().equals(overview)) {
-                            System.out.println("DrawBoards after action | Player 2 Opponent board (Player 1 board)");
-                            overview.printBoard();
-                            drawBoard(overview, false);
-                        }
-                    }
-                }
+            if (playingPlayer.equals(game.getPlayers().get(0))) {
+                playingPlayer = game.getPlayers().get(0);
+                opponentPlayer = game.getPlayers().get(1);
+            } else {
+                playingPlayer = game.getPlayers().get(1);
+                opponentPlayer = this.gameManager.getPlayers().get(0);
             }
+            Overview overviewPlayer = playingPlayer.getPlayer();
+            drawBoard(overviewPlayer, true);
 
+            Overview overviewOpponent = opponentPlayer.getPlayer();
+            drawBoard(overviewOpponent, false);
         } catch (RemoteException ex) {
             Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        /*
+         try {
+         for (int i = 0; i < game.getOverviews().size(); i++) {
+         if (game.getPlayers().get(0).equals(this.playingPlayer)) {
+         if (i == 0) { // Overview of Player1
+         Overview overview = game.getOverviews().get(i);
+         if (game.getPlayers().get(0).getPlayer().equals(overview)) {
+         System.out.println("DrawBoards after action player 1 | Player 1 board\n");
+         overview.printBoard();
+         drawBoard(overview, true);
+         }
+         }
+         if (i == 1) { // Overview of Player1 Opponent
+         Overview overview = game.getOverviews().get(i);
+         if (game.getPlayers().get(1).getPlayer().equals(overview)) {
+         System.out.println("");
+         System.out.println("DrawBoards after action player 1 | Player 1 Opponent board (Player 2 board)\n");
+
+         overview.printBoard();
+         drawBoard(overview, false);
+         }
+
+         }
+         }
+         if (game.getPlayers().get(1).equals(this.playingPlayer)) {
+         if (i == 2) { // Overview Player2
+         Overview overview = game.getOverviews().get(i);
+         if (game.getPlayers().get(1).getPlayer().equals(overview)) {
+         System.out.println("");
+         System.out.println("DrawBoards after action player 2 | Player 2 board\n");
+
+         overview.printBoard();
+         drawBoard(overview, true);
+         }
+         }
+         if (i == 3) { // Overview of Player2 Opponent
+         Overview overview = game.getOverviews().get(i);
+         if (game.getPlayers().get(1).getOpponent().equals(overview)) {
+         System.out.println("");
+         System.out.println("DrawBoards after action player 2 | Player 2 Opponent board (Player 1 board)\n");
+
+         overview.printBoard();
+         drawBoard(overview, false);
+         }
+         }
+         }
+         }
+
+         } catch (RemoteException ex) {
+         Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);
+         }*/
     }
 
     private void drawBoard(Overview overview, boolean isPlayerBoard) {
@@ -305,13 +381,15 @@ public class FXMLGameVC implements Initializable {
         }
     }
 
-    private void drawStart(IGameManager game) {
+    private void drawStart() {
 //        double canvasHeight = this.canvasPlayer.getHeight();
 //        double canvasWidth = this.canvasPlayer.getWidth();
         try {
-            gridPanePlayer = new GridPane();
-            gridPaneOpponent = new GridPane();
-            game.buildOverviewsForPlayers();
+            if (this.gameManager.getOverviews().size() != 2) {
+                this.gameManager.buildOverviewsForPlayers();
+                //Battleship.handler.getRMIClient().bindToServer("GameUpdate", this.gameManager);
+
+            }
         } catch (RemoteException ex) {
             Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);
         }

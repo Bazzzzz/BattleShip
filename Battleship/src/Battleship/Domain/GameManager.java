@@ -77,10 +77,13 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
     @Override
     public synchronized boolean placeShip(IPlayer player, int[] locationStart, int shipLength, int direction) throws RemoteException {
         Ship ship = null;
+        System.out.println("[PlaceShip] Game info: overviews:" + this.overviews.size() + ", name:" + this.name + ", player1:" + this.players.get(0) + ", player 2:" + this.players.get(1));
+
         if (player != null) {
+            System.out.println("[PlaceShip - PlayerNotNull] Game info: overviews:" + this.overviews.size() + ", name:" + this.name + ", player1:" + this.players.get(0) + ", player 2:" + this.players.get(1));
+
             Overview playerOverview = null;
             boolean notFound = true;
-
             for (int i = 0; i < this.overviews.size() && notFound; i++) {
                 if (this.overviews.get(i).equals(player.getPlayer())) {
                     playerOverview = this.overviews.get(i);
@@ -110,49 +113,50 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
      * Fire a torpedo at the opponents board. If a ship is hit it will take
      * damage. If a special package is hit is will be claimed by the player.
      *
-     * @param player not null
+     * @param firingPlayer not null
+     * @param receiveingPlayer
      * @param torpedoName not null
      * @param firedLocation
      * @return True if torpedo was fired.
      * @throws java.rmi.RemoteException
      */
     @Override
-    public synchronized boolean fireTorpedo(IPlayer player, String torpedoName, int[] firedLocation) throws RemoteException {
+    public synchronized boolean fireTorpedo(IPlayer firingPlayer, IPlayer receivingPlayer, String torpedoName, int[] firedLocation) throws RemoteException {
         Torpedo torpedo = null;
-        if (player != null) {
-            Overview playerOverview = null;
+        if (firingPlayer != null && receivingPlayer != null) {
+            Overview receivingPlayerOverview = receivingPlayer.getPlayer();
             boolean notFound = true;
 
-            for (int i = 0; i < this.overviews.size() && notFound; i++) {
-                if (this.overviews.get(i).equals(player.getPlayer())) {
-                    playerOverview = this.overviews.get(i);
-                    notFound = false;
-                }
-            }
+//            for (int i = 0; i < this.overviews.size() && notFound; i++) {
+//                if (this.overviews.get(i).equals(firingPlayer.getPlayer())) {
+//                    receivingPlayerOverview = this.overviews.get(i);
+//                    notFound = false;
+//                }
+//            }
             if (torpedoName != null) {
-                if (playerOverview.locationHasTorpedo(firedLocation)) {
+                if (receivingPlayerOverview.locationHasTorpedo(firedLocation)) {
                     return false;
                 }
                 torpedo = new Torpedo(torpedoName);
                 torpedo.updateFireLocation(firedLocation);
                 torpedos.add(torpedo);
-                if (playerOverview.locationHasShip(firedLocation)) {
-                    
-                    if (this.damageShip(player, firedLocation) == 1) {
+                if (receivingPlayerOverview.locationHasShip(firedLocation)) {
+
+                    if (this.damageShip(receivingPlayer, firedLocation) == 1) {
                         // TODO: Animation of ship destruction?
 
                     }
-                    playerOverview.displayTorpedoShipHit(firedLocation);
-                    this.updateOverview(player, playerOverview);
+                    receivingPlayerOverview.displayTorpedoShipHit(firedLocation);
+                    this.updateOverview(receivingPlayer, receivingPlayerOverview);
                     return true;
-                } else if (playerOverview.locationHasSpecial(firedLocation)) {
+                } else if (receivingPlayerOverview.locationHasSpecial(firedLocation)) {
                     // TODO: Obtain Special TESTING
-                    this.claimSpecial(firedLocation, player);
-                    this.updateOverview(player, playerOverview);
+                    this.claimSpecial(firedLocation, firingPlayer);
+                    this.updateOverview(receivingPlayer, receivingPlayerOverview);
                     return true;
                 } else {
-                    playerOverview.displayTorpedo(firedLocation);
-                    this.updateOverview(player, playerOverview);
+                    receivingPlayerOverview.displayTorpedo(firedLocation);
+                    this.updateOverview(receivingPlayer, receivingPlayerOverview);
                     return true;
                 }
             }
@@ -196,10 +200,10 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
     public void updateOverview(IPlayer player, Overview overview) throws RemoteException {
         if (player.equals(this.players.get(0))) {
             this.overviews.set(0, overview);
-            this.overviews.set(2, overview);
+            player.setPlayerOverview(overview);
         } else {
             this.overviews.set(1, overview);
-            this.overviews.set(3, overview);
+            player.setPlayerOverview(overview);
         }
     }
 
@@ -305,10 +309,10 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
     public boolean changeTurn(IPlayer player) throws RemoteException {
         for (IPlayer playerLoop : this.players) {
             if (playerLoop.equals(player)) {
-                return playerLoop.changeTurn();
+                playerLoop.changeTurn();
             }
         }
-        return false;
+        return true;
     }
 
     public boolean getPlayerTurn(IPlayer player) throws RemoteException {
@@ -361,20 +365,17 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
         IPlayer player2 = this.players.get(1);
 
         // Set players own overview.
-        Overview player1OwnField = player1.setPlayerOverview(new Overview());
-        Overview player2OwnField = player2.setPlayerOverview(new Overview());
+        Overview player1OwnField = player1.setPlayerOverview(new Overview(player1.getName()));
+        Overview player2OwnField = player2.setPlayerOverview(new Overview(player2.getName()));
 
         // Set players opponents overviews.
-        Overview player1OpponentField = player2OwnField;
-        player1.setOpponentOverview(player1OpponentField);
+        /*Overview player1OpponentField = player2OwnField;
+         player1.setOpponentOverview(player1OpponentField);
 
-        Overview player2OpponentField = player1OwnField;
-        player2.setOpponentOverview(player2OpponentField);
-
+         Overview player2OpponentField = player1OwnField;
+         player2.setOpponentOverview(player2OpponentField);*/
         overviews.add(player1.getPlayer());
         overviews.add(player2.getPlayer());
-        overviews.add(player1.getOpponent());
-        overviews.add(player2.getOpponent());
     }
 
     @Override

@@ -5,25 +5,27 @@
  */
 package Battleship.Domain;
 
+import java.io.Serializable;
+
 /**
  *
  * @author sebas
  */
-public class Location {
+public class Location implements Serializable {
     private int xCoord;
     private int yCoord;
 
-<span class="nc" id="L16">    public Location(int xCoord, int yCoord) {</span>
-<span class="nc" id="L17">        this.xCoord = xCoord;</span>
-<span class="nc" id="L18">        this.yCoord = yCoord;</span>
-<span class="nc" id="L19">    }</span>
+<span class="nc" id="L18">    public Location(int xCoord, int yCoord) {</span>
+<span class="nc" id="L19">        this.xCoord = xCoord;</span>
+<span class="nc" id="L20">        this.yCoord = yCoord;</span>
+<span class="nc" id="L21">    }</span>
 
     public int getxCoord() {
-<span class="nc" id="L22">        return xCoord;</span>
+<span class="nc" id="L24">        return xCoord;</span>
     }
 
     public int getyCoord() {
-<span class="nc" id="L26">        return yCoord;</span>
+<span class="nc" id="L28">        return yCoord;</span>
     }
     
     

@@ -15,8 +15,9 @@ import java.util.Random;
  * @author sebas
  */
 public class Overview implements Serializable {
-
+    @Deprecated
     private boolean isOpponentsBoard;
+    private String playerName;
     private List<SpecialPackage> specials;
     private List<Ship> ships;
     /**
@@ -27,8 +28,9 @@ public class Overview implements Serializable {
     public static final int BOARDWIDTH = 16;
     public static final int BOARDHEIGHT = 16;
 
-    public Overview() {
+    public Overview(String playerName) {
         this.isOpponentsBoard = false;
+        this.playerName = playerName;
         this.specials = new ArrayList<SpecialPackage>(4);
         this.ships = new ArrayList<Ship>(7);
         board = new int[BOARDWIDTH][BOARDHEIGHT];
@@ -41,6 +43,7 @@ public class Overview implements Serializable {
     public int getBoardHeight() {
         return BOARDHEIGHT;
     }
+    @Deprecated
     public boolean isIsOpponentsBoard() {
         return isOpponentsBoard;
     }
@@ -50,7 +53,9 @@ public class Overview implements Serializable {
     public List<SpecialPackage> getSpecials() {
         return specials;
     }
-
+    public String getName() {
+        return this.playerName;
+    }
     /**
      * Enables a board to become an opponents board.
      *
@@ -441,7 +446,9 @@ public class Overview implements Serializable {
         for(int i = 0; i < overview.getBoardWidth(); i++) {
             for(int j = 0; j < overview.getBoardHeight(); j++) {
                 if(this.getBoard()[i][j] == overview.getBoard()[i][j]) {
-                    result = true;
+                    if(this.getName().equals(overview.getName())) {
+                        result = true;
+                    }
                 }
             }
         }
