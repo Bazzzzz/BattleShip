@@ -28,6 +28,10 @@ public interface IPlayer {
     public Overview setPlayerOverview(Overview playerOverview);
     
     public boolean isTurn();
+    
+    public void setScore(int score);
+    
+    public int getScore();
     /**
      * Changes the turn.
      *

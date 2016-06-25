@@ -49,6 +49,8 @@ public class FXMLLobbyListController implements Initializable {
     @FXML
     private Button btnNewLobby;
     @FXML
+    private Button btnRefresh;
+    @FXML
     private Label lblGameHost;
     @FXML
     private TextArea taGameSettings;
@@ -177,6 +179,15 @@ public class FXMLLobbyListController implements Initializable {
         }
     }
 
+    @FXML
+    public void handleRefreshButton(ActionEvent e) {
+        try {
+            this.fillLobbyList();
+        } catch (RemoteException ex) {
+            Logger.getLogger(FXMLLobbyListController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     /**
      * Loads the lobby FXML screen.
      *

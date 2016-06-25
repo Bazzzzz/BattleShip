@@ -154,7 +154,8 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
 
                     if (this.damageShip(receivingPlayer, firedLocation) == -1) {
                         // TODO: Animation of ship destruction?
-
+                        int score = receivingPlayer.getPlayer().getShipOnLocation(firedLocation).getAmountHit() * 200;
+                        firingPlayer.setScore(score);
                     }
                     System.out.println("[FireTorpedo - ShipDamage] Damaged ship: " + receivingPlayer.getPlayer().getShipOnLocation(firedLocation).getAmountHit());
                     receivingPlayerOverview.displayTorpedoShipHit(firedLocation);

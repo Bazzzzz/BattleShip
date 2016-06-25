@@ -95,6 +95,6 @@ public class Account implements Serializable {
 
     @Override
     public String toString() {
-        return "Account login name: " + this.loginName;
+        return this.loginName + ": " + this.score;
     }
 }

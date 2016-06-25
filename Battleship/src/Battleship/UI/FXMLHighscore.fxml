@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Battleship.UI.FXMLHighscoreController">
+   <children>
+      <Label layoutX="242.0" layoutY="14.0" text="Highscores">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label layoutX="278.0" layoutY="49.0" text="Top 10" />
+      <ListView fx:id="lvHighscore" layoutX="201.0" layoutY="77.0" prefHeight="200.0" prefWidth="200.0" />
+      <Button fx:id="btnHome" layoutX="211.0" layoutY="313.0" mnemonicParsing="false" onAction="#handleHomeAction" prefHeight="31.0" prefWidth="180.0" text="Home" />
+   </children>
+</AnchorPane>

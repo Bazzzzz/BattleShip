@@ -124,7 +124,10 @@ public class FXMLGameVC implements Initializable {
                     } else {
                         opponentPlayer = this.gameManager.getPlayers().get(0);
                     }
-
+                    lblPlayer1Score.setText("" + gameManager.getPlayers().get(0).getScore());
+                    lblPlayer2Score.setText("" + gameManager.getPlayers().get(1).getScore());
+                    lblPlayer1Name.setText(gameManager.getPlayers().get(0).getName());
+                    lblPlayer2Name.setText(gameManager.getPlayers().get(1).getName());
                     System.out.println("Print player1's board");
                     this.gameManager.getPlayers().get(0).getPlayer().printBoard();
 
@@ -184,6 +187,8 @@ public class FXMLGameVC implements Initializable {
                     lblPlayer1Turn.setVisible(false);
                     lblPlayer2Turn.setVisible(true);
                 }
+                lblPlayer1Score.setText("" + gameManager.getPlayers().get(0).getScore());
+                lblPlayer2Score.setText("" + gameManager.getPlayers().get(1).getScore());
                 drawBoards(gameManager);
                 //                if (runGame != null) {
                 //                    gameManager = runGame;
@@ -289,6 +294,18 @@ public class FXMLGameVC implements Initializable {
             for (IPlayer playerLoop : this.gameManager.getPlayers()) {
                 this.gameManager.changeTurn(playerLoop);
                 //Battleship.handler.getRMIClient().bindToServer("GameUpdate", this.gameManager);
+            }
+        } catch (RemoteException ex) {
+            Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @FXML
+    public void handleLeaveButton(ActionEvent e) {
+        try {
+            this.gameManager.removePlayer(playingPlayer);
+            if (opponentPlayer.getName().equals(Battleship.handler.getLoggedInPlayer().getLoginName())) {
+                Battleship.handler.addScoreToDB(opponentPlayer.getName(), opponentPlayer.getScore());
             }
         } catch (RemoteException ex) {
             Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);

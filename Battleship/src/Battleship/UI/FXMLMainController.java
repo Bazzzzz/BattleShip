@@ -36,6 +36,8 @@ public class FXMLMainController implements Initializable {
     @FXML
     private Button btnRegister;
     @FXML
+    private Button btnHighscore;
+    @FXML
     private TextField tfUsername;
     @FXML
     private TextField tfPassword;
@@ -71,6 +73,13 @@ public class FXMLMainController implements Initializable {
         this.handleRegisterAction();
     }
 
+    @FXML
+    public void handleHighscoreButton(ActionEvent e) {
+        setApplicationHandler(tfServerIP.getText());
+        this.handleHighscoreAction();
+
+    }
+
     private void handlePlayAction(RMIClient client) throws IOException {
         try {
             String username = tfUsername.getText();
@@ -82,12 +91,12 @@ public class FXMLMainController implements Initializable {
                         Parent window;
 
                         window = FXMLLoader.load(getClass().getResource("FXMLLobbyList.fxml"));
-                        
+
                         Battleship.currentStage.getScene().setRoot(window);
                         /*Stage stage = new Stage();
-                        stage.setTitle("Lobbies");
-                        stage.setScene(new Scene(window));
-                        stage.show();*/
+                         stage.setTitle("Lobbies");
+                         stage.setScene(new Scene(window));
+                         stage.show();*/
                     } else {
                         throw new BattleshipExceptions("Unable to make connection.");
                     }
@@ -120,6 +129,17 @@ public class FXMLMainController implements Initializable {
         }
     }
 
+    private void handleHighscoreAction() {
+        try {
+            Parent window;
+            window = FXMLLoader.load(getClass().getResource("FXMLHighscore.fxml"));
+            Battleship.currentStage.getScene().setRoot(window);
+        } catch (IOException ex) {
+            Logger.getLogger(FXMLMainController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
     private boolean handleRMIConnection(RMIClient client) {
         if (client.connectToServer("lobbyList", null)) {
             Battleship.handler.setRMIClient(client);
@@ -131,7 +151,7 @@ public class FXMLMainController implements Initializable {
     private void loginPlayer(String username, String password) {
         Battleship.handler.loginPlayer(username, password);
     }
-    
+
     private void setApplicationHandler(String ipAddress) {
         Battleship.setApplicationHandler(ipAddress);
     }

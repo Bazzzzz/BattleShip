@@ -17,6 +17,7 @@ import java.util.List;
 public class Player implements IPlayer, Serializable {
     private String name;
     private boolean isTurn;
+    private int score;
     private Overview player;
     private Overview opponent;
     private List<SpecialPackage> specials;
@@ -41,6 +42,7 @@ public class Player implements IPlayer, Serializable {
         opponent = null;
         specials = new ArrayList<SpecialPackage>();
         this.isReady = false;
+        this.score = 0;
     }
 
     @Override
@@ -121,5 +123,17 @@ public class Player implements IPlayer, Serializable {
     
     public String toString() {
         return String.format("Player information: \n %s", this.getName());
+    }
+
+    @Override
+    public void setScore(int score) {
+        if(score > 0) {
+            this.score = score;
+        }    
+    }
+
+    @Override
+    public int getScore() {
+        return this.score;
     }
 }

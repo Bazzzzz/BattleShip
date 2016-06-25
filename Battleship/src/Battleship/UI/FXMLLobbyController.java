@@ -225,7 +225,7 @@ public class FXMLLobbyController implements Initializable {
 
     private void handleCloseWindow() {
         try {
-            if (this.lobby.getPlayers().size() == 1) {
+            if (this.lobby.getPlayers().size() == 0) {
                 Battleship.handler.getRMIClient().unbindFromServer("Lobby", this.lobby);
             }
         } catch (RemoteException ex) {

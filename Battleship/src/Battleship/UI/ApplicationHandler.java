@@ -11,6 +11,7 @@ import Battleship.Interfaces.ILobby;
 import Battleship.Interfaces.IPlayer;
 import Battleship.Persistence.DatabaseMediator;
 import Battleship.RMI.RMIClient;
+import java.util.List;
 
 /**
  *
@@ -93,10 +94,23 @@ public class ApplicationHandler {
             loggedInPlayer = new Account(username, password);
         }
     }
-
+    /**
+     * Logout a player from the application.
+     * @return True if logged out.
+     */
     public boolean logoutPlayer() {
         loggedInPlayer = null;
         return dbm.logout();
     }
-
+    /**
+     * Change the score of a player
+     * @param username not null or empty
+     * @param score Greater than 0
+     */
+    public void addScoreToDB(String username, int score) {
+        dbm.addScore(username, score);
+    } 
+    public List<Account> getHighscore() {
+        return dbm.getHighschore();
+    }
 }

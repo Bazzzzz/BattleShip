@@ -66,12 +66,6 @@ public class DatabaseMediator implements IDatabaseMediator {
         }
     }
 
-    /**
-     * Add a new player account to the database.
-     *
-     * @param account not null
-     * @return True if added to database.
-     */
     @Override
     public boolean addNewPlayer(Account account) {
         if(account == null) {
@@ -97,13 +91,6 @@ public class DatabaseMediator implements IDatabaseMediator {
         return false;
     }
 
-    /**
-     * Retrieve a player from the database and make him log in.
-     *
-     * @param username not null
-     * @param password not null
-     * @return True if logged in.
-     */
     @Override
     public boolean login(String username, String password) {
         if (username == null || password == null) {
@@ -128,23 +115,19 @@ public class DatabaseMediator implements IDatabaseMediator {
         return false;
     }
 
-    /**
-     * Retrieve the top 10 players from the database.
-     * @return List holding the top 10 players
-     */
     @Override
     public List<Account> getHighschore() {
         List<Account> highscores = new ArrayList<>();
         try {
             if(openConnection()) {
-                callStatement = con.prepareCall("(call highschore()");
+                callStatement = con.prepareCall("call highscore()");
                 
                 callStatement.execute();
                 
                 ResultSet result = callStatement.getResultSet();
                 
                 while(result.next()) {
-                    String username = result.getString("name");
+                    String username = result.getString("username");
                     int score = result.getInt("score");
                     
                     highscores.add(new Account(username, score));
@@ -160,15 +143,26 @@ public class DatabaseMediator implements IDatabaseMediator {
         
     }
     
-    
-    /**
-     * Log out a player.
-     *
-     * @return True if logged out.
-     */
     @Override
     public boolean logout() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void addScore(String username, int score) {
+        if(!username.isEmpty() && username != null && score > 0) {
+            try {
+                if(openConnection()) {
+                    callStatement = con.prepareCall("call changescore(?,?)");
+                    callStatement.setString(1, username);
+                    callStatement.setInt(2, score);
+                    
+                    callStatement.execute();
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
 }

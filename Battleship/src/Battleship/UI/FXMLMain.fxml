@@ -19,5 +19,6 @@
             <Font size="30.0" />
          </font>
       </Label>
+      <Button fx:id="btnHighscore" layoutX="207.0" layoutY="259.0" mnemonicParsing="false" onAction="#handleHighscoreButton" prefHeight="31.0" prefWidth="187.0" text="Highscore" />
    </children>
 </AnchorPane>

@@ -76,9 +76,9 @@
             </HBox>
          </children>
       </HBox>
-      <HBox layoutY="501.0" prefHeight="282.0" prefWidth="1280.0">
+      <HBox layoutY="547.0" prefHeight="236.0" prefWidth="1280.0">
          <children>
-            <TabPane prefHeight="282.0" prefWidth="1289.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane prefHeight="250.0" prefWidth="1280.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab text="Inventory: Ships">
                      <content>
@@ -99,5 +99,6 @@
             </TabPane>
          </children>
       </HBox>
+      <Button fx:id="btnLeave" layoutX="538.0" layoutY="510.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="199.0" text="Leave Game" />
    </children>
 </AnchorPane>
