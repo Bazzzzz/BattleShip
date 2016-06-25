@@ -16,7 +16,7 @@ public class Ship implements Serializable {
     private int length;
     private int[] locationStart;
     private int[] locationEnd;
-    private int amountHit = 0;
+    private int amountHit;
     private String name;
     private int direction;
 
@@ -48,7 +48,7 @@ public class Ship implements Serializable {
             throw new IllegalArgumentException("Ships start location invalid.");
         }
         this.name = determineShipName(length);
-
+        this.amountHit = 0;
     }
 
     public int getLength() {

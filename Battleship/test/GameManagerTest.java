@@ -8,6 +8,7 @@ import Battleship.Domain.GameManager;
 import Battleship.Domain.Overview;
 import Battleship.Domain.Player;
 import Battleship.Domain.Ship;
+import Battleship.Exceptions.BattleshipExceptions;
 import Battleship.Interfaces.IGameManager;
 import Battleship.Interfaces.IPlayer;
 import java.rmi.RemoteException;
@@ -80,7 +81,7 @@ public class GameManagerTest {
     }
 
     @Test
-    public void TestPlaceShipSuccessHorizontal() throws RemoteException {
+    public void TestPlaceShipSuccessHorizontal() throws RemoteException, BattleshipExceptions {
         manager.addPlayer(player1);
         manager.addPlayer(player2);
         int[] locationShip = new int[2];
@@ -121,7 +122,7 @@ public class GameManagerTest {
     }
 
     @Test
-    public void TestPlaceShipSuccessVertical() throws RemoteException {
+    public void TestPlaceShipSuccessVertical() throws RemoteException, BattleshipExceptions {
         manager.addPlayer(player1);
         manager.addPlayer(player2);
         int[] locationShip = new int[2];
@@ -184,7 +185,7 @@ public class GameManagerTest {
     }
 
     @Test
-    public void TestPlaceShipOnInvalidLocation() throws RemoteException {
+    public void TestPlaceShipOnInvalidLocation() throws RemoteException, BattleshipExceptions {
         manager.addPlayer(player1);
         manager.addPlayer(player2);
         int[] locationShip = new int[2];
@@ -218,7 +219,7 @@ public class GameManagerTest {
     }
 
     @Test
-    public void TestPlaceShipOnOtherShip() throws RemoteException {
+    public void TestPlaceShipOnOtherShip() throws RemoteException, BattleshipExceptions {
         manager.addPlayer(player1);
         manager.addPlayer(player2);
         int[] locationShip = new int[2];
@@ -285,7 +286,7 @@ public class GameManagerTest {
     }
 
     @Test
-    public void TestPlaceShipMoreThan7() throws RemoteException {
+    public void TestPlaceShipMoreThan7() throws RemoteException, BattleshipExceptions {
         manager.addPlayer(player1);
         manager.addPlayer(player2);
         int[] locationShip = new int[2];
@@ -374,7 +375,7 @@ public class GameManagerTest {
     }
 
     @Test
-    public void TestFireTorpedoSucess() throws RemoteException {
+    public void TestFireTorpedoSucess() throws RemoteException, BattleshipExceptions {
         manager.addPlayer(player1);
         manager.addPlayer(player2);
         int[] locationShip = new int[2];
@@ -439,7 +440,7 @@ public class GameManagerTest {
     }
 
     @Test
-    public void TestFireTorpedoAtDamagedPartOfShip() throws RemoteException {
+    public void TestFireTorpedoAtDamagedPartOfShip() throws RemoteException, BattleshipExceptions {
         manager.addPlayer(player1);
         manager.addPlayer(player2);
         int[] locationShip = new int[2];
@@ -468,7 +469,7 @@ public class GameManagerTest {
     }
 
     @Test
-    public void TestRepairShipSucces() throws RemoteException {
+    public void TestRepairShipSucces() throws RemoteException, BattleshipExceptions {
         manager.addPlayer(player1);
         manager.addPlayer(player2);
         int[] locationShip = new int[2];

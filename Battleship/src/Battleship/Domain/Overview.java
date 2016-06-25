@@ -249,8 +249,6 @@ public class Overview implements Serializable {
                     return ship;
                 } else if (checkForShipOnLocation(ship, location)) {
                     return ship;
-                } else {
-                    continue;
                 }
             }
         }
@@ -437,6 +435,7 @@ public class Overview implements Serializable {
             for (int j = BOARDWIDTH; j > 0; j--) {
                 System.out.print(board[i - 1][j - 1]);
             }
+            System.out.println("");
         }
     }
     @Override

@@ -115,26 +115,162 @@ public class RMIServerClientTest {
 //        System.out.println(gameFromServer.getPlayers().get(1).getPlayer() + " Overview of player 2 from server game.");
 //        System.out.println(gameFromServer.getPlayers().get(0).getOpponent()+ " Overview of the opponent of player 1 (player2) from server game.");
 //        System.out.println(gameFromServer.getPlayers().get(1).getOpponent()+ " Overview of the opponent of player 2 (player1) from server game.");
-        
+        // Place First Ship.
         int[] location = new int[2];
-        location[0] = 5;
+        location[0] = 1;
         location[1] = 4;
-        
+
 //        System.out.println("Player1 overview status before place ship: " + playerBas.getPlayer() + ", " + playerBas.getOpponent());
 //        System.out.println("Player2 overview status before place ship: " + playerSukh.getPlayer() + ", " + playerSukh.getOpponent());
-        
-        System.out.println("Player Overview from Player: " + gameFromServer.getPlayers().get(0).getPlayer().equals(gameFromServer.getOverviews().get(0)));
+        System.out.println("Player1 Overview from Player: " + gameFromServer.getPlayers().get(0).getPlayer().equals(gameFromServer.getOverviews().get(0)));
+        System.out.println("Player2 Overview from Player: " + gameFromServer.getPlayers().get(1).getPlayer().equals(gameFromServer.getOverviews().get(0)));
+
         gameFromServer.placeShip(gameFromServer.getPlayers().get(0), location, 3, 0);
-        gameFromServer.placeShip(gameFromServer.getPlayers().get(1), location, 4, 1);
+        gameFromServer.placeShip(gameFromServer.getPlayers().get(1), location, 3, 0);
         //gameFromServer.placeShip(playerBas, location, 3, 0);
         //gameFromServer.placeShip(playerSukh, location, 4, 1);
-        gameFromServer.updateOverview(gameFromServer.getPlayers().get(0), gameFromServer.getPlayers().get(0).getPlayer());
-        gameFromServer.updateOverview(gameFromServer.getPlayers().get(0), gameFromServer.getPlayers().get(1).getPlayer());
-        
-        Ship ship = gameFromServer.getPlayers().get(0).getPlayer().getShipOnLocation(location);
-        assertNotNull("Ship is found where expected after placement.", ship);
-        ship = gameFromServer.getPlayers().get(1).getPlayer().getShipOnLocation(location);
+        //gameFromServer.updateOverview(gameFromServer.getPlayers().get(0), gameFromServer.getPlayers().get(0).getPlayer());
+        //gameFromServer.updateOverview(gameFromServer.getPlayers().get(1), gameFromServer.getPlayers().get(1).getPlayer());
 
+        Ship ship = gameFromServer.getPlayers().get(0).getPlayer().getShipOnLocation(location);
+        assertNotNull("Ship is found where expected after placement for player 1.", ship);
+        ship = gameFromServer.getPlayers().get(1).getPlayer().getShipOnLocation(location);
+        assertNotNull("Ship is found where expected after placement for player 2.", ship);
+        
+        // Place Second Ship.
+        location[0] = 2;
+        location[1] = 4;
+
+        boolean secondShip = gameFromServer.placeShip(gameFromServer.getPlayers().get(0), location, 2, 0);
+        assertTrue("Second ship was placed for player 1", secondShip);
+        secondShip = gameFromServer.placeShip(gameFromServer.getPlayers().get(1), location, 2, 0);
+        assertTrue("Second ship was placed for player 2", secondShip);
+
+        ship = gameFromServer.getPlayers().get(0).getPlayer().getShipOnLocation(location);
+        assertNotNull("Second ship is found where expected after placement for player 1.", ship);
+        ship = gameFromServer.getPlayers().get(1).getPlayer().getShipOnLocation(location);
+        assertNotNull("Second ship is found where expected after placement for player 2.", ship);
+        
+        // Place remaining Ships player 1.
+        location[0] = 3;
+        location[1] = 4;
+        gameFromServer.placeShip(gameFromServer.getPlayers().get(0), location, 3, 0); // 3
+
+        location[0] = 4;
+        location[1] = 4;
+        gameFromServer.placeShip(gameFromServer.getPlayers().get(0), location, 4, 0); // 4
+
+        location[0] = 5;
+        location[1] = 4;
+        gameFromServer.placeShip(gameFromServer.getPlayers().get(0), location, 5, 0); // 5
+
+        location[0] = 6;
+        location[1] = 4;
+        gameFromServer.placeShip(gameFromServer.getPlayers().get(0), location, 6, 0); // 6
+
+        location[0] = 7;
+        location[1] = 4;
+        gameFromServer.placeShip(gameFromServer.getPlayers().get(0), location, 7, 0); // 7
+        
+        // Place remaining Ships player 2.
+        location[0] = 3;
+        location[1] = 4;
+        gameFromServer.placeShip(gameFromServer.getPlayers().get(1), location, 3, 0); // 3
+
+        location[0] = 4;
+        location[1] = 4;
+        gameFromServer.placeShip(gameFromServer.getPlayers().get(1), location, 4, 0); // 4
+
+        location[0] = 5;
+        location[1] = 4;
+        gameFromServer.placeShip(gameFromServer.getPlayers().get(1), location, 5, 0); // 5
+
+        location[0] = 6;
+        location[1] = 4;
+        gameFromServer.placeShip(gameFromServer.getPlayers().get(1), location, 6, 0); // 6
+
+        location[0] = 7;
+        location[1] = 4;
+        gameFromServer.placeShip(gameFromServer.getPlayers().get(1), location, 7, 0); // 7
+        
+        int[] torpedoLocation = new int[2];
+        
+        // First Torpedo hit
+        torpedoLocation[0] = 7;
+        torpedoLocation[1] = 4;
+        boolean torpedoHit = gameFromServer.fireTorpedo(gameFromServer.getPlayers().get(0), gameFromServer.getPlayers().get(1), "TorpedoName", torpedoLocation);
+        
+        System.out.println("OverviewList: \n" + gameFromServer.getOverviews().get(1).getShipOnLocation(torpedoLocation).getName()
+        + " amounts hit: " + gameFromServer.getOverviews().get(1).getShipOnLocation(torpedoLocation).getAmountHit());
+        System.out.println("PlayersList: \n" + gameFromServer.getPlayers().get(1).getPlayer().getShipOnLocation(torpedoLocation).getName() 
+                + " amounts hit: " + gameFromServer.getPlayers().get(1).getPlayer().getShipOnLocation(torpedoLocation).getAmountHit());
+        
+        assertTrue("PlayerBas hit PlayerSukh's ship", torpedoHit);
+        Ship damagedShip = gameFromServer.getPlayers().get(1).getPlayer().getShipOnLocation(torpedoLocation);
+        assertNotNull("PlayerBas has a ship on the location.", damagedShip);
+        boolean torpedoFalse = gameFromServer.fireTorpedo(gameFromServer.getPlayers().get(0), gameFromServer.getPlayers().get(1), "TorpedoName", torpedoLocation);
+        assertFalse("PlayerBas can't fire on the same location twice.", torpedoFalse);
+        int actual = damagedShip.getAmountHit();
+        int expected = 1;
+        assertEquals("PlayerBas damaged PlayerSukh's ship on the location", expected, actual);
+        
+        // Second Torpedo hit
+        torpedoLocation[0] = 7;
+        torpedoLocation[1] = 5;
+        torpedoHit = gameFromServer.fireTorpedo(gameFromServer.getPlayers().get(0), gameFromServer.getPlayers().get(1), "TorpedoName", torpedoLocation);
+        assertTrue("PlayerBas hit PlayerSukh's ship", torpedoHit);
+        
+        damagedShip = gameFromServer.getPlayers().get(1).getPlayer().getShipOnLocation(torpedoLocation);
+        assertNotNull("PlayerBas has a ship on the location.", damagedShip);
+        torpedoFalse = gameFromServer.fireTorpedo(gameFromServer.getPlayers().get(0), gameFromServer.getPlayers().get(1), "TorpedoName", torpedoLocation);
+        assertFalse("PlayerBas can't fire on the same location twice.", torpedoFalse);
+        actual = damagedShip.getAmountHit();
+        expected = 2;
+        assertEquals("PlayerBas damaged PlayerSukh's ship on the location", expected, actual);
+        
+        // Third Torpedo hit
+        torpedoLocation[0] = 7;
+        torpedoLocation[1] = 6;
+        torpedoHit = gameFromServer.fireTorpedo(gameFromServer.getPlayers().get(0), gameFromServer.getPlayers().get(1), "TorpedoName", torpedoLocation);
+        assertTrue("PlayerBas hit PlayerSukh's ship", torpedoHit);
+        
+        damagedShip = gameFromServer.getPlayers().get(1).getPlayer().getShipOnLocation(torpedoLocation);
+        assertNotNull("PlayerBas has a ship on the location.", damagedShip);
+        torpedoFalse = gameFromServer.fireTorpedo(gameFromServer.getPlayers().get(0), gameFromServer.getPlayers().get(1), "TorpedoName", torpedoLocation);
+        assertFalse("PlayerBas can't fire on the same location twice.", torpedoFalse);
+        actual = damagedShip.getAmountHit();
+        expected = 3;
+        assertEquals("PlayerBas damaged PlayerSukh's ship on the location", expected, actual);
+        
+        torpedoLocation[0] = 7;
+        torpedoLocation[1] = 7;
+        torpedoHit = gameFromServer.fireTorpedo(gameFromServer.getPlayers().get(0), gameFromServer.getPlayers().get(1), "TorpedoName", torpedoLocation);
+        assertTrue("PlayerBas hit PlayerSukh's ship", torpedoHit);
+        
+        torpedoLocation[0] = 7;
+        torpedoLocation[1] = 8;
+        torpedoHit = gameFromServer.fireTorpedo(gameFromServer.getPlayers().get(0), gameFromServer.getPlayers().get(1), "TorpedoName", torpedoLocation);
+        assertTrue("PlayerBas hit PlayerSukh's ship", torpedoHit);
+        
+        torpedoLocation[0] = 7;
+        torpedoLocation[1] = 9;
+        torpedoHit = gameFromServer.fireTorpedo(gameFromServer.getPlayers().get(0), gameFromServer.getPlayers().get(1), "TorpedoName", torpedoLocation);
+        assertTrue("PlayerBas hit PlayerSukh's ship", torpedoHit);
+        
+        torpedoLocation[0] = 7;
+        torpedoLocation[1] = 10;
+        torpedoHit = gameFromServer.fireTorpedo(gameFromServer.getPlayers().get(0), gameFromServer.getPlayers().get(1), "TorpedoName", torpedoLocation);
+        assertTrue("PlayerBas hit PlayerSukh's ship", torpedoHit);
+
+        damagedShip = gameFromServer.getPlayers().get(1).getPlayer().getShipOnLocation(torpedoLocation);
+        assertNotNull("PlayerBas has a ship on the location.", damagedShip);
+        torpedoFalse = gameFromServer.fireTorpedo(gameFromServer.getPlayers().get(0), gameFromServer.getPlayers().get(1), "TorpedoName", torpedoLocation);
+        assertFalse("PlayerBas can't fire on the same location twice.", torpedoFalse);
+        actual = damagedShip.getAmountHit();
+        expected = 7;
+        assertEquals("PlayerBas damaged PlayerSukh's ship on the location", expected, actual);
+        
+        assertTrue("PlayerSukh's ship destroyed.", damagedShip.isDestroyed());
     }
     /*
      @Test

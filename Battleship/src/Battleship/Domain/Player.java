@@ -43,6 +43,7 @@ public class Player implements IPlayer, Serializable {
         this.isReady = false;
     }
 
+    @Override
     public Overview getPlayer() {
         return player;
     }
@@ -51,6 +52,7 @@ public class Player implements IPlayer, Serializable {
         return opponent;
     }
     
+    @Override
     public Overview setPlayerOverview(Overview playerOverview) {
         this.player = playerOverview;
         return this.player;

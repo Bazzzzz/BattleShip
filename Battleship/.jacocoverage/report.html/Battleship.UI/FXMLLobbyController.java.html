@@ -68,17 +68,18 @@ import javafx.stage.Stage;
     private ILobby lobby;
 
     private ScheduledExecutorService serviceLobbyRunner;
+
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (Battleship.handler.getRMIClient().connectToServer(&quot;lobbyList&quot;, null)) {</span>
-<span class="nc" id="L78">            this.lobby = Battleship.handler.getRMIClient().getSelectedLobbyRMI(Singleton.getInstance().getLobbyName());</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        if (Battleship.handler.getRMIClient().connectToServer(&quot;lobbyList&quot;, null)) {</span>
+<span class="nc" id="L79">            this.lobby = Battleship.handler.getRMIClient().getSelectedLobbyRMI(Singleton.getInstance().getLobbyName());</span>
         }
-<span class="nc" id="L80">        System.out.println(&quot;LobbyController: &quot; + this.lobby.toString());</span>
-<span class="nc" id="L81">        btnStart.setDisable(false);</span>
+<span class="nc" id="L81">        System.out.println(&quot;LobbyController: &quot; + this.lobby.toString());</span>
+<span class="nc" id="L82">        btnStart.setDisable(false);</span>
 
         /*cbReady.setOnAction((event) -&gt; {
          if (!cbReady.isDisabled()) {
@@ -97,158 +98,160 @@ import javafx.stage.Stage;
          }
          }
          });*/
-<span class="nc" id="L100">        this.loadData();</span>
+<span class="nc" id="L101">        this.loadData();</span>
 
-<span class="nc" id="L102">        serviceLobbyRunner = Executors.newSingleThreadScheduledExecutor();</span>
-<span class="nc" id="L103">        serviceLobbyRunner.scheduleAtFixedRate(new LobbyRunner(), 0, 10, TimeUnit.SECONDS);</span>
-<span class="nc" id="L104">    }</span>
+<span class="nc" id="L103">        serviceLobbyRunner = Executors.newSingleThreadScheduledExecutor();</span>
+<span class="nc" id="L104">        serviceLobbyRunner.scheduleAtFixedRate(new LobbyRunner(), 0, 10, TimeUnit.SECONDS);</span>
+<span class="nc" id="L105">    }</span>
 
-<span class="nc" id="L106">    private class LobbyRunner implements Runnable {</span>
+<span class="nc" id="L107">    private class LobbyRunner implements Runnable {</span>
 
         @Override
         public void run() {
-<span class="nc" id="L110">            ILobby curLobby = lobby;</span>
+<span class="nc" id="L111">            ILobby curLobby = lobby;</span>
             ILobby runLobby;
             try {
-<span class="nc" id="L113">                runLobby = Battleship.handler.getRMIClient().getSelectedLobbyRMI(curLobby.getName());</span>
-<span class="nc bnc" id="L114" title="All 2 branches missed.">                if (runLobby != null) {</span>
-<span class="nc" id="L115">                    lobby = runLobby;</span>
-<span class="nc" id="L116">                    Platform.runLater(new Runnable() {</span>
+<span class="nc" id="L114">                runLobby = Battleship.handler.getRMIClient().getSelectedLobbyRMI(curLobby.getName());</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">                if (runLobby != null) {</span>
+<span class="nc" id="L116">                    lobby = runLobby;</span>
+<span class="nc" id="L117">                    Platform.runLater(new Runnable() {</span>
                         @Override
                         public void run() {
-<span class="nc" id="L119">                            loadData();</span>
-<span class="nc" id="L120">                        }</span>
+<span class="nc" id="L120">                            loadData();</span>
+<span class="nc" id="L121">                        }</span>
                     });
-<span class="nc" id="L122">                    System.out.println(&quot;New lobby data loaded.&quot; + lobby.getPlayers().size());</span>
-<span class="nc bnc" id="L123" title="All 2 branches missed.">                    for (IPlayer p : lobby.getPlayers()) {</span>
-<span class="nc" id="L124">                        String output = String.format(&quot;Lobby has players: %s&quot;, p.toString());</span>
-<span class="nc" id="L125">                        System.out.println(output);</span>
-<span class="nc" id="L126">                    }</span>
+<span class="nc" id="L123">                    System.out.println(&quot;New lobby data loaded.&quot; + lobby.getPlayers().size());</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">                    for (IPlayer p : lobby.getPlayers()) {</span>
+<span class="nc" id="L125">                        String output = String.format(&quot;Lobby has players: %s&quot;, p.toString());</span>
+<span class="nc" id="L126">                        System.out.println(output);</span>
+<span class="nc" id="L127">                    }</span>
                 }
-<span class="nc" id="L128">            } catch (RemoteException ex) {</span>
-<span class="nc" id="L129">                Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L130">            }</span>
-<span class="nc" id="L131">            System.out.println(&quot;Runnable Ran. Lobby information: &quot; + lobby);</span>
-<span class="nc" id="L132">        }</span>
+<span class="nc" id="L129">            } catch (RemoteException ex) {</span>
+<span class="nc" id="L130">                Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L131">            }</span>
+<span class="nc" id="L132">            System.out.println(&quot;Runnable Ran. Lobby information: &quot; + lobby);</span>
+<span class="nc" id="L133">        }</span>
     }
 
     @FXML
     public void handleLeaveLobbyButton(ActionEvent e) {
-<span class="nc" id="L137">        Account player = Battleship.handler.getLoggedInPlayer();</span>
+<span class="nc" id="L138">        Account player = Battleship.handler.getLoggedInPlayer();</span>
         try {
-<span class="nc" id="L139">            this.lobby.removePlayerFromLobby(player.getLoginName());</span>
-<span class="nc" id="L140">            serviceLobbyRunner.shutdownNow();</span>
-<span class="nc" id="L141">            this.handleCloseWindow();</span>
-<span class="nc" id="L142">        } catch (RemoteException ex) {</span>
-<span class="nc" id="L143">            Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L144">        }</span>
-<span class="nc" id="L145">    }</span>
+<span class="nc" id="L140">            this.lobby.removePlayerFromLobby(player.getLoginName());</span>
+<span class="nc" id="L141">            serviceLobbyRunner.shutdownNow();</span>
+<span class="nc" id="L142">            this.handleCloseWindow();</span>
+<span class="nc" id="L143">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L144">            Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L145">        }</span>
+<span class="nc" id="L146">    }</span>
 
     @FXML
     public void handleStartButton(ActionEvent e) {
         try {
 
             //if (this.lobby.playersReady()) {
-<span class="nc" id="L152">            IGameManager tempGame = this.lobby.createGameManager();</span>
-<span class="nc" id="L153">            Battleship.handler.getRMIClient().bindToServer(&quot;Game&quot;, tempGame);</span>
-<span class="nc" id="L154">            Battleship.handler.getRMIClient().bindToServer(&quot;LobbyUpdate&quot;, lobby);</span>
-<span class="nc" id="L155">            Singleton.getInstance().setLobbyName(this.lobby.getName());</span>
-<span class="nc" id="L156">            Singleton.getInstance().setGameName(tempGame.getName());</span>
+<span class="nc" id="L153">            IGameManager tempGame = this.lobby.createGameManager();</span>
+<span class="nc" id="L154">            Battleship.handler.getRMIClient().bindToServer(&quot;Game&quot;, tempGame);</span>
+<span class="nc" id="L155">            Battleship.handler.getRMIClient().bindToServer(&quot;LobbyUpdate&quot;, lobby);</span>
+<span class="nc" id="L156">            Singleton.getInstance().setLobbyName(this.lobby.getName());</span>
+<span class="nc" id="L157">            Singleton.getInstance().setGameName(tempGame.getName());</span>
 
-<span class="nc" id="L158">            serviceLobbyRunner.shutdownNow();</span>
-<span class="nc" id="L159">            Executors.newSingleThreadExecutor().execute(new Runnable() {</span>
+<span class="nc" id="L159">            serviceLobbyRunner.shutdownNow();</span>
+<span class="nc" id="L160">            Executors.newSingleThreadExecutor().execute(new Runnable() {</span>
                 @Override
                 public void run() {
-<span class="nc" id="L162">                    Platform.runLater(new Runnable() {</span>
+<span class="nc" id="L163">                    Platform.runLater(new Runnable() {</span>
                         @Override
                         public void run() {
                             try {
-<span class="nc" id="L166">                                handleOpenGameWindow();</span>
-<span class="nc" id="L167">                            } catch (IOException ex) {</span>
-<span class="nc" id="L168">                                Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L169">                            }</span>
-<span class="nc" id="L170">                        }</span>
+<span class="nc" id="L167">                                handleOpenGameWindow();</span>
+<span class="nc" id="L168">                            } catch (IOException ex) {</span>
+<span class="nc" id="L169">                                Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L170">                            }</span>
+<span class="nc" id="L171">                        }</span>
                     });
-<span class="nc" id="L172">                }</span>
+<span class="nc" id="L173">                }</span>
             });
             //}
-<span class="nc" id="L175">        } catch (RemoteException ex) {</span>
-<span class="nc" id="L176">            Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L177">        } catch (IOException ex) {</span>
-<span class="nc" id="L178">            Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L179">        }</span>
+<span class="nc" id="L176">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L177">            Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L178">        } catch (IOException ex) {</span>
+<span class="nc" id="L179">            Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L180">        }</span>
 
-<span class="nc" id="L181">    }</span>
+<span class="nc" id="L182">    }</span>
 
     private void loadData() {
-<span class="nc" id="L184">        IPlayer player1 = null;</span>
-<span class="nc" id="L185">        IPlayer player2 = null;</span>
-<span class="nc" id="L186">        String lobbyName = null;</span>
-<span class="nc" id="L187">        boolean playersReady = false;</span>
+<span class="nc" id="L185">        IPlayer player1 = null;</span>
+<span class="nc" id="L186">        IPlayer player2 = null;</span>
+<span class="nc" id="L187">        String lobbyName = null;</span>
+<span class="nc" id="L188">        boolean playersReady = false;</span>
         try {
-<span class="nc bnc" id="L189" title="All 2 branches missed.">            if (lobby.getPlayers().size() == 2) {</span>
-<span class="nc" id="L190">                player1 = this.lobby.getPlayers().get(0);</span>
-<span class="nc" id="L191">                player2 = this.lobby.getPlayers().get(1);</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">            if (lobby.getPlayers().size() == 2) {</span>
+<span class="nc" id="L191">                player1 = this.lobby.getPlayers().get(0);</span>
+<span class="nc" id="L192">                player2 = this.lobby.getPlayers().get(1);</span>
             }
-<span class="nc" id="L193">            lobbyName = this.lobby.getName();</span>
-<span class="nc" id="L194">            playersReady = this.lobby.playersReady();</span>
-<span class="nc" id="L195">        } catch (RemoteException ex) {</span>
-<span class="nc" id="L196">            Logger.getLogger(FXMLLobbyController.class</span>
-<span class="nc" id="L197">                    .getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L198">        }</span>
-<span class="nc" id="L199">        final IPlayer finalPlayer1 = player1;</span>
-<span class="nc" id="L200">        final IPlayer finalPlayer2 = player2;</span>
-<span class="nc" id="L201">        final String finalLobbyName = lobbyName;</span>
-<span class="nc" id="L202">        final boolean finalPlayersReady = playersReady;</span>
-<span class="nc" id="L203">        Platform.runLater(new Runnable() {</span>
+<span class="nc" id="L194">            lobbyName = this.lobby.getName();</span>
+<span class="nc" id="L195">            playersReady = this.lobby.playersReady();</span>
+<span class="nc" id="L196">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L197">            Logger.getLogger(FXMLLobbyController.class</span>
+<span class="nc" id="L198">                    .getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L199">        }</span>
+<span class="nc" id="L200">        final IPlayer finalPlayer1 = player1;</span>
+<span class="nc" id="L201">        final IPlayer finalPlayer2 = player2;</span>
+<span class="nc" id="L202">        final String finalLobbyName = lobbyName;</span>
+<span class="nc" id="L203">        final boolean finalPlayersReady = playersReady;</span>
+<span class="nc" id="L204">        Platform.runLater(new Runnable() {</span>
             @Override
             public void run() {
-<span class="nc bnc" id="L206" title="All 6 branches missed.">                if (finalPlayer1 != null</span>
+<span class="nc bnc" id="L207" title="All 6 branches missed.">                if (finalPlayer1 != null</span>
                         &amp;&amp; finalPlayer2 != null
-<span class="nc bnc" id="L208" title="All 2 branches missed.">                        &amp;&amp; (finalLobbyName != null || !finalLobbyName.isEmpty())) {</span>
-<span class="nc" id="L209">                    lblTitle.setText(finalLobbyName);</span>
-<span class="nc" id="L210">                    lblPlayer2Name.setText(finalPlayer2.getName());</span>
-<span class="nc" id="L211">                    lblPlayer2Score.setText(&quot;0&quot;);</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">                        &amp;&amp; (finalLobbyName != null || !finalLobbyName.isEmpty())) {</span>
+<span class="nc" id="L210">                    lblTitle.setText(finalLobbyName);</span>
+<span class="nc" id="L211">                    lblPlayer2Name.setText(finalPlayer2.getName());</span>
+<span class="nc" id="L212">                    lblPlayer2Score.setText(&quot;0&quot;);</span>
 
-<span class="nc" id="L213">                    lblPlayer1Name.setText(finalPlayer1.getName());</span>
-<span class="nc" id="L214">                    lblPlayer1Score.setText(&quot;0&quot;);</span>
+<span class="nc" id="L214">                    lblPlayer1Name.setText(finalPlayer1.getName());</span>
+<span class="nc" id="L215">                    lblPlayer1Score.setText(&quot;0&quot;);</span>
                     /*if (finalPlayersReady) {
                      btnStart.setDisable(false);
                      }*/
 
                 }
-<span class="nc" id="L220">            }</span>
+<span class="nc" id="L221">            }</span>
         }
         );
-<span class="nc" id="L223">    }</span>
+<span class="nc" id="L224">    }</span>
 
     private void handleCloseWindow() {
         try {
-<span class="nc bnc" id="L227" title="All 2 branches missed.">            if(this.lobby.getPlayers().size() == 1) {</span>
-<span class="nc" id="L228">                Battleship.handler.getRMIClient().unbindFromServer(&quot;Lobby&quot;, this.lobby);</span>
+<span class="nc bnc" id="L228" title="All 2 branches missed.">            if (this.lobby.getPlayers().size() == 1) {</span>
+<span class="nc" id="L229">                Battleship.handler.getRMIClient().unbindFromServer(&quot;Lobby&quot;, this.lobby);</span>
             }
-<span class="nc" id="L230">        } catch (RemoteException ex) {</span>
-<span class="nc" id="L231">            Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L232">        }</span>
-        
+<span class="nc" id="L231">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L232">            Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L233">        }</span>
+
         Parent window;
         try {
-<span class="nc" id="L236">            window = FXMLLoader.load(getClass().getResource(&quot;FXMLLobbyList.fxml&quot;));</span>
-<span class="nc" id="L237">            Battleship.currentStage.getScene().setRoot(window);</span>
-<span class="nc" id="L238">        } catch (IOException ex) {</span>
-<span class="nc" id="L239">            Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L240">        }</span>
-        
-<span class="nc" id="L242">    }</span>
+<span class="nc" id="L237">            serviceLobbyRunner.shutdownNow();</span>
+
+<span class="nc" id="L239">            window = FXMLLoader.load(getClass().getResource(&quot;FXMLLobbyList.fxml&quot;));</span>
+<span class="nc" id="L240">            Battleship.currentStage.getScene().setRoot(window);</span>
+<span class="nc" id="L241">        } catch (IOException ex) {</span>
+<span class="nc" id="L242">            Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L243">        }</span>
+
+<span class="nc" id="L245">    }</span>
 
     private void handleOpenGameWindow() throws IOException {
         Parent window;
 
-<span class="nc" id="L247">        window = FXMLLoader.load(getClass().getResource(&quot;FXMLGame.fxml&quot;));</span>
-<span class="nc" id="L248">        Stage stage = new Stage();</span>
-<span class="nc" id="L249">        stage.setTitle(&quot;Game: &quot; + lobby.getName());</span>
-<span class="nc" id="L250">        stage.setScene(new Scene(window));</span>
-<span class="nc" id="L251">        stage.show();</span>
-<span class="nc" id="L252">    }</span>
+<span class="nc" id="L250">        window = FXMLLoader.load(getClass().getResource(&quot;FXMLGame.fxml&quot;));</span>
+<span class="nc" id="L251">        Stage stage = new Stage();</span>
+<span class="nc" id="L252">        stage.setTitle(&quot;Game: &quot; + lobby.getName());</span>
+<span class="nc" id="L253">        stage.setScene(new Scene(window));</span>
+<span class="nc" id="L254">        stage.show();</span>
+<span class="nc" id="L255">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

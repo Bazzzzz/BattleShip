@@ -15,8 +15,9 @@ import java.util.Random;
  * @author sebas
  */
 public class Overview implements Serializable {
-
+    @Deprecated
     private boolean isOpponentsBoard;
+    private String playerName;
     private List&lt;SpecialPackage&gt; specials;
     private List&lt;Ship&gt; ships;
     /**
@@ -27,38 +28,42 @@ public class Overview implements Serializable {
     public static final int BOARDWIDTH = 16;
     public static final int BOARDHEIGHT = 16;
 
-<span class="fc" id="L30">    public Overview() {</span>
-<span class="fc" id="L31">        this.isOpponentsBoard = false;</span>
-<span class="fc" id="L32">        this.specials = new ArrayList&lt;SpecialPackage&gt;(4);</span>
-<span class="fc" id="L33">        this.ships = new ArrayList&lt;Ship&gt;(7);</span>
-<span class="fc" id="L34">        board = new int[BOARDWIDTH][BOARDHEIGHT];</span>
-<span class="fc" id="L35">    }</span>
+<span class="fc" id="L31">    public Overview(String playerName) {</span>
+<span class="fc" id="L32">        this.isOpponentsBoard = false;</span>
+<span class="fc" id="L33">        this.playerName = playerName;</span>
+<span class="fc" id="L34">        this.specials = new ArrayList&lt;SpecialPackage&gt;(4);</span>
+<span class="fc" id="L35">        this.ships = new ArrayList&lt;Ship&gt;(7);</span>
+<span class="fc" id="L36">        board = new int[BOARDWIDTH][BOARDHEIGHT];</span>
+<span class="fc" id="L37">    }</span>
 
     public int getBoardWidth() {
-<span class="fc" id="L38">        return BOARDWIDTH;</span>
+<span class="fc" id="L40">        return BOARDWIDTH;</span>
     }
     
     public int getBoardHeight() {
-<span class="fc" id="L42">        return BOARDHEIGHT;</span>
+<span class="fc" id="L44">        return BOARDHEIGHT;</span>
     }
+    @Deprecated
     public boolean isIsOpponentsBoard() {
-<span class="nc" id="L45">        return isOpponentsBoard;</span>
+<span class="nc" id="L48">        return isOpponentsBoard;</span>
     }
     public int[][] getBoard() {
-<span class="fc" id="L48">        return this.board;</span>
+<span class="fc" id="L51">        return this.board;</span>
     }
     public List&lt;SpecialPackage&gt; getSpecials() {
-<span class="nc" id="L51">        return specials;</span>
+<span class="nc" id="L54">        return specials;</span>
     }
-
+    public String getName() {
+<span class="fc" id="L57">        return this.playerName;</span>
+    }
     /**
      * Enables a board to become an opponents board.
      *
      * @return opponentsBoard field.
      */
     public boolean setOpponentsBoard() {
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">        this.isOpponentsBoard = !this.isOpponentsBoard;</span>
-<span class="fc" id="L61">        return this.isOpponentsBoard;</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        this.isOpponentsBoard = !this.isOpponentsBoard;</span>
+<span class="nc" id="L66">        return this.isOpponentsBoard;</span>
     }
 
     /**
@@ -71,38 +76,38 @@ public class Overview implements Serializable {
      * @return True if all locations for a ships length are available.
      */
     public boolean locationShipLengthAvailable(int[] locationStart, int[] locationEnd, int direction) {
-<span class="pc bpc" id="L74" title="2 of 4 branches missed.">        if (locationStart.length == 2 &amp;&amp; locationEnd.length == 2) {</span>
+<span class="pc bpc" id="L79" title="2 of 4 branches missed.">        if (locationStart.length == 2 &amp;&amp; locationEnd.length == 2) {</span>
             // Vertical means x-axis remains the same.
-<span class="fc" id="L76">            int xStart = locationStart[0];</span>
-<span class="fc" id="L77">            int yStart = locationStart[1];</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">            if (direction == 0) {</span>
-<span class="fc" id="L79">                int yEnd = locationEnd[1];</span>
+<span class="fc" id="L81">            int xStart = locationStart[0];</span>
+<span class="fc" id="L82">            int yStart = locationStart[1];</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">            if (direction == 0) {</span>
+<span class="fc" id="L84">                int yEnd = locationEnd[1];</span>
 
-<span class="fc bfc" id="L81" title="All 2 branches covered.">                for (int i = yEnd; i &gt; yStart; i--) {</span>
-<span class="fc" id="L82">                    int[] tempLocation = new int[2];</span>
-<span class="fc" id="L83">                    tempLocation[0] = xStart;</span>
-<span class="fc" id="L84">                    tempLocation[1] = i;</span>
-<span class="pc bpc" id="L85" title="1 of 2 branches missed.">                    if (!this.locationAvailable(tempLocation)) {</span>
-<span class="nc" id="L86">                        return false;</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">                for (int i = yEnd; i &gt; yStart; i--) {</span>
+<span class="fc" id="L87">                    int[] tempLocation = new int[2];</span>
+<span class="fc" id="L88">                    tempLocation[0] = xStart;</span>
+<span class="fc" id="L89">                    tempLocation[1] = i;</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">                    if (!this.locationAvailable(tempLocation)) {</span>
+<span class="nc" id="L91">                        return false;</span>
                     }
                 }
-<span class="fc" id="L89">                return true;</span>
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">            } else if (direction == 1) {</span>
+<span class="fc" id="L94">                return true;</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">            } else if (direction == 1) {</span>
                 // Horizontal means y-axis remains the same.
-<span class="fc" id="L92">                int xEnd = locationEnd[0];</span>
+<span class="fc" id="L97">                int xEnd = locationEnd[0];</span>
 
-<span class="fc bfc" id="L94" title="All 2 branches covered.">                for (int i = xEnd; i &gt; xStart; i--) {</span>
-<span class="fc" id="L95">                    int[] tempLocation = new int[2];</span>
-<span class="fc" id="L96">                    tempLocation[0] = i;</span>
-<span class="fc" id="L97">                    tempLocation[1] = yStart;</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">                    if (!this.locationAvailable(tempLocation)) {</span>
-<span class="fc" id="L99">                        return false;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">                for (int i = xEnd; i &gt; xStart; i--) {</span>
+<span class="fc" id="L100">                    int[] tempLocation = new int[2];</span>
+<span class="fc" id="L101">                    tempLocation[0] = i;</span>
+<span class="fc" id="L102">                    tempLocation[1] = yStart;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">                    if (!this.locationAvailable(tempLocation)) {</span>
+<span class="fc" id="L104">                        return false;</span>
                     }
                 }
-<span class="fc" id="L102">                return true;</span>
+<span class="fc" id="L107">                return true;</span>
             }
         }
-<span class="nc" id="L105">        return false;</span>
+<span class="nc" id="L110">        return false;</span>
     }
 
     /**
@@ -117,17 +122,17 @@ public class Overview implements Serializable {
      * @return True if the location is available, False if filled.
      */
     public boolean locationAvailable(int[] location) {
-<span class="pc bpc" id="L120" title="1 of 2 branches missed.">        if (location.length == 2) {</span>
-<span class="fc" id="L121">            int xLocationIndex = location[0] - 1;</span>
-<span class="fc" id="L122">            int yLocationIndex = location[1] - 1;</span>
-<span class="fc bfc" id="L123" title="All 8 branches covered.">            if ((xLocationIndex &gt;= 0 &amp;&amp; xLocationIndex &lt; BOARDWIDTH - 1)</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">        if (location.length == 2) {</span>
+<span class="fc" id="L126">            int xLocationIndex = location[0] - 1;</span>
+<span class="fc" id="L127">            int yLocationIndex = location[1] - 1;</span>
+<span class="fc bfc" id="L128" title="All 8 branches covered.">            if ((xLocationIndex &gt;= 0 &amp;&amp; xLocationIndex &lt; BOARDWIDTH - 1)</span>
                     &amp;&amp; (yLocationIndex &gt;= 0 &amp;&amp; yLocationIndex &lt; BOARDHEIGHT - 1)) {
-<span class="fc bfc" id="L125" title="All 2 branches covered.">                if (board[xLocationIndex][yLocationIndex] == 0) {</span>
-<span class="fc" id="L126">                    return true;</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">                if (board[xLocationIndex][yLocationIndex] == 0) {</span>
+<span class="fc" id="L131">                    return true;</span>
                 }
             }
         }
-<span class="fc" id="L130">        return false;</span>
+<span class="fc" id="L135">        return false;</span>
     }
 
     /**
@@ -142,15 +147,15 @@ public class Overview implements Serializable {
      * @return True if the location holds a piece of a ship, False if not.
      */
     public boolean locationHasShip(int[] location) {
-<span class="pc bpc" id="L145" title="1 of 2 branches missed.">        if (verifySpecificLocation(location)) {</span>
-<span class="fc" id="L146">            int xLocationIndex = location[0] - 1;</span>
-<span class="fc" id="L147">            int yLocationIndex = location[1] - 1;</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">        if (verifySpecificLocation(location)) {</span>
+<span class="fc" id="L151">            int xLocationIndex = location[0] - 1;</span>
+<span class="fc" id="L152">            int yLocationIndex = location[1] - 1;</span>
 
-<span class="fc bfc" id="L149" title="All 2 branches covered.">            if (board[xLocationIndex][yLocationIndex] == 1) {</span>
-<span class="fc" id="L150">                return true;</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">            if (board[xLocationIndex][yLocationIndex] == 1) {</span>
+<span class="fc" id="L155">                return true;</span>
             }
         }
-<span class="fc" id="L153">        return false;</span>
+<span class="fc" id="L158">        return false;</span>
     }
 
     /**
@@ -165,15 +170,15 @@ public class Overview implements Serializable {
      * @return True if the location holds a torpedo, False if not.
      */
     public boolean locationHasTorpedo(int[] location) {
-<span class="pc bpc" id="L168" title="1 of 2 branches missed.">        if (verifySpecificLocation(location)) {</span>
-<span class="fc" id="L169">            int xLocationIndex = location[0] - 1;</span>
-<span class="fc" id="L170">            int yLocationIndex = location[1] - 1;</span>
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">        if (verifySpecificLocation(location)) {</span>
+<span class="fc" id="L174">            int xLocationIndex = location[0] - 1;</span>
+<span class="fc" id="L175">            int yLocationIndex = location[1] - 1;</span>
 
-<span class="fc bfc" id="L172" title="All 4 branches covered.">            if (board[xLocationIndex][yLocationIndex] == -1 || board[xLocationIndex][yLocationIndex] == -5) {</span>
-<span class="fc" id="L173">                return true;</span>
+<span class="fc bfc" id="L177" title="All 4 branches covered.">            if (board[xLocationIndex][yLocationIndex] == -1 || board[xLocationIndex][yLocationIndex] == -5) {</span>
+<span class="fc" id="L178">                return true;</span>
             }
         }
-<span class="fc" id="L176">        return false;</span>
+<span class="fc" id="L181">        return false;</span>
     }
 
     /**
@@ -182,7 +187,7 @@ public class Overview implements Serializable {
      * @return Size of ships.
      */
     public int amountOfShips() {
-<span class="fc" id="L185">        return ships.size();</span>
+<span class="fc" id="L190">        return ships.size();</span>
     }
 
     /**
@@ -197,15 +202,15 @@ public class Overview implements Serializable {
      * @return True if the location holds a special package, False if not.
      */
     public boolean locationHasSpecial(int[] location) {
-<span class="pc bpc" id="L200" title="1 of 2 branches missed.">        if (verifySpecificLocation(location)) {</span>
-<span class="fc" id="L201">            int xLocationIndex = location[0] - 1;</span>
-<span class="fc" id="L202">            int yLocationIndex = location[1] - 1;</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">        if (verifySpecificLocation(location)) {</span>
+<span class="fc" id="L206">            int xLocationIndex = location[0] - 1;</span>
+<span class="fc" id="L207">            int yLocationIndex = location[1] - 1;</span>
 
-<span class="pc bpc" id="L204" title="1 of 2 branches missed.">            if (board[xLocationIndex][yLocationIndex] == 2) {</span>
-<span class="nc" id="L205">                return true;</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">            if (board[xLocationIndex][yLocationIndex] == 2) {</span>
+<span class="nc" id="L210">                return true;</span>
             }
         }
-<span class="fc" id="L208">        return false;</span>
+<span class="fc" id="L213">        return false;</span>
     }
 
     /**
@@ -215,12 +220,12 @@ public class Overview implements Serializable {
      * @return True if placed.
      */
     public boolean addShip(Ship ship) {
-<span class="pc bpc" id="L218" title="1 of 2 branches missed.">        if (ship != null) {</span>
-<span class="fc" id="L219">            ships.add(ship);</span>
-<span class="fc" id="L220">            this.placeShipOnBoard(ship);</span>
-<span class="fc" id="L221">            return true;</span>
+<span class="pc bpc" id="L223" title="1 of 2 branches missed.">        if (ship != null) {</span>
+<span class="fc" id="L224">            ships.add(ship);</span>
+<span class="fc" id="L225">            this.placeShipOnBoard(ship);</span>
+<span class="fc" id="L226">            return true;</span>
         }
-<span class="nc" id="L223">        return false;</span>
+<span class="nc" id="L228">        return false;</span>
 
     }
 
@@ -232,24 +237,24 @@ public class Overview implements Serializable {
      * @return Ship that's located on a location.
      */
     public Ship getShipOnLocation(int[] location) {
-<span class="pc bpc" id="L235" title="5 of 10 branches missed.">        if (location.length == 2</span>
+<span class="pc bpc" id="L240" title="1 of 10 branches missed.">        if (location.length == 2</span>
                 &amp;&amp; location[0] &gt; 0 &amp;&amp; location[0] &lt; BOARDWIDTH
                 &amp;&amp; location[1] &gt; 0 &amp;&amp; location[1] &lt; BOARDHEIGHT) {
-<span class="fc bfc" id="L238" title="All 2 branches covered.">            for (Ship ship : this.ships) {</span>
-<span class="fc bfc" id="L239" title="All 2 branches covered.">                if (ship.getLocationStart()[0] == location[0]</span>
-<span class="fc bfc" id="L240" title="All 2 branches covered.">                        &amp;&amp; ship.getLocationStart()[1] == location[1]) {</span>
-<span class="fc" id="L241">                    return ship;</span>
-<span class="fc bfc" id="L242" title="All 2 branches covered.">                } else if (ship.getLocationEnd()[0] == location[0]</span>
-<span class="fc bfc" id="L243" title="All 2 branches covered.">                        &amp;&amp; ship.getLocationEnd()[1] == location[1]) {</span>
-<span class="fc" id="L244">                    return ship;</span>
-<span class="pc bpc" id="L245" title="1 of 2 branches missed.">                } else if (checkForShipOnLocation(ship, location)) {</span>
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">            for (Ship ship : this.ships) {</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">                if (ship.getLocationStart()[0] == location[0]</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">                        &amp;&amp; ship.getLocationStart()[1] == location[1]) {</span>
 <span class="fc" id="L246">                    return ship;</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">                } else if (ship.getLocationEnd()[0] == location[0]</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">                        &amp;&amp; ship.getLocationEnd()[1] == location[1]) {</span>
+<span class="fc" id="L249">                    return ship;</span>
+<span class="pc bpc" id="L250" title="1 of 2 branches missed.">                } else if (checkForShipOnLocation(ship, location)) {</span>
+<span class="fc" id="L251">                    return ship;</span>
                 } else {
                     continue;
                 }
             }
         }
-<span class="fc" id="L252">        return null;</span>
+<span class="fc" id="L257">        return null;</span>
     }
 
     /**
@@ -260,36 +265,36 @@ public class Overview implements Serializable {
      * @return True if a ship is found. False if not.
      */
     private boolean checkForShipOnLocation(Ship ship, int[] location) {
-<span class="fc" id="L263">        int locationStart[] = ship.getLocationStart();</span>
-<span class="fc" id="L264">        int locationEnd[] = ship.getLocationEnd();</span>
+<span class="fc" id="L268">        int locationStart[] = ship.getLocationStart();</span>
+<span class="fc" id="L269">        int locationEnd[] = ship.getLocationEnd();</span>
         // Vertical x-axis remains the same
-<span class="fc bfc" id="L266" title="All 2 branches covered.">        if (ship.getDirection() == 0) {</span>
-<span class="fc" id="L267">            int xIndex = locationStart[0];</span>
-<span class="pc bpc" id="L268" title="1 of 2 branches missed.">            for (int i = locationEnd[1]; i &gt; locationStart[1]; i--) {</span>
-<span class="fc" id="L269">                int[] tempLocation = new int[2];</span>
-<span class="fc" id="L270">                tempLocation[0] = xIndex;</span>
-<span class="fc" id="L271">                tempLocation[1] = i;</span>
-<span class="pc bpc" id="L272" title="1 of 4 branches missed.">                if (location[0] == tempLocation[0]</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">        if (ship.getDirection() == 0) {</span>
+<span class="fc" id="L272">            int xIndex = locationStart[0];</span>
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">            for (int i = locationEnd[1]; i &gt; locationStart[1]; i--) {</span>
+<span class="fc" id="L274">                int[] tempLocation = new int[2];</span>
+<span class="fc" id="L275">                tempLocation[0] = xIndex;</span>
+<span class="fc" id="L276">                tempLocation[1] = i;</span>
+<span class="pc bpc" id="L277" title="1 of 4 branches missed.">                if (location[0] == tempLocation[0]</span>
                         &amp;&amp; location[1] == tempLocation[1]) {
-<span class="fc" id="L274">                    return true;</span>
+<span class="fc" id="L279">                    return true;</span>
                 }
             }
-<span class="nc" id="L277">        } // Horizontal y-axis remains the same</span>
-<span class="pc bpc" id="L278" title="1 of 2 branches missed.">        else if (ship.getDirection() == 1) {</span>
-<span class="fc" id="L279">            int yIndex = locationStart[1];</span>
-<span class="pc bpc" id="L280" title="1 of 2 branches missed.">            for (int i = locationEnd[0]; i &gt; locationStart[0]; i--) {</span>
-<span class="fc" id="L281">                int[] tempLocation = new int[2];</span>
-<span class="fc" id="L282">                tempLocation[0] = i;</span>
-<span class="fc" id="L283">                tempLocation[1] = yIndex;</span>
-<span class="pc bpc" id="L284" title="1 of 4 branches missed.">                if (location[0] == tempLocation[0]</span>
+<span class="nc" id="L282">        } // Horizontal y-axis remains the same</span>
+<span class="pc bpc" id="L283" title="1 of 2 branches missed.">        else if (ship.getDirection() == 1) {</span>
+<span class="fc" id="L284">            int yIndex = locationStart[1];</span>
+<span class="pc bpc" id="L285" title="1 of 2 branches missed.">            for (int i = locationEnd[0]; i &gt; locationStart[0]; i--) {</span>
+<span class="fc" id="L286">                int[] tempLocation = new int[2];</span>
+<span class="fc" id="L287">                tempLocation[0] = i;</span>
+<span class="fc" id="L288">                tempLocation[1] = yIndex;</span>
+<span class="pc bpc" id="L289" title="1 of 4 branches missed.">                if (location[0] == tempLocation[0]</span>
                         &amp;&amp; location[1] == tempLocation[1]) {
-<span class="fc" id="L286">                    return true;</span>
+<span class="fc" id="L291">                    return true;</span>
                 }
             }
-<span class="nc" id="L289">        } else {</span>
-<span class="nc" id="L290">            return false;</span>
+<span class="nc" id="L294">        } else {</span>
+<span class="nc" id="L295">            return false;</span>
         }
-<span class="nc" id="L292">        return false;</span>
+<span class="nc" id="L297">        return false;</span>
     }
 
     /**
@@ -299,16 +304,16 @@ public class Overview implements Serializable {
      * @return True if fixed. False otherwise.
      */
     public boolean fixShipOnLocation(int[] location) {
-<span class="nc bnc" id="L302" title="All 8 branches missed.">        if (location[0] &gt; 0 &amp;&amp; location[0] &lt; BOARDWIDTH</span>
+<span class="pc bpc" id="L307" title="4 of 8 branches missed.">        if (location[0] &gt; 0 &amp;&amp; location[0] &lt; BOARDWIDTH</span>
                 &amp;&amp; location[1] &gt; 0 &amp;&amp; location[1] &lt; BOARDHEIGHT) {
-<span class="nc" id="L304">            int xIndex = location[0] - 1;</span>
-<span class="nc" id="L305">            int yIndex = location[1] - 1;</span>
-<span class="nc bnc" id="L306" title="All 2 branches missed.">            if (board[xIndex][yIndex] == -5) {</span>
-<span class="nc" id="L307">                board[xIndex][yIndex] = 1;</span>
+<span class="fc" id="L309">            int xIndex = location[0] - 1;</span>
+<span class="fc" id="L310">            int yIndex = location[1] - 1;</span>
+<span class="pc bpc" id="L311" title="1 of 2 branches missed.">            if (board[xIndex][yIndex] == -5) {</span>
+<span class="fc" id="L312">                board[xIndex][yIndex] = 1;</span>
             }
-<span class="nc" id="L309">            return true;</span>
+<span class="fc" id="L314">            return true;</span>
         }
-<span class="nc" id="L311">        return false;</span>
+<span class="nc" id="L316">        return false;</span>
     }
 
     /**
@@ -317,8 +322,8 @@ public class Overview implements Serializable {
      * @param ship
      */
     private void placeShipOnBoard(Ship ship) {
-<span class="fc" id="L320">        this.defineLocationsForShipBody(ship);</span>
-<span class="fc" id="L321">    }</span>
+<span class="fc" id="L325">        this.defineLocationsForShipBody(ship);</span>
+<span class="fc" id="L326">    }</span>
 
     /**
      * Calculates the location of the ship on the board. Fills in a 1 to
@@ -327,23 +332,23 @@ public class Overview implements Serializable {
      * @param ship
      */
     private void defineLocationsForShipBody(Ship ship) {
-<span class="fc" id="L330">        int[] locationStart = ship.getLocationStart();</span>
-<span class="fc" id="L331">        int[] locationEnd = ship.getLocationEnd();</span>
-<span class="fc" id="L332">        int direction = ship.getDirection();</span>
+<span class="fc" id="L335">        int[] locationStart = ship.getLocationStart();</span>
+<span class="fc" id="L336">        int[] locationEnd = ship.getLocationEnd();</span>
+<span class="fc" id="L337">        int direction = ship.getDirection();</span>
         // Vertical x-axis remains the same
-<span class="fc bfc" id="L334" title="All 2 branches covered.">        if (direction == 0) {</span>
-<span class="fc" id="L335">            int xIndex = locationStart[0] - 1;</span>
-<span class="fc bfc" id="L336" title="All 2 branches covered.">            for (int i = locationEnd[1] - 1; i &gt;= locationStart[1] - 1; i--) {</span>
-<span class="fc" id="L337">                board[xIndex][i] = 1;</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">        if (direction == 0) {</span>
+<span class="fc" id="L340">            int xIndex = locationStart[0] - 1;</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">            for (int i = locationEnd[1] - 1; i &gt;= locationStart[1] - 1; i--) {</span>
+<span class="fc" id="L342">                board[xIndex][i] = 1;</span>
             }
-<span class="fc" id="L339">        } // Horizontal y-axis remains the same</span>
-<span class="pc bpc" id="L340" title="1 of 2 branches missed.">        else if (direction == 1) {</span>
-<span class="fc" id="L341">            int yIndex = locationStart[1] - 1;</span>
-<span class="fc bfc" id="L342" title="All 2 branches covered.">            for (int i = locationEnd[0] - 1; i &gt;= locationStart[0] - 1; i--) {</span>
-<span class="fc" id="L343">                board[i][yIndex] = 1;</span>
+<span class="fc" id="L344">        } // Horizontal y-axis remains the same</span>
+<span class="pc bpc" id="L345" title="1 of 2 branches missed.">        else if (direction == 1) {</span>
+<span class="fc" id="L346">            int yIndex = locationStart[1] - 1;</span>
+<span class="fc bfc" id="L347" title="All 2 branches covered.">            for (int i = locationEnd[0] - 1; i &gt;= locationStart[0] - 1; i--) {</span>
+<span class="fc" id="L348">                board[i][yIndex] = 1;</span>
             }
         }
-<span class="fc" id="L346">    }</span>
+<span class="fc" id="L351">    }</span>
 
     /**
      * Verifies if the location given is reachable on the board.
@@ -352,15 +357,15 @@ public class Overview implements Serializable {
      * @return True if reachable location, False if not.
      */
     private boolean verifySpecificLocation(int[] location) {
-<span class="pc bpc" id="L355" title="1 of 2 branches missed.">        if (location.length == 2) {</span>
-<span class="fc" id="L356">            int xLocationIndex = location[0] - 1;</span>
-<span class="fc" id="L357">            int yLocationIndex = location[1] - 1;</span>
-<span class="pc bpc" id="L358" title="4 of 8 branches missed.">            if ((xLocationIndex &gt;= 0 &amp;&amp; xLocationIndex &lt; BOARDWIDTH - 1)</span>
+<span class="pc bpc" id="L360" title="1 of 2 branches missed.">        if (location.length == 2) {</span>
+<span class="fc" id="L361">            int xLocationIndex = location[0] - 1;</span>
+<span class="fc" id="L362">            int yLocationIndex = location[1] - 1;</span>
+<span class="pc bpc" id="L363" title="4 of 8 branches missed.">            if ((xLocationIndex &gt;= 0 &amp;&amp; xLocationIndex &lt; BOARDWIDTH - 1)</span>
                     &amp;&amp; (yLocationIndex &gt;= 0 &amp;&amp; yLocationIndex &lt; BOARDHEIGHT - 1)) {
-<span class="fc" id="L360">                return true;</span>
+<span class="fc" id="L365">                return true;</span>
             }
         }
-<span class="nc" id="L363">        return false;</span>
+<span class="nc" id="L368">        return false;</span>
     }
 
     /**
@@ -369,12 +374,12 @@ public class Overview implements Serializable {
      * @param torpedoLocation
      */
     public void displayTorpedo(int[] torpedoLocation) {
-<span class="pc bpc" id="L372" title="1 of 2 branches missed.">        if (torpedoLocation.length == 2) {</span>
-<span class="fc" id="L373">            int xIndex = torpedoLocation[0] - 1;</span>
-<span class="fc" id="L374">            int yIndex = torpedoLocation[1] - 1;</span>
-<span class="fc" id="L375">            board[xIndex][yIndex] = -1;</span>
+<span class="pc bpc" id="L377" title="1 of 2 branches missed.">        if (torpedoLocation.length == 2) {</span>
+<span class="fc" id="L378">            int xIndex = torpedoLocation[0] - 1;</span>
+<span class="fc" id="L379">            int yIndex = torpedoLocation[1] - 1;</span>
+<span class="fc" id="L380">            board[xIndex][yIndex] = -1;</span>
         }
-<span class="fc" id="L377">    }</span>
+<span class="fc" id="L382">    }</span>
 
     /**
      * Updates the overview to indicate that a torpedo has hit a ship.
@@ -382,70 +387,72 @@ public class Overview implements Serializable {
      * @param torpedoLocation
      */
     public void displayTorpedoShipHit(int[] torpedoLocation) {
-<span class="pc bpc" id="L385" title="1 of 2 branches missed.">        if (torpedoLocation.length == 2) {</span>
-<span class="fc" id="L386">            int xIndex = torpedoLocation[0] - 1;</span>
-<span class="fc" id="L387">            int yIndex = torpedoLocation[1] - 1;</span>
-<span class="fc" id="L388">            board[xIndex][yIndex] = -5;</span>
+<span class="pc bpc" id="L390" title="1 of 2 branches missed.">        if (torpedoLocation.length == 2) {</span>
+<span class="fc" id="L391">            int xIndex = torpedoLocation[0] - 1;</span>
+<span class="fc" id="L392">            int yIndex = torpedoLocation[1] - 1;</span>
+<span class="fc" id="L393">            board[xIndex][yIndex] = -5;</span>
         }
-<span class="fc" id="L390">    }</span>
+<span class="fc" id="L395">    }</span>
 
     /**
      * Builds and places random special packages on the overview.
      */
     public void buildSpecialPackages() {
-<span class="nc" id="L396">        int[] randomLocation = new int[2];</span>
-<span class="nc" id="L397">        int numberOfPackages = 0;</span>
-<span class="nc bnc" id="L398" title="All 2 branches missed.">        while (numberOfPackages &lt; 4) {</span>
+<span class="nc" id="L401">        int[] randomLocation = new int[2];</span>
+<span class="nc" id="L402">        int numberOfPackages = 0;</span>
+<span class="nc bnc" id="L403" title="All 2 branches missed.">        while (numberOfPackages &lt; 4) {</span>
 
-<span class="nc" id="L400">            int[] tempLocation = new int[2];</span>
+<span class="nc" id="L405">            int[] tempLocation = new int[2];</span>
 
             // Set x-axis
-<span class="nc" id="L403">            Random randomX = new Random();</span>
-<span class="nc" id="L404">            int randomNumber = randomX.nextInt(BOARDWIDTH - 1);</span>
-<span class="nc" id="L405">            tempLocation[0] = randomNumber;</span>
+<span class="nc" id="L408">            Random randomX = new Random();</span>
+<span class="nc" id="L409">            int randomNumber = randomX.nextInt(BOARDWIDTH - 1);</span>
+<span class="nc" id="L410">            tempLocation[0] = randomNumber;</span>
 
             // Set y-axis
-<span class="nc" id="L408">            Random randomY = new Random();</span>
-<span class="nc" id="L409">            randomNumber = randomY.nextInt(BOARDHEIGHT - 1);</span>
-<span class="nc" id="L410">            tempLocation[1] = randomNumber;</span>
+<span class="nc" id="L413">            Random randomY = new Random();</span>
+<span class="nc" id="L414">            randomNumber = randomY.nextInt(BOARDHEIGHT - 1);</span>
+<span class="nc" id="L415">            tempLocation[1] = randomNumber;</span>
 
-<span class="nc bnc" id="L412" title="All 2 branches missed.">            if (locationAvailable(tempLocation)) {</span>
-<span class="nc" id="L413">                numberOfPackages++;</span>
-<span class="nc" id="L414">                randomLocation = tempLocation;</span>
-<span class="nc" id="L415">                SpecialPackage special = new SpecialTorpedo(&quot;temp&quot;, randomLocation);</span>
-<span class="nc" id="L416">                specials.add(special);</span>
+<span class="nc bnc" id="L417" title="All 2 branches missed.">            if (locationAvailable(tempLocation)) {</span>
+<span class="nc" id="L418">                numberOfPackages++;</span>
+<span class="nc" id="L419">                randomLocation = tempLocation;</span>
+<span class="nc" id="L420">                SpecialPackage special = new SpecialTorpedo(&quot;temp&quot;, randomLocation);</span>
+<span class="nc" id="L421">                specials.add(special);</span>
             }
-<span class="nc" id="L418">        }</span>
-<span class="nc bnc" id="L419" title="All 2 branches missed.">        if (specials.size() == 4) {</span>
-<span class="nc bnc" id="L420" title="All 2 branches missed.">            for (SpecialPackage special : specials) {</span>
-<span class="nc" id="L421">                placeSpecialOnBoard(special);</span>
-<span class="nc" id="L422">            }</span>
+<span class="nc" id="L423">        }</span>
+<span class="nc bnc" id="L424" title="All 2 branches missed.">        if (specials.size() == 4) {</span>
+<span class="nc bnc" id="L425" title="All 2 branches missed.">            for (SpecialPackage special : specials) {</span>
+<span class="nc" id="L426">                placeSpecialOnBoard(special);</span>
+<span class="nc" id="L427">            }</span>
         }
-<span class="nc" id="L424">    }</span>
+<span class="nc" id="L429">    }</span>
 
     private void placeSpecialOnBoard(SpecialPackage special) {
-<span class="nc" id="L427">        board[special.getPlacedLocation()[0]][special.getPlacedLocation()[1]] = 2;</span>
-<span class="nc" id="L428">    }</span>
+<span class="nc" id="L432">        board[special.getPlacedLocation()[0]][special.getPlacedLocation()[1]] = 2;</span>
+<span class="nc" id="L433">    }</span>
 
     public void printBoard() {
-<span class="nc bnc" id="L431" title="All 2 branches missed.">        for (int i = BOARDHEIGHT; i &gt; 0; i--) {</span>
-<span class="nc bnc" id="L432" title="All 2 branches missed.">            for (int j = BOARDWIDTH; j &gt; 0; j--) {</span>
-<span class="nc" id="L433">                System.out.print(board[i - 1][j - 1]);</span>
+<span class="nc bnc" id="L436" title="All 2 branches missed.">        for (int i = BOARDHEIGHT; i &gt; 0; i--) {</span>
+<span class="nc bnc" id="L437" title="All 2 branches missed.">            for (int j = BOARDWIDTH; j &gt; 0; j--) {</span>
+<span class="nc" id="L438">                System.out.print(board[i - 1][j - 1]);</span>
             }
         }
-<span class="nc" id="L436">    }</span>
+<span class="nc" id="L441">    }</span>
     @Override
     public boolean equals(Object object) {
-<span class="fc" id="L439">        Overview overview = (Overview) object;</span>
-<span class="fc" id="L440">        boolean result = false;</span>
-<span class="fc bfc" id="L441" title="All 2 branches covered.">        for(int i = 0; i &lt; overview.getBoardWidth(); i++) {</span>
-<span class="fc bfc" id="L442" title="All 2 branches covered.">            for(int j = 0; j &lt; overview.getBoardHeight(); j++) {</span>
-<span class="fc bfc" id="L443" title="All 2 branches covered.">                if(this.getBoard()[i][j] == overview.getBoard()[i][j]) {</span>
-<span class="fc" id="L444">                    result = true;</span>
+<span class="fc" id="L444">        Overview overview = (Overview) object;</span>
+<span class="fc" id="L445">        boolean result = false;</span>
+<span class="fc bfc" id="L446" title="All 2 branches covered.">        for(int i = 0; i &lt; overview.getBoardWidth(); i++) {</span>
+<span class="fc bfc" id="L447" title="All 2 branches covered.">            for(int j = 0; j &lt; overview.getBoardHeight(); j++) {</span>
+<span class="fc bfc" id="L448" title="All 2 branches covered.">                if(this.getBoard()[i][j] == overview.getBoard()[i][j]) {</span>
+<span class="fc bfc" id="L449" title="All 2 branches covered.">                    if(this.getName().equals(overview.getName())) {</span>
+<span class="fc" id="L450">                        result = true;</span>
+                    }
                 }
             }
         }
-<span class="fc" id="L448">        return result;</span>
+<span class="fc" id="L455">        return result;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

@@ -8,6 +8,7 @@ import Battleship.Domain.GameManager;
 import Battleship.Domain.Overview;
 import Battleship.Domain.Player;
 import Battleship.Domain.Ship;
+import Battleship.Exceptions.BattleshipExceptions;
 import Battleship.Interfaces.IGameManager;
 import Battleship.Interfaces.IPlayer;
 import java.rmi.RemoteException;
@@ -67,7 +68,7 @@ public class TestGame_InConsole {
 */
     
     @Test
-    public void testPrintBoardAfterTorpedoOnShip() throws RemoteException {
+    public void testPrintBoardAfterTorpedoOnShip() throws RemoteException, BattleshipExceptions {
         int[] locationShip = new int[2];
         locationShip[0] = 4;
         locationShip[1] = 4;

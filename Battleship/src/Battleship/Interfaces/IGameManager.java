@@ -9,6 +9,7 @@ import Battleship.Domain.Overview;
 import Battleship.Domain.Ship;
 import Battleship.Domain.SpecialPackage;
 import Battleship.Domain.Torpedo;
+import Battleship.Exceptions.BattleshipExceptions;
 import Battleship.RMI.RMIClient;
 import fontys.observer.RemotePropertyListener;
 import fontys.observer.RemotePublisher;
@@ -26,7 +27,7 @@ public interface IGameManager extends RemotePublisher {
 
     public boolean confirmBoard() throws RemoteException;
 
-    public boolean placeShip(IPlayer player, int[] locationStart, int shipLength, int direction) throws RemoteException;
+    public boolean placeShip(IPlayer player, int[] locationStart, int shipLength, int direction) throws RemoteException, BattleshipExceptions;
 
     public boolean fireTorpedo(IPlayer player, IPlayer receiveingPlayer, String torpedoName, int[] firedLocation) throws RemoteException;
 

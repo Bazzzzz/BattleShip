@@ -48,7 +48,7 @@ public class Player implements IPlayer, Serializable {
     }
 
     public Overview getOpponent() {
-<span class="fc" id="L51">        return opponent;</span>
+<span class="nc" id="L51">        return opponent;</span>
     }
     
     public Overview setPlayerOverview(Overview playerOverview) {
@@ -57,9 +57,9 @@ public class Player implements IPlayer, Serializable {
     }
     
     public Overview setOpponentOverview(Overview opponentOverview) {
-<span class="fc" id="L60">        opponentOverview.setOpponentsBoard();</span>
-<span class="fc" id="L61">        this.opponent = opponentOverview;</span>
-<span class="fc" id="L62">        return this.opponent;</span>
+<span class="nc" id="L60">        opponentOverview.setOpponentsBoard();</span>
+<span class="nc" id="L61">        this.opponent = opponentOverview;</span>
+<span class="nc" id="L62">        return this.opponent;</span>
     }
     public boolean isTurn() {
 <span class="nc" id="L65">        return this.isTurn;</span>

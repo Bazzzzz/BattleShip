@@ -64,7 +64,7 @@ public class Ship implements Serializable {
     }
 
     public int getAmountHit() {
-<span class="nc" id="L67">        return amountHit;</span>
+<span class="fc" id="L67">        return amountHit;</span>
     }
 
     public String getName() {
@@ -83,11 +83,11 @@ public class Ship implements Serializable {
      * @return Damage taken.
      */
     public int changeAmountHit(int number) {
-<span class="pc bpc" id="L86" title="1 of 2 branches missed.">        if (number &gt; 0) {</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        if (number &gt; 0) {</span>
 <span class="fc" id="L87">            this.amountHit = this.increaseHitCounter(number);</span>
         }
         else {
-<span class="nc" id="L90">            this.amountHit = this.decreaseHitCounter(number);</span>
+<span class="fc" id="L90">            this.amountHit = this.decreaseHitCounter(number);</span>
         }
 <span class="fc" id="L92">        return this.amountHit;</span>
     }
@@ -97,15 +97,15 @@ public class Ship implements Serializable {
         
     }
     private int decreaseHitCounter(int number) {
-<span class="nc" id="L100">        return this.amountHit -= ((-1) * number);</span>
+<span class="fc" id="L100">        return this.amountHit -= ((-1) * number);</span>
     }
     /**
      * Determine whether a ship has been destroyed or not.
      * @return 
      */
     public boolean isDestroyed() {
-<span class="pc bpc" id="L107" title="1 of 2 branches missed.">        if(this.amountHit == this.length) {</span>
-<span class="nc" id="L108">            return true;</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        if(this.amountHit == this.length) {</span>
+<span class="fc" id="L108">            return true;</span>
         }
 <span class="fc" id="L110">        return false;</span>
     }
