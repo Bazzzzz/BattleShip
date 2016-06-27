@@ -11,7 +11,9 @@ import Battleship.Interfaces.IGameManager;
 import Battleship.Interfaces.IPlayer;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
@@ -28,6 +30,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -91,11 +94,16 @@ public class FXMLGameVC implements Initializable {
 
     private ScheduledExecutorService serviceGameRunner;
 
+    private List<StackPane> stackPanesPlayer;
+    private List<StackPane> stackPanesOpponent;
+
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        stackPanesPlayer = new ArrayList<StackPane>();
+        stackPanesOpponent = new ArrayList<StackPane>();
         this.initializeImages();
 
         this.drawBackground();
@@ -141,7 +149,7 @@ public class FXMLGameVC implements Initializable {
                 // TODO: Check display on ship hit.
                 // http://stackoverflow.com/questions/31095954/how-to-get-gridpane-row-and-column-ids-on-mouse-entered-in-each-cell-of-grid-in
                 serviceGameRunner = Executors.newSingleThreadScheduledExecutor();
-                serviceGameRunner.scheduleAtFixedRate(new GameRunner(), 0, 20, TimeUnit.SECONDS);
+                serviceGameRunner.scheduleAtFixedRate(new GameRunner(), 10, 30, TimeUnit.SECONDS);
 
                 // Set player 1 as first turn.
                 if (!this.gameManager.getPlayers().get(0).isTurn()) {
@@ -226,22 +234,34 @@ public class FXMLGameVC implements Initializable {
             System.out.println("Print playing player's board before ship placement.\n");
             playingPlayer.getPlayer().printBoard();
             System.out.println(this.gameManager.getName());
-            if (this.gameManager.getPlayerTurn(playingPlayer)) {
-                if (this.gameManager.placeShip(playingPlayer, location, 3, 0)) {
-                    this.drawBoards(this.gameManager);
-                    System.out.println("Print player1's board");
-                    this.gameManager.getPlayers().get(0).getPlayer().printBoard();
+            //if (this.gameManager.getPlayerTurn(playingPlayer)) {
+            if (this.gameManager.placeShip(playingPlayer, location, 3, 0)) {
+                this.drawBoards(this.gameManager);
+                System.out.println("Print player1's board");
+                this.gameManager.getPlayers().get(0).getPlayer().printBoard();
 
-                    System.out.println("Print player2's board");
-                    this.gameManager.getPlayers().get(1).getPlayer().printBoard();
-                    if (playingPlayer.getPlayer().amountOfShips() < 7) {
-                        this.gameManager.changeTurn(playingPlayer);
-                    }
-
+                System.out.println("Print player2's board");
+                this.gameManager.getPlayers().get(1).getPlayer().printBoard();
+                if (playingPlayer.getPlayer().amountOfShips() < 7) {
+                    this.gameManager.changeTurn(playingPlayer);
+                } else if (playingPlayer.getPlayer().amountOfShips() == 7) {
+                    btnPlaceShip.setDisable(true);
                 } else {
-                    // TODO: Error Message.
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Warning");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Already placed 7 ships.");
+                    alert.show();
                 }
+
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Warning");
+                alert.setHeaderText(null);
+                alert.setContentText("Cannot place ship out of bounds.");
+                alert.show();
             }
+            //}
             //}
             //}
         } catch (RemoteException ex) {
@@ -266,23 +286,27 @@ public class FXMLGameVC implements Initializable {
                     opponentPlayer = playerLoop;
                 }
             }
-            if (this.gameManager.getPlayerTurn(playingPlayer) && opponentPlayer != null) {
-                if (this.gameManager.fireTorpedo(playingPlayer, opponentPlayer, "TorpedoTemp", location)) {
-                    this.drawBoards(this.gameManager);
+            //if (this.gameManager.getPlayerTurn(playingPlayer) && opponentPlayer != null) {
+            if (this.gameManager.fireTorpedo(playingPlayer, opponentPlayer, "TorpedoTemp", location)) {
+                this.drawBoards(this.gameManager);
 
-                    this.gameManager.changeTurn(playingPlayer);
-                    //Battleship.handler.getRMIClient().bindToServer("GameUpdate", this.gameManager);
+                this.gameManager.changeTurn(playingPlayer);
+                //Battleship.handler.getRMIClient().bindToServer("GameUpdate", this.gameManager);
 
-                    System.out.println("Print player1's board");
-                    this.gameManager.getPlayers().get(0).getPlayer().printBoard();
+                System.out.println("Print player1's board");
+                this.gameManager.getPlayers().get(0).getPlayer().printBoard();
 
-                    System.out.println("Print player2's board");
-                    this.gameManager.getPlayers().get(1).getPlayer().printBoard();
-                } else {
-                    // TODO: Error Message.
-                }
-
+                System.out.println("Print player2's board");
+                this.gameManager.getPlayers().get(1).getPlayer().printBoard();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Warning");
+                alert.setHeaderText(null);
+                alert.setContentText("Cannot place torpedo.");
+                alert.show();
             }
+
+            //}
         } catch (RemoteException ex) {
             Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -396,24 +420,40 @@ public class FXMLGameVC implements Initializable {
     }
 
     private void drawBoard(Overview overview, boolean isPlayerBoard) {
+        for (StackPane paneLoop : this.stackPanesPlayer) {
+            gridPanePlayer.getChildren().remove(paneLoop);
+        }
+        for (StackPane paneLoop : this.stackPanesOpponent) {
+            gridPaneOpponent.getChildren().remove(paneLoop);
+        }
+
         if (isPlayerBoard) {
             int[][] board = overview.getBoard();
             for (int i = 0; i < board.length; i++) {
                 for (int j = 0; j < board[0].length; j++) {
+                    StackPane pane = new StackPane();
+                    pane.setMinSize(20.00, 20.00);
+                    pane.setMaxSize(20.00, 20.00);
+
                     Label boardIndex = new Label(Integer.toString(board[i][j]));
                     boardIndex.setAlignment(Pos.CENTER);
-
-                    gridPanePlayer.add(boardIndex, i, j);
+                    pane.getChildren().add(boardIndex);
+                    stackPanesPlayer.add(pane);
+                    gridPanePlayer.add(pane, i, j);
                 }
             }
         } else {
             int[][] board = overview.getBoard();
             for (int i = 0; i < board.length; i++) {
                 for (int j = 0; j < board[0].length; j++) {
+                    StackPane pane = new StackPane();
+                    pane.setMinSize(20.00, 20.00);
+                    pane.setMaxSize(20.00, 20.00);
                     Label boardIndex = new Label(Integer.toString(board[i][j]));
                     boardIndex.setAlignment(Pos.CENTER);
-
-                    gridPaneOpponent.add(boardIndex, i, j);
+                    pane.getChildren().add(boardIndex);
+                    stackPanesOpponent.add(pane);
+                    gridPaneOpponent.add(pane, i, j);
                 }
             }
         }

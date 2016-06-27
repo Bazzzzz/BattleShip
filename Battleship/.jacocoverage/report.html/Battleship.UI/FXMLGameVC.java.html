@@ -6,6 +6,7 @@
 package Battleship.UI;
 
 import Battleship.Domain.Overview;
+import Battleship.Exceptions.BattleshipExceptions;
 import Battleship.Interfaces.IGameManager;
 import Battleship.Interfaces.IPlayer;
 import java.net.URL;
@@ -45,7 +46,7 @@ import javafx.stage.Stage;
  *
  * @author sebas
  */
-<span class="nc" id="L48">public class FXMLGameVC implements Initializable {</span>
+<span class="nc" id="L49">public class FXMLGameVC implements Initializable {</span>
 
     IGameManager gameManager;
 
@@ -95,214 +96,251 @@ import javafx.stage.Stage;
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-<span class="nc" id="L98">        this.initializeImages();</span>
+<span class="nc" id="L99">        this.initializeImages();</span>
 
-<span class="nc" id="L100">        this.drawBackground();</span>
+<span class="nc" id="L101">        this.drawBackground();</span>
 
-<span class="nc" id="L102">        gridPanePlayer = new GridPane();</span>
-<span class="nc" id="L103">        gridPaneOpponent = new GridPane();</span>
+<span class="nc" id="L103">        gridPanePlayer = new GridPane();</span>
+<span class="nc" id="L104">        gridPaneOpponent = new GridPane();</span>
 
-<span class="nc" id="L105">        String gameName = Singleton.getInstance().getGameName();</span>
-<span class="nc bnc" id="L106" title="All 2 branches missed.">        if (Battleship.handler.getRMIClient().connectToServer(&quot;game&quot;, gameName)) {</span>
+<span class="nc" id="L106">        String gameName = Singleton.getInstance().getGameName();</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        if (Battleship.handler.getRMIClient().connectToServer(&quot;game&quot;, gameName)) {</span>
             try {
-<span class="nc" id="L108">                IGameManager game = Battleship.handler.getRMIClient().getGameManager();</span>
-<span class="nc bnc" id="L109" title="All 2 branches missed.">                if (game != null) {</span>
-<span class="nc" id="L110">                    this.gameManager = game;</span>
-                    
-<span class="nc bnc" id="L112" title="All 2 branches missed.">                    if (Battleship.handler.getPlayingPlayer().equals(gameManager.getPlayers().get(0))) {</span>
-<span class="nc" id="L113">                        playingPlayer = gameManager.getPlayers().get(0);</span>
+<span class="nc" id="L109">                IGameManager game = Battleship.handler.getRMIClient().getGameManager();</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">                if (game != null) {</span>
+<span class="nc" id="L111">                    this.gameManager = game;</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">                    if (this.gameManager.getPlayers().size() == 2</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">                            &amp;&amp; Battleship.handler.getPlayingPlayer().equals(gameManager.getPlayers().get(0))) {</span>
+<span class="nc" id="L114">                        this.drawStart();</span>
                     }
-<span class="nc bnc" id="L115" title="All 2 branches missed.">                    if (Battleship.handler.getPlayingPlayer().equals(gameManager.getPlayers().get(1))) {</span>
-<span class="nc" id="L116">                        playingPlayer = gameManager.getPlayers().get(1);</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">                    if (Battleship.handler.getPlayingPlayer().equals(gameManager.getPlayers().get(0))) {</span>
+<span class="nc" id="L117">                        playingPlayer = gameManager.getPlayers().get(0);</span>
                     }
-<span class="nc bnc" id="L118" title="All 2 branches missed.">                    if (playingPlayer.equals(this.gameManager.getPlayers().get(0))) {</span>
-<span class="nc" id="L119">                        opponentPlayer = this.gameManager.getPlayers().get(1);</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">                    if (Battleship.handler.getPlayingPlayer().equals(gameManager.getPlayers().get(1))) {</span>
+<span class="nc" id="L120">                        playingPlayer = gameManager.getPlayers().get(1);</span>
+                    }
+<span class="nc bnc" id="L122" title="All 2 branches missed.">                    if (playingPlayer.equals(this.gameManager.getPlayers().get(0))) {</span>
+<span class="nc" id="L123">                        opponentPlayer = this.gameManager.getPlayers().get(1);</span>
                     } else {
-<span class="nc" id="L121">                        opponentPlayer = this.gameManager.getPlayers().get(0);</span>
+<span class="nc" id="L125">                        opponentPlayer = this.gameManager.getPlayers().get(0);</span>
                     }
+<span class="nc" id="L127">                    lblPlayer1Score.setText(&quot;&quot; + gameManager.getPlayers().get(0).getScore());</span>
+<span class="nc" id="L128">                    lblPlayer2Score.setText(&quot;&quot; + gameManager.getPlayers().get(1).getScore());</span>
+<span class="nc" id="L129">                    lblPlayer1Name.setText(gameManager.getPlayers().get(0).getName());</span>
+<span class="nc" id="L130">                    lblPlayer2Name.setText(gameManager.getPlayers().get(1).getName());</span>
+<span class="nc" id="L131">                    System.out.println(&quot;Print player1's board&quot;);</span>
+<span class="nc" id="L132">                    this.gameManager.getPlayers().get(0).getPlayer().printBoard();</span>
 
-<span class="nc bnc" id="L124" title="All 4 branches missed.">                    if (playingPlayer.equals(this.gameManager.getPlayers().get(0)) &amp;&amp; opponentPlayer != null) {</span>
-<span class="nc" id="L125">                        this.drawStart();</span>
-                    }
-<span class="nc" id="L127">                    System.out.println(&quot;Print player1's board&quot;);</span>
-<span class="nc" id="L128">                    this.gameManager.getPlayers().get(0).getPlayer().printBoard();</span>
+<span class="nc" id="L134">                    System.out.println(&quot;Print player2's board&quot;);</span>
+<span class="nc" id="L135">                    this.gameManager.getPlayers().get(1).getPlayer().printBoard();</span>
 
-<span class="nc" id="L130">                    System.out.println(&quot;Print player2's board&quot;);</span>
-<span class="nc" id="L131">                    this.gameManager.getPlayers().get(1).getPlayer().printBoard();</span>
+                }
+<span class="nc" id="L138">                System.out.println(&quot;RMI call to game name: &quot; + Battleship.handler.getRMIClient().getSelectedGameRMI(gameName).getName());</span>
 
-                }   
-<span class="nc" id="L134">                System.out.println(&quot;RMI call to game name: &quot; + Battleship.handler.getRMIClient().getSelectedGameRMI(gameName).getName());</span>
-                
                 // TODO: Location on selection in gridview instead of random.
                 // TODO: Check display on ship hit.
                 // http://stackoverflow.com/questions/31095954/how-to-get-gridpane-row-and-column-ids-on-mouse-entered-in-each-cell-of-grid-in
-<span class="nc" id="L139">                serviceGameRunner = Executors.newSingleThreadScheduledExecutor();</span>
-<span class="nc" id="L140">                serviceGameRunner.scheduleAtFixedRate(new GameRunner(), 0, 10, TimeUnit.SECONDS);</span>
+<span class="nc" id="L143">                serviceGameRunner = Executors.newSingleThreadScheduledExecutor();</span>
+<span class="nc" id="L144">                serviceGameRunner.scheduleAtFixedRate(new GameRunner(), 0, 20, TimeUnit.SECONDS);</span>
 
                 // Set player 1 as first turn.
-<span class="nc bnc" id="L143" title="All 2 branches missed.">                if (!this.gameManager.getPlayers().get(0).isTurn()) {</span>
-<span class="nc bnc" id="L144" title="All 2 branches missed.">                    for (int i = 0; i &lt; this.gameManager.getPlayers().size(); i++) {</span>
-<span class="nc bnc" id="L145" title="All 2 branches missed.">                        if (this.playingPlayer.equals(this.gameManager.getPlayers().get(i))) {</span>
-<span class="nc" id="L146">                            this.gameManager.changeTurn(this.gameManager.getPlayers().get(i));</span>
-<span class="nc" id="L147">                            System.out.println(this.gameManager.getPlayerTurn(this.gameManager.getPlayers().get(i)));</span>
-<span class="nc" id="L148">                            Battleship.handler.getRMIClient().bindToServer(&quot;GameUpdate&quot;, this.gameManager);</span>
-<span class="nc" id="L149">                            lblPlayer2Turn.setVisible(false);</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">                if (!this.gameManager.getPlayers().get(0).isTurn()) {</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">                    for (int i = 0; i &lt; this.gameManager.getPlayers().size(); i++) {</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">                        if (this.playingPlayer.equals(this.gameManager.getPlayers().get(i))) {</span>
+<span class="nc" id="L150">                            this.gameManager.changeTurn(this.gameManager.getPlayers().get(i));</span>
+<span class="nc" id="L151">                            System.out.println(this.gameManager.getPlayerTurn(this.gameManager.getPlayers().get(i)));</span>
+                            //Battleship.handler.getRMIClient().bindToServer(&quot;GameUpdate&quot;, this.gameManager);
+<span class="nc" id="L153">                            lblPlayer2Turn.setVisible(false);</span>
                         }
                     }
                 }
 
-<span class="nc" id="L154">                drawBoards(gameManager);</span>
-<span class="nc" id="L155">                this.showGrids();</span>
-<span class="nc" id="L156">            } catch (RemoteException ex) {</span>
-<span class="nc" id="L157">                Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L158">            }</span>
+<span class="nc" id="L158">                drawBoards(gameManager);</span>
+<span class="nc" id="L159">                this.showGrids();</span>
+<span class="nc" id="L160">            } catch (RemoteException ex) {</span>
+<span class="nc" id="L161">                Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L162">            }</span>
         }
 
-<span class="nc" id="L161">    }</span>
+<span class="nc" id="L165">    }</span>
 
-<span class="nc" id="L163">    private class GameRunner implements Runnable {</span>
+<span class="nc" id="L167">    private class GameRunner implements Runnable {</span>
 
         @Override
         public void run() {
-<span class="nc" id="L167">            IGameManager curGame = gameManager;</span>
-<span class="nc" id="L168">            System.out.println(&quot;GameRunner run.&quot;);</span>
+<span class="nc" id="L171">            String gameName = Singleton.getInstance().getGameName();</span>
+<span class="nc" id="L172">            System.out.println(&quot;GameRunner run.&quot;);</span>
             try {
-<span class="nc" id="L170">                gameManager = Battleship.handler.getRMIClient().getSelectedGameRMI(curGame.getName());</span>
-<span class="nc" id="L171">                System.out.println(&quot;\nRunner Thread: &quot; + gameManager.getName() + &quot;, overview player 1: \n&quot;);</span>
-                
-<span class="nc" id="L173">                gameManager.getPlayers().get(0).getPlayer().printBoard();</span>
-<span class="nc" id="L174">                System.out.println(&quot;\nRunner Thread: &quot; + gameManager.getName() + &quot;, overview player 2: \n&quot;);</span>
-<span class="nc" id="L175">                Overview overviewP2 = gameManager.getPlayers().get(1).getPlayer();</span>
-<span class="nc" id="L176">                overviewP2.printBoard();</span>
-//                if (runGame != null) {
-//                    gameManager = runGame;
-//                    Platform.runLater(new Runnable() {
-//                        public void run() {
-//                            drawBoards(gameManager);
-//                        }
-//                    }
-//                    );
-//                    System.out.println(
-//                            &quot;Runner Thread: &quot; + runGame.getName() + &quot;, overview player 1: &quot; + runGame.getPlayers().get(0).getPlayer());
-//                    System.out.println(
-//                            &quot;Runner Thread: &quot; + runGame.getName() + &quot;, overview player 2: &quot; + runGame.getPlayers().get(1).getPlayer());
-//
-//                }
-<span class="nc" id="L191">            } catch (RemoteException ex) {</span>
-<span class="nc" id="L192">                Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L193">            }</span>
-<span class="nc" id="L194">        }</span>
+<span class="nc" id="L174">                gameManager = Battleship.handler.getRMIClient().getSelectedGameRMI(gameName);</span>
+
+<span class="nc" id="L176">                System.out.println(&quot;\nRunner Thread: &quot; + gameManager.getName() + &quot;, overview player 1: \n&quot;);</span>
+<span class="nc" id="L177">                Overview overviewP1 = gameManager.getPlayers().get(0).getPlayer();</span>
+<span class="nc" id="L178">                overviewP1.printBoard();</span>
+<span class="nc" id="L179">                System.out.println(&quot;\nRunner Thread: &quot; + gameManager.getName() + &quot;, overview player 2: \n&quot;);</span>
+<span class="nc" id="L180">                Overview overviewP2 = gameManager.getPlayers().get(1).getPlayer();</span>
+<span class="nc" id="L181">                overviewP2.printBoard();</span>
+
+<span class="nc bnc" id="L183" title="All 2 branches missed.">                if (gameManager.getPlayerTurn(gameManager.getPlayers().get(0))) {</span>
+<span class="nc" id="L184">                    lblPlayer1Turn.setVisible(true);</span>
+<span class="nc" id="L185">                    lblPlayer2Turn.setVisible(false);</span>
+                } else {
+<span class="nc" id="L187">                    lblPlayer1Turn.setVisible(false);</span>
+<span class="nc" id="L188">                    lblPlayer2Turn.setVisible(true);</span>
+                }
+<span class="nc" id="L190">                lblPlayer1Score.setText(&quot;&quot; + gameManager.getPlayers().get(0).getScore());</span>
+<span class="nc" id="L191">                lblPlayer2Score.setText(&quot;&quot; + gameManager.getPlayers().get(1).getScore());</span>
+<span class="nc" id="L192">                drawBoards(gameManager);</span>
+                //                if (runGame != null) {
+                //                    gameManager = runGame;
+                //                    Platform.runLater(new Runnable() {
+                //                        public void run() {
+                //                            drawBoards(gameManager);
+                //                        }
+                //                    }
+                //                    );
+                //                    System.out.println(
+                //                            &quot;Runner Thread: &quot; + runGame.getName() + &quot;, overview player 1: &quot; + runGame.getPlayers().get(0).getPlayer());
+                //                    System.out.println(
+                //                            &quot;Runner Thread: &quot; + runGame.getName() + &quot;, overview player 2: &quot; + runGame.getPlayers().get(1).getPlayer());
+                //
+                //                }
+<span class="nc" id="L207">            } catch (RemoteException ex) {</span>
+<span class="nc" id="L208">                Logger.getLogger(FXMLLobbyController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L209">            }</span>
+<span class="nc" id="L210">        }</span>
     }
 
     @FXML
     public void handlePlaceShipButton(ActionEvent e) {
 
-<span class="nc" id="L200">        Random random = new Random();</span>
-<span class="nc" id="L201">        int x = random.nextInt(14);</span>
-<span class="nc" id="L202">        int y = random.nextInt(14);</span>
-<span class="nc" id="L203">        int[] location = new int[2];</span>
-<span class="nc" id="L204">        location[0] = x+1;</span>
-<span class="nc" id="L205">        location[1] = y+1;</span>
+<span class="nc" id="L216">        Random random = new Random();</span>
+<span class="nc" id="L217">        int x = random.nextInt(14);</span>
+<span class="nc" id="L218">        int y = random.nextInt(14);</span>
+<span class="nc" id="L219">        int[] location = new int[2];</span>
+<span class="nc" id="L220">        location[0] = x + 1;</span>
+<span class="nc" id="L221">        location[1] = y + 1;</span>
 
         try {
-<span class="nc bnc" id="L208" title="All 2 branches missed.">            for (IPlayer playerLoop : this.gameManager.getPlayers()) {</span>
-<span class="nc bnc" id="L209" title="All 2 branches missed.">                if (playerLoop.equals(playingPlayer)) {</span>
-<span class="nc bnc" id="L210" title="All 2 branches missed.">                    if (this.gameManager.getPlayerTurn(playerLoop)) {</span>
-<span class="nc bnc" id="L211" title="All 2 branches missed.">                        if (this.gameManager.placeShip(playerLoop, location, 3, 0)) {</span>
-<span class="nc" id="L212">                            this.drawBoards(this.gameManager);</span>
-<span class="nc bnc" id="L213" title="All 2 branches missed.">                            if (playerLoop.getPlayer().amountOfShips() &lt; 7) {</span>
-<span class="nc" id="L214">                                this.gameManager.changeTurn(playerLoop);</span>
-                            }
-                            
-                            //Battleship.handler.getRMIClient().bindToServer(&quot;GameUpdate&quot;, this.gameManager);
-<span class="nc" id="L218">                            System.out.println(&quot;Print player1's board&quot;);</span>
-<span class="nc" id="L219">                            this.gameManager.getPlayers().get(0).getPlayer().printBoard();</span>
+            //for (IPlayer playerLoop : this.gameManager.getPlayers()) {
+            //  if (playerLoop.equals(playingPlayer)) {
+<span class="nc" id="L226">            System.out.println(&quot;Print playing player's board before ship placement.\n&quot;);</span>
+<span class="nc" id="L227">            playingPlayer.getPlayer().printBoard();</span>
+<span class="nc" id="L228">            System.out.println(this.gameManager.getName());</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">            if (this.gameManager.getPlayerTurn(playingPlayer)) {</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">                if (this.gameManager.placeShip(playingPlayer, location, 3, 0)) {</span>
+<span class="nc" id="L231">                    this.drawBoards(this.gameManager);</span>
+<span class="nc" id="L232">                    System.out.println(&quot;Print player1's board&quot;);</span>
+<span class="nc" id="L233">                    this.gameManager.getPlayers().get(0).getPlayer().printBoard();</span>
 
-<span class="nc" id="L221">                            System.out.println(&quot;Print player2's board&quot;);</span>
-<span class="nc" id="L222">                            this.gameManager.getPlayers().get(1).getPlayer().printBoard();</span>
-                        }
+<span class="nc" id="L235">                    System.out.println(&quot;Print player2's board&quot;);</span>
+<span class="nc" id="L236">                    this.gameManager.getPlayers().get(1).getPlayer().printBoard();</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">                    if (playingPlayer.getPlayer().amountOfShips() &lt; 7) {</span>
+<span class="nc" id="L238">                        this.gameManager.changeTurn(playingPlayer);</span>
                     }
+
+                } else {
+                    // TODO: Error Message.
                 }
-<span class="nc" id="L226">            }</span>
-<span class="nc" id="L227">        } catch (RemoteException ex) {</span>
-<span class="nc" id="L228">            Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L229">        }</span>
-<span class="nc" id="L230">    }</span>
+            }
+            //}
+            //}
+<span class="nc" id="L247">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L248">            Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L249">        } catch (BattleshipExceptions ex) {</span>
+<span class="nc" id="L250">            Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L251">        }</span>
+<span class="nc" id="L252">    }</span>
 
     @FXML
     public void handleFireTorpedoButton(ActionEvent e) {
-<span class="nc" id="L234">        Random random = new Random();</span>
-<span class="nc" id="L235">        int x = random.nextInt(16);</span>
-<span class="nc" id="L236">        int y = random.nextInt(16);</span>
-<span class="nc" id="L237">        int[] location = new int[2];</span>
-<span class="nc" id="L238">        location[0] = x;</span>
-<span class="nc" id="L239">        location[1] = y;</span>
+<span class="nc" id="L256">        Random random = new Random();</span>
+<span class="nc" id="L257">        int x = random.nextInt(16);</span>
+<span class="nc" id="L258">        int y = random.nextInt(16);</span>
+<span class="nc" id="L259">        int[] location = new int[2];</span>
+<span class="nc" id="L260">        location[0] = x;</span>
+<span class="nc" id="L261">        location[1] = y;</span>
         try {
-<span class="nc" id="L241">            IPlayer opponentPlayer = null;</span>
-<span class="nc bnc" id="L242" title="All 2 branches missed.">            for (IPlayer playerLoop : this.gameManager.getPlayers()) {</span>
-<span class="nc bnc" id="L243" title="All 2 branches missed.">                if (!playerLoop.equals(playerLoop)) {</span>
-<span class="nc" id="L244">                    opponentPlayer = playerLoop;</span>
+<span class="nc" id="L263">            IPlayer opponentPlayer = null;</span>
+<span class="nc bnc" id="L264" title="All 2 branches missed.">            for (IPlayer playerLoop : this.gameManager.getPlayers()) {</span>
+<span class="nc bnc" id="L265" title="All 2 branches missed.">                if (!playingPlayer.equals(playerLoop)) {</span>
+<span class="nc" id="L266">                    opponentPlayer = playerLoop;</span>
                 }
-<span class="nc" id="L246">            }</span>
-<span class="nc bnc" id="L247" title="All 4 branches missed.">            if (this.gameManager.getPlayerTurn(playingPlayer) &amp;&amp; opponentPlayer != null) {</span>
-<span class="nc" id="L248">                this.gameManager.fireTorpedo(playingPlayer, opponentPlayer, &quot;TorpedoTemp&quot;, location);</span>
-<span class="nc" id="L249">                this.drawBoards(this.gameManager);</span>
+<span class="nc" id="L268">            }</span>
+<span class="nc bnc" id="L269" title="All 4 branches missed.">            if (this.gameManager.getPlayerTurn(playingPlayer) &amp;&amp; opponentPlayer != null) {</span>
+<span class="nc bnc" id="L270" title="All 2 branches missed.">                if (this.gameManager.fireTorpedo(playingPlayer, opponentPlayer, &quot;TorpedoTemp&quot;, location)) {</span>
+<span class="nc" id="L271">                    this.drawBoards(this.gameManager);</span>
 
-<span class="nc" id="L251">                this.gameManager.changeTurn(playingPlayer);</span>
-                //Battleship.handler.getRMIClient().bindToServer(&quot;GameUpdate&quot;, this.gameManager);
+<span class="nc" id="L273">                    this.gameManager.changeTurn(playingPlayer);</span>
+                    //Battleship.handler.getRMIClient().bindToServer(&quot;GameUpdate&quot;, this.gameManager);
 
-<span class="nc" id="L254">                System.out.println(&quot;Print player1's board&quot;);</span>
-<span class="nc" id="L255">                this.gameManager.getPlayers().get(0).getPlayer().printBoard();</span>
+<span class="nc" id="L276">                    System.out.println(&quot;Print player1's board&quot;);</span>
+<span class="nc" id="L277">                    this.gameManager.getPlayers().get(0).getPlayer().printBoard();</span>
 
-<span class="nc" id="L257">                System.out.println(&quot;Print player2's board&quot;);</span>
-<span class="nc" id="L258">                this.gameManager.getPlayers().get(1).getPlayer().printBoard();</span>
+<span class="nc" id="L279">                    System.out.println(&quot;Print player2's board&quot;);</span>
+<span class="nc" id="L280">                    this.gameManager.getPlayers().get(1).getPlayer().printBoard();</span>
+                } else {
+                    // TODO: Error Message.
+                }
+
             }
-<span class="nc" id="L260">        } catch (RemoteException ex) {</span>
-<span class="nc" id="L261">            Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L262">        }</span>
-<span class="nc" id="L263">    }</span>
+<span class="nc" id="L286">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L287">            Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L288">        }</span>
+<span class="nc" id="L289">    }</span>
 
     @FXML
     public void handleEndPlayerTurnButton(ActionEvent e) {
         try {
-<span class="nc bnc" id="L268" title="All 2 branches missed.">            for (IPlayer playerLoop : this.gameManager.getPlayers()) {</span>
-<span class="nc" id="L269">                this.gameManager.changeTurn(playerLoop);</span>
+<span class="nc bnc" id="L294" title="All 2 branches missed.">            for (IPlayer playerLoop : this.gameManager.getPlayers()) {</span>
+<span class="nc" id="L295">                this.gameManager.changeTurn(playerLoop);</span>
                 //Battleship.handler.getRMIClient().bindToServer(&quot;GameUpdate&quot;, this.gameManager);
-<span class="nc" id="L271">            }</span>
-<span class="nc" id="L272">        } catch (RemoteException ex) {</span>
-<span class="nc" id="L273">            Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L274">        }</span>
-<span class="nc" id="L275">    }</span>
+<span class="nc" id="L297">            }</span>
+<span class="nc" id="L298">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L299">            Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L300">        }</span>
+<span class="nc" id="L301">    }</span>
+
+    @FXML
+    public void handleLeaveButton(ActionEvent e) {
+        try {
+<span class="nc" id="L306">            this.gameManager.removePlayer(playingPlayer);</span>
+<span class="nc bnc" id="L307" title="All 2 branches missed.">            if (opponentPlayer.getName().equals(Battleship.handler.getLoggedInPlayer().getLoginName())) {</span>
+<span class="nc" id="L308">                Battleship.handler.addScoreToDB(opponentPlayer.getName(), opponentPlayer.getScore());</span>
+            }
+<span class="nc" id="L310">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L311">            Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L312">        }</span>
+<span class="nc" id="L313">    }</span>
 
     private void showGrids() {
-<span class="nc" id="L278">        gridPanePlayer.setGridLinesVisible(true);</span>
+<span class="nc" id="L316">        gridPanePlayer.setGridLinesVisible(true);</span>
 
-<span class="nc" id="L280">        gridPaneOpponent.setGridLinesVisible(true);</span>
+<span class="nc" id="L318">        gridPaneOpponent.setGridLinesVisible(true);</span>
 
-<span class="nc" id="L282">        hBoxPlayerView.getChildren().add(gridPanePlayer);</span>
-<span class="nc" id="L283">        hBoxOpponentView.getChildren().add(gridPaneOpponent);</span>
-<span class="nc" id="L284">    }</span>
+<span class="nc" id="L320">        hBoxPlayerView.getChildren().add(gridPanePlayer);</span>
+<span class="nc" id="L321">        hBoxOpponentView.getChildren().add(gridPaneOpponent);</span>
+<span class="nc" id="L322">    }</span>
 
     private void drawBoards(IGameManager game) {
         //        double canvasHeight = this.canvasPlayer.getHeight();
         //        double canvasWidth = this.canvasPlayer.getWidth();
 
         try {
-<span class="nc bnc" id="L291" title="All 2 branches missed.">            if (playingPlayer.equals(game.getPlayers().get(0))) {</span>
-<span class="nc" id="L292">                playingPlayer = game.getPlayers().get(0);</span>
-<span class="nc" id="L293">                opponentPlayer = game.getPlayers().get(1);</span>
+<span class="nc bnc" id="L329" title="All 2 branches missed.">            if (playingPlayer.equals(game.getPlayers().get(0))) {</span>
+<span class="nc" id="L330">                playingPlayer = game.getPlayers().get(0);</span>
+<span class="nc" id="L331">                opponentPlayer = game.getPlayers().get(1);</span>
             } else {
-<span class="nc" id="L295">                playingPlayer = game.getPlayers().get(1);</span>
-<span class="nc" id="L296">                opponentPlayer = this.gameManager.getPlayers().get(0);</span>
+<span class="nc" id="L333">                playingPlayer = game.getPlayers().get(1);</span>
+<span class="nc" id="L334">                opponentPlayer = this.gameManager.getPlayers().get(0);</span>
             }
-<span class="nc" id="L298">            Overview overviewPlayer = playingPlayer.getPlayer();</span>
-<span class="nc" id="L299">            drawBoard(overviewPlayer, true);</span>
+<span class="nc" id="L336">            Overview overviewPlayer = playingPlayer.getPlayer();</span>
+<span class="nc" id="L337">            drawBoard(overviewPlayer, true);</span>
 
-<span class="nc" id="L301">            Overview overviewOpponent = opponentPlayer.getPlayer();</span>
-<span class="nc" id="L302">            drawBoard(overviewOpponent, false);</span>
-<span class="nc" id="L303">        } catch (RemoteException ex) {</span>
-<span class="nc" id="L304">            Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L305">        }</span>
+<span class="nc" id="L339">            Overview overviewOpponent = opponentPlayer.getPlayer();</span>
+<span class="nc" id="L340">            drawBoard(overviewOpponent, false);</span>
+<span class="nc" id="L341">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L342">            Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L343">        }</span>
 
         /*
          try {
@@ -355,55 +393,55 @@ import javafx.stage.Stage;
          } catch (RemoteException ex) {
          Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);
          }*/
-<span class="nc" id="L358">    }</span>
+<span class="nc" id="L396">    }</span>
 
     private void drawBoard(Overview overview, boolean isPlayerBoard) {
-<span class="nc bnc" id="L361" title="All 2 branches missed.">        if (isPlayerBoard) {</span>
-<span class="nc" id="L362">            int[][] board = overview.getBoard();</span>
-<span class="nc bnc" id="L363" title="All 2 branches missed.">            for (int i = 0; i &lt; board.length; i++) {</span>
-<span class="nc bnc" id="L364" title="All 2 branches missed.">                for (int j = 0; j &lt; board[0].length; j++) {</span>
-<span class="nc" id="L365">                    Label boardIndex = new Label(Integer.toString(board[i][j]));</span>
-<span class="nc" id="L366">                    boardIndex.setAlignment(Pos.CENTER);</span>
+<span class="nc bnc" id="L399" title="All 2 branches missed.">        if (isPlayerBoard) {</span>
+<span class="nc" id="L400">            int[][] board = overview.getBoard();</span>
+<span class="nc bnc" id="L401" title="All 2 branches missed.">            for (int i = 0; i &lt; board.length; i++) {</span>
+<span class="nc bnc" id="L402" title="All 2 branches missed.">                for (int j = 0; j &lt; board[0].length; j++) {</span>
+<span class="nc" id="L403">                    Label boardIndex = new Label(Integer.toString(board[i][j]));</span>
+<span class="nc" id="L404">                    boardIndex.setAlignment(Pos.CENTER);</span>
 
-<span class="nc" id="L368">                    gridPanePlayer.add(boardIndex, i, j);</span>
+<span class="nc" id="L406">                    gridPanePlayer.add(boardIndex, i, j);</span>
                 }
             }
-<span class="nc" id="L371">        } else {</span>
-<span class="nc" id="L372">            int[][] board = overview.getBoard();</span>
-<span class="nc bnc" id="L373" title="All 2 branches missed.">            for (int i = 0; i &lt; board.length; i++) {</span>
-<span class="nc bnc" id="L374" title="All 2 branches missed.">                for (int j = 0; j &lt; board[0].length; j++) {</span>
-<span class="nc" id="L375">                    Label boardIndex = new Label(Integer.toString(board[i][j]));</span>
-<span class="nc" id="L376">                    boardIndex.setAlignment(Pos.CENTER);</span>
+<span class="nc" id="L409">        } else {</span>
+<span class="nc" id="L410">            int[][] board = overview.getBoard();</span>
+<span class="nc bnc" id="L411" title="All 2 branches missed.">            for (int i = 0; i &lt; board.length; i++) {</span>
+<span class="nc bnc" id="L412" title="All 2 branches missed.">                for (int j = 0; j &lt; board[0].length; j++) {</span>
+<span class="nc" id="L413">                    Label boardIndex = new Label(Integer.toString(board[i][j]));</span>
+<span class="nc" id="L414">                    boardIndex.setAlignment(Pos.CENTER);</span>
 
-<span class="nc" id="L378">                    gridPaneOpponent.add(boardIndex, i, j);</span>
+<span class="nc" id="L416">                    gridPaneOpponent.add(boardIndex, i, j);</span>
                 }
             }
         }
-<span class="nc" id="L382">    }</span>
+<span class="nc" id="L420">    }</span>
 
     private void drawStart() {
 //        double canvasHeight = this.canvasPlayer.getHeight();
 //        double canvasWidth = this.canvasPlayer.getWidth();
         try {
-<span class="nc bnc" id="L388" title="All 2 branches missed.">            if (this.gameManager.getOverviews().size() != 2) {</span>
-<span class="nc" id="L389">                this.gameManager.buildOverviewsForPlayers();</span>
+<span class="nc bnc" id="L426" title="All 2 branches missed.">            if (this.gameManager.getOverviews().size() != 2) {</span>
+<span class="nc" id="L427">                this.gameManager.buildOverviewsForPlayers();</span>
                 //Battleship.handler.getRMIClient().bindToServer(&quot;GameUpdate&quot;, this.gameManager);
 
             }
-<span class="nc" id="L393">        } catch (RemoteException ex) {</span>
-<span class="nc" id="L394">            Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L395">        }</span>
+<span class="nc" id="L431">        } catch (RemoteException ex) {</span>
+<span class="nc" id="L432">            Logger.getLogger(FXMLGameVC.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L433">        }</span>
 
-<span class="nc" id="L397">    }</span>
+<span class="nc" id="L435">    }</span>
 
     private void drawBackground() {
 //        this.canvasOpponent.getGraphicsContext2D().drawImage(this.fieldBackground, 0, 0);
 //        this.canvasPlayer.getGraphicsContext2D().drawImage(this.fieldBackground, 0, 0);
-<span class="nc" id="L402">    }</span>
+<span class="nc" id="L440">    }</span>
 
     private void initializeImages() {
-<span class="nc" id="L405">        this.fieldBackground = new Image(&quot;Battleship/Images/WaterBG1.jpg&quot;);</span>
-<span class="nc" id="L406">    }</span>
+<span class="nc" id="L443">        this.fieldBackground = new Image(&quot;Battleship/Images/WaterBG1.jpg&quot;);</span>
+<span class="nc" id="L444">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

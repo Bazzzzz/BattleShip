@@ -36,6 +36,8 @@ import javafx.stage.Stage;
     @FXML
     private Button btnRegister;
     @FXML
+    private Button btnHighscore;
+    @FXML
     private TextField tfUsername;
     @FXML
     private TextField tfPassword;
@@ -49,91 +51,109 @@ import javafx.stage.Stage;
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-<span class="nc" id="L52">        this.tfServerIP.setText(&quot;localhost&quot;);</span>
-<span class="nc" id="L53">        this.tfPassword.setText(&quot;test&quot;);</span>
-<span class="nc" id="L54">    }</span>
+<span class="nc" id="L54">        this.tfServerIP.setText(&quot;localhost&quot;);</span>
+<span class="nc" id="L55">        this.tfPassword.setText(&quot;test&quot;);</span>
+<span class="nc" id="L56">    }</span>
 
     @FXML
     public void handlePlayButton(ActionEvent e) throws IOException {
         try {
-<span class="nc" id="L59">            RMIClient client = new RMIClient(tfServerIP.getText());</span>
-<span class="nc" id="L60">            setApplicationHandler(tfServerIP.getText());</span>
-<span class="nc" id="L61">            this.handlePlayAction(client);</span>
-<span class="nc" id="L62">        } catch (BattleshipExceptions ex) {</span>
-<span class="nc" id="L63">            lblError.setText(ex.getMessage());</span>
-<span class="nc" id="L64">        }</span>
+<span class="nc" id="L61">            RMIClient client = new RMIClient(tfServerIP.getText());</span>
+<span class="nc" id="L62">            setApplicationHandler(tfServerIP.getText());</span>
+<span class="nc" id="L63">            this.handlePlayAction(client);</span>
+<span class="nc" id="L64">        } catch (BattleshipExceptions ex) {</span>
+<span class="nc" id="L65">            lblError.setText(ex.getMessage());</span>
+<span class="nc" id="L66">        }</span>
 
-<span class="nc" id="L66">    }</span>
+<span class="nc" id="L68">    }</span>
 
     @FXML
     public void handleRegisterButton(ActionEvent e) {
-<span class="nc" id="L70">        setApplicationHandler(tfServerIP.getText());</span>
-<span class="nc" id="L71">        this.handleRegisterAction();</span>
-<span class="nc" id="L72">    }</span>
+<span class="nc" id="L72">        setApplicationHandler(tfServerIP.getText());</span>
+<span class="nc" id="L73">        this.handleRegisterAction();</span>
+<span class="nc" id="L74">    }</span>
+
+    @FXML
+    public void handleHighscoreButton(ActionEvent e) {
+<span class="nc" id="L78">        setApplicationHandler(tfServerIP.getText());</span>
+<span class="nc" id="L79">        this.handleHighscoreAction();</span>
+
+<span class="nc" id="L81">    }</span>
 
     private void handlePlayAction(RMIClient client) throws IOException {
         try {
-<span class="nc" id="L76">            String username = tfUsername.getText();</span>
-<span class="nc" id="L77">            String password = tfPassword.getText();</span>
-<span class="nc bnc" id="L78" title="All 2 branches missed.">            if (!username.equals(&quot;&quot;)) {</span>
-<span class="nc bnc" id="L79" title="All 2 branches missed.">                if (!password.equals(&quot;&quot;)) {</span>
-<span class="nc bnc" id="L80" title="All 2 branches missed.">                    if (this.handleRMIConnection(client)) {</span>
-<span class="nc" id="L81">                        this.loginPlayer(username, password);</span>
+<span class="nc" id="L85">            String username = tfUsername.getText();</span>
+<span class="nc" id="L86">            String password = tfPassword.getText();</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">            if (!username.equals(&quot;&quot;)) {</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">                if (!password.equals(&quot;&quot;)) {</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">                    if (this.handleRMIConnection(client)) {</span>
+<span class="nc" id="L90">                        this.loginPlayer(username, password);</span>
                         Parent window;
 
-<span class="nc" id="L84">                        window = FXMLLoader.load(getClass().getResource(&quot;FXMLLobbyList.fxml&quot;));</span>
-                        
-<span class="nc" id="L86">                        Battleship.currentStage.getScene().setRoot(window);</span>
+<span class="nc" id="L93">                        window = FXMLLoader.load(getClass().getResource(&quot;FXMLLobbyList.fxml&quot;));</span>
+
+<span class="nc" id="L95">                        Battleship.currentStage.getScene().setRoot(window);</span>
                         /*Stage stage = new Stage();
-                        stage.setTitle(&quot;Lobbies&quot;);
-                        stage.setScene(new Scene(window));
-                        stage.show();*/
-<span class="nc" id="L91">                    } else {</span>
-<span class="nc" id="L92">                        throw new BattleshipExceptions(&quot;Unable to make connection.&quot;);</span>
+                         stage.setTitle(&quot;Lobbies&quot;);
+                         stage.setScene(new Scene(window));
+                         stage.show();*/
+<span class="nc" id="L100">                    } else {</span>
+<span class="nc" id="L101">                        throw new BattleshipExceptions(&quot;Unable to make connection.&quot;);</span>
                     }
 
                 } else {
                     // TODO: Start game without saving account details.
                 }
             } else {
-<span class="nc" id="L99">                throw new BattleshipExceptions(&quot;Fill in a username.&quot;);</span>
+<span class="nc" id="L108">                throw new BattleshipExceptions(&quot;Fill in a username.&quot;);</span>
             }
-<span class="nc" id="L101">        } catch (BattleshipExceptions ex) {</span>
-<span class="nc" id="L102">            lblError.setText(ex.getMessage());</span>
-<span class="nc" id="L103">        }</span>
-<span class="nc" id="L104">    }</span>
+<span class="nc" id="L110">        } catch (BattleshipExceptions ex) {</span>
+<span class="nc" id="L111">            lblError.setText(ex.getMessage());</span>
+<span class="nc" id="L112">        }</span>
+<span class="nc" id="L113">    }</span>
 
     private void handleRegisterAction() {
         try {
-<span class="nc bnc" id="L108" title="All 4 branches missed.">            if (tfUsername.getText() != null &amp;&amp; tfPassword.getText() != null) {</span>
-<span class="nc bnc" id="L109" title="All 2 branches missed.">                if (Battleship.handler.newPlayerToDB(tfUsername.getText(), tfPassword.getText())) {</span>
+<span class="nc bnc" id="L117" title="All 4 branches missed.">            if (tfUsername.getText() != null &amp;&amp; tfPassword.getText() != null) {</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">                if (Battleship.handler.newPlayerToDB(tfUsername.getText(), tfPassword.getText())) {</span>
                     // TODO: Confirmation message.
-<span class="nc" id="L111">                    System.out.println(&quot;Player registered.&quot;);</span>
-<span class="nc" id="L112">                    lblError.setText(&quot;Player registered.&quot;);</span>
+<span class="nc" id="L120">                    System.out.println(&quot;Player registered.&quot;);</span>
+<span class="nc" id="L121">                    lblError.setText(&quot;Player registered.&quot;);</span>
 
                 } else {
-<span class="nc" id="L115">                    throw new BattleshipExceptions(&quot;Fill in username and password.&quot;);</span>
+<span class="nc" id="L124">                    throw new BattleshipExceptions(&quot;Fill in username and password.&quot;);</span>
                 }
             }
-<span class="nc" id="L118">        } catch (BattleshipExceptions | IllegalArgumentException ex) {</span>
-<span class="nc" id="L119">            lblError.setText(ex.getMessage());</span>
-<span class="nc" id="L120">        }</span>
-<span class="nc" id="L121">    }</span>
+<span class="nc" id="L127">        } catch (BattleshipExceptions | IllegalArgumentException ex) {</span>
+<span class="nc" id="L128">            lblError.setText(ex.getMessage());</span>
+<span class="nc" id="L129">        }</span>
+<span class="nc" id="L130">    }</span>
+
+    private void handleHighscoreAction() {
+        try {
+            Parent window;
+<span class="nc" id="L135">            window = FXMLLoader.load(getClass().getResource(&quot;FXMLHighscore.fxml&quot;));</span>
+<span class="nc" id="L136">            Battleship.currentStage.getScene().setRoot(window);</span>
+<span class="nc" id="L137">        } catch (IOException ex) {</span>
+<span class="nc" id="L138">            Logger.getLogger(FXMLMainController.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L139">        }</span>
+
+<span class="nc" id="L141">    }</span>
 
     private boolean handleRMIConnection(RMIClient client) {
-<span class="nc bnc" id="L124" title="All 2 branches missed.">        if (client.connectToServer(&quot;lobbyList&quot;, null)) {</span>
-<span class="nc" id="L125">            Battleship.handler.setRMIClient(client);</span>
-<span class="nc" id="L126">            return true;</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">        if (client.connectToServer(&quot;lobbyList&quot;, null)) {</span>
+<span class="nc" id="L145">            Battleship.handler.setRMIClient(client);</span>
+<span class="nc" id="L146">            return true;</span>
         }
-<span class="nc" id="L128">        return false;</span>
+<span class="nc" id="L148">        return false;</span>
     }
 
     private void loginPlayer(String username, String password) {
-<span class="nc" id="L132">        Battleship.handler.loginPlayer(username, password);</span>
-<span class="nc" id="L133">    }</span>
-    
+<span class="nc" id="L152">        Battleship.handler.loginPlayer(username, password);</span>
+<span class="nc" id="L153">    }</span>
+
     private void setApplicationHandler(String ipAddress) {
-<span class="nc" id="L136">        Battleship.setApplicationHandler(ipAddress);</span>
-<span class="nc" id="L137">    }</span>
+<span class="nc" id="L156">        Battleship.setApplicationHandler(ipAddress);</span>
+<span class="nc" id="L157">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

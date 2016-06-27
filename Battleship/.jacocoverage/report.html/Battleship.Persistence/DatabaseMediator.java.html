@@ -66,110 +66,104 @@ public class DatabaseMediator implements IDatabaseMediator {
 <span class="nc" id="L66">        }</span>
 <span class="nc" id="L67">    }</span>
 
-    /**
-     * Add a new player account to the database.
-     *
-     * @param account not null
-     * @return True if added to database.
-     */
     @Override
     public boolean addNewPlayer(Account account) {
-<span class="nc bnc" id="L77" title="All 2 branches missed.">        if(account == null) {</span>
-<span class="nc" id="L78">            return false;</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        if(account == null) {</span>
+<span class="nc" id="L72">            return false;</span>
         }
         
         try {
-<span class="nc bnc" id="L82" title="All 2 branches missed.">            if(openConnection()) {</span>
-<span class="nc" id="L83">                callStatement = con.prepareCall(&quot;call addPlayer(?,?)&quot;);</span>
-<span class="nc" id="L84">                callStatement.setString(1, account.getLoginName());</span>
-<span class="nc" id="L85">                callStatement.setString(2, account.getPassword());</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">            if(openConnection()) {</span>
+<span class="nc" id="L77">                callStatement = con.prepareCall(&quot;call addPlayer(?,?)&quot;);</span>
+<span class="nc" id="L78">                callStatement.setString(1, account.getLoginName());</span>
+<span class="nc" id="L79">                callStatement.setString(2, account.getPassword());</span>
                 
-<span class="nc" id="L87">                callStatement.execute();</span>
+<span class="nc" id="L81">                callStatement.execute();</span>
                 
-<span class="nc" id="L89">                return true;</span>
+<span class="nc" id="L83">                return true;</span>
             }
             
-<span class="nc" id="L92">        } catch (SQLException ex) {</span>
-<span class="nc" id="L93">            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L86">        } catch (SQLException ex) {</span>
+<span class="nc" id="L87">            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);</span>
         } finally {
-<span class="nc" id="L95">            closeConnection();</span>
-<span class="nc" id="L96">        }</span>
-<span class="nc" id="L97">        return false;</span>
+<span class="nc" id="L89">            closeConnection();</span>
+<span class="nc" id="L90">        }</span>
+<span class="nc" id="L91">        return false;</span>
     }
 
-    /**
-     * Retrieve a player from the database and make him log in.
-     *
-     * @param username not null
-     * @param password not null
-     * @return True if logged in.
-     */
     @Override
     public boolean login(String username, String password) {
-<span class="nc bnc" id="L109" title="All 4 branches missed.">        if (username == null || password == null) {</span>
-<span class="nc" id="L110">            return false;</span>
+<span class="nc bnc" id="L96" title="All 4 branches missed.">        if (username == null || password == null) {</span>
+<span class="nc" id="L97">            return false;</span>
         }
         try {
-<span class="nc bnc" id="L113" title="All 2 branches missed.">            if(openConnection()) {</span>
-<span class="nc" id="L114">                callStatement = con.prepareCall(&quot;call login(?,?)&quot;);</span>
-<span class="nc" id="L115">                callStatement.setString(1, username);</span>
-<span class="nc" id="L116">                callStatement.setString(2, password);</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">            if(openConnection()) {</span>
+<span class="nc" id="L101">                callStatement = con.prepareCall(&quot;call login(?,?)&quot;);</span>
+<span class="nc" id="L102">                callStatement.setString(1, username);</span>
+<span class="nc" id="L103">                callStatement.setString(2, password);</span>
                 
-<span class="nc" id="L118">                callStatement.execute();</span>
+<span class="nc" id="L105">                callStatement.execute();</span>
                 
-<span class="nc" id="L120">                return true;</span>
+<span class="nc" id="L107">                return true;</span>
             }
             
-<span class="nc" id="L123">        } catch (SQLException ex) {</span>
-<span class="nc" id="L124">            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L110">        } catch (SQLException ex) {</span>
+<span class="nc" id="L111">            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);</span>
         } finally {
-<span class="nc" id="L126">            closeConnection();</span>
-<span class="nc" id="L127">        }</span>
-<span class="nc" id="L128">        return false;</span>
+<span class="nc" id="L113">            closeConnection();</span>
+<span class="nc" id="L114">        }</span>
+<span class="nc" id="L115">        return false;</span>
     }
 
-    /**
-     * Retrieve the top 10 players from the database.
-     * @return List holding the top 10 players
-     */
     @Override
     public List&lt;Account&gt; getHighschore() {
-<span class="nc" id="L137">        List&lt;Account&gt; highscores = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L120">        List&lt;Account&gt; highscores = new ArrayList&lt;&gt;();</span>
         try {
-<span class="nc bnc" id="L139" title="All 2 branches missed.">            if(openConnection()) {</span>
-<span class="nc" id="L140">                callStatement = con.prepareCall(&quot;(call highschore()&quot;);</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">            if(openConnection()) {</span>
+<span class="nc" id="L123">                callStatement = con.prepareCall(&quot;call highscore()&quot;);</span>
                 
-<span class="nc" id="L142">                callStatement.execute();</span>
+<span class="nc" id="L125">                callStatement.execute();</span>
                 
-<span class="nc" id="L144">                ResultSet result = callStatement.getResultSet();</span>
+<span class="nc" id="L127">                ResultSet result = callStatement.getResultSet();</span>
                 
-<span class="nc bnc" id="L146" title="All 2 branches missed.">                while(result.next()) {</span>
-<span class="nc" id="L147">                    String username = result.getString(&quot;name&quot;);</span>
-<span class="nc" id="L148">                    int score = result.getInt(&quot;score&quot;);</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">                while(result.next()) {</span>
+<span class="nc" id="L130">                    String username = result.getString(&quot;username&quot;);</span>
+<span class="nc" id="L131">                    int score = result.getInt(&quot;score&quot;);</span>
                     
-<span class="nc" id="L150">                    highscores.add(new Account(username, score));</span>
-<span class="nc" id="L151">                }</span>
-<span class="nc" id="L152">                return highscores;</span>
+<span class="nc" id="L133">                    highscores.add(new Account(username, score));</span>
+<span class="nc" id="L134">                }</span>
+<span class="nc" id="L135">                return highscores;</span>
             }       
-<span class="nc" id="L154">        } catch (SQLException ex) {</span>
-<span class="nc" id="L155">            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L137">        } catch (SQLException ex) {</span>
+<span class="nc" id="L138">            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);</span>
         } finally {
-<span class="nc" id="L157">            closeConnection();</span>
-<span class="nc" id="L158">        }</span>
-<span class="nc" id="L159">        return new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L140">            closeConnection();</span>
+<span class="nc" id="L141">        }</span>
+<span class="nc" id="L142">        return new ArrayList&lt;&gt;();</span>
         
     }
     
-    
-    /**
-     * Log out a player.
-     *
-     * @return True if logged out.
-     */
     @Override
     public boolean logout() {
-<span class="nc" id="L171">        throw new UnsupportedOperationException(&quot;Not supported yet.&quot;); //To change body of generated methods, choose Tools | Templates.</span>
+<span class="nc" id="L148">        throw new UnsupportedOperationException(&quot;Not supported yet.&quot;); //To change body of generated methods, choose Tools | Templates.</span>
     }
+
+    @Override
+    public void addScore(String username, int score) {
+<span class="nc bnc" id="L153" title="All 6 branches missed.">        if(!username.isEmpty() &amp;&amp; username != null &amp;&amp; score &gt; 0) {</span>
+            try {
+<span class="nc bnc" id="L155" title="All 2 branches missed.">                if(openConnection()) {</span>
+<span class="nc" id="L156">                    callStatement = con.prepareCall(&quot;call changescore(?,?)&quot;);</span>
+<span class="nc" id="L157">                    callStatement.setString(1, username);</span>
+<span class="nc" id="L158">                    callStatement.setInt(2, score);</span>
+                    
+<span class="nc" id="L160">                    callStatement.execute();</span>
+                }
+<span class="nc" id="L162">            } catch (SQLException ex) {</span>
+<span class="nc" id="L163">                Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L164">            }</span>
+        }
+<span class="nc" id="L166">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

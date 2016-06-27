@@ -225,7 +225,7 @@ import javafx.stage.Stage;
 
     private void handleCloseWindow() {
         try {
-<span class="nc bnc" id="L228" title="All 2 branches missed.">            if (this.lobby.getPlayers().size() == 1) {</span>
+<span class="nc bnc" id="L228" title="All 2 branches missed.">            if (this.lobby.getPlayers().size() == 0) {</span>
 <span class="nc" id="L229">                Battleship.handler.getRMIClient().unbindFromServer(&quot;Lobby&quot;, this.lobby);</span>
             }
 <span class="nc" id="L231">        } catch (RemoteException ex) {</span>

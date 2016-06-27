@@ -16,7 +16,7 @@ public class Ship implements Serializable {
     private int length;
     private int[] locationStart;
     private int[] locationEnd;
-<span class="fc" id="L19">    private int amountHit = 0;</span>
+    private int amountHit;
     private String name;
     private int direction;
 
@@ -48,7 +48,7 @@ public class Ship implements Serializable {
 <span class="nc" id="L48">            throw new IllegalArgumentException(&quot;Ships start location invalid.&quot;);</span>
         }
 <span class="fc" id="L50">        this.name = determineShipName(length);</span>
-
+<span class="fc" id="L51">        this.amountHit = 0;</span>
 <span class="fc" id="L52">    }</span>
 
     public int getLength() {

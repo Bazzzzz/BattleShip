@@ -5,6 +5,7 @@
  */
 package Battleship.Domain;
 
+import Battleship.Exceptions.BattleshipExceptions;
 import fontys.observer.RemotePropertyListener;
 import Battleship.Interfaces.IGameManager;
 import Battleship.Interfaces.ILobby;
@@ -33,25 +34,25 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
     private List&lt;Overview&gt; overviews;
     private List&lt;IPlayer&gt; players;
 
-<span class="fc" id="L36">    public GameManager() throws RemoteException {</span>
-<span class="fc" id="L37">        torpedos = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L38">        overviews = new ArrayList&lt;&gt;(4);</span>
-<span class="fc" id="L39">        players = new ArrayList&lt;&gt;(2);</span>
+<span class="fc" id="L37">    public GameManager() throws RemoteException {</span>
+<span class="fc" id="L38">        torpedos = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L39">        overviews = new ArrayList&lt;&gt;(4);</span>
+<span class="fc" id="L40">        players = new ArrayList&lt;&gt;(2);</span>
 
-<span class="fc" id="L41">    }</span>
+<span class="fc" id="L42">    }</span>
 
     public GameManager(String name) throws RemoteException {
-<span class="nc" id="L44">        this();</span>
-<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (name.endsWith(&quot;game&quot;)) {</span>
-<span class="nc" id="L46">            this.name = name;</span>
+<span class="nc" id="L45">        this();</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (name.endsWith(&quot;game&quot;)) {</span>
+<span class="nc" id="L47">            this.name = name;</span>
         } else {
-<span class="nc" id="L48">            throw new IllegalArgumentException(&quot;Game name has to end with game.&quot;);</span>
+<span class="nc" id="L49">            throw new IllegalArgumentException(&quot;Game name has to end with game.&quot;);</span>
         }
 
-<span class="nc" id="L51">    }</span>
+<span class="nc" id="L52">    }</span>
 
     public String getName() throws RemoteException {
-<span class="nc" id="L54">        return name;</span>
+<span class="nc" id="L55">        return name;</span>
     }
 
     /**
@@ -61,7 +62,7 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
      */
     @Override
     public boolean confirmBoard() throws RemoteException {
-<span class="nc" id="L64">        return false;</span>
+<span class="nc" id="L65">        return false;</span>
     }
 
     /**
@@ -75,38 +76,46 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
      * @throws java.rmi.RemoteException
      */
     @Override
-    public synchronized boolean placeShip(IPlayer player, int[] locationStart, int shipLength, int direction) throws RemoteException {
-<span class="fc" id="L79">        Ship ship = null;</span>
-<span class="fc" id="L80">        System.out.println(&quot;[PlaceShip] Game info: overviews:&quot; + this.overviews.size() + &quot;, name:&quot; + this.name + &quot;, player1:&quot; + this.players.get(0) + &quot;, player 2:&quot; + this.players.get(1));</span>
+    public synchronized boolean placeShip(IPlayer player, int[] locationStart, int shipLength, int direction) throws RemoteException, BattleshipExceptions {
+<span class="fc" id="L80">        Ship ship = null;</span>
+        //System.out.println(&quot;\n[PlaceShip] Game info: overviews:&quot; + this.overviews.size() + &quot;, name:&quot; + this.name + &quot;, player1:&quot; + this.players.get(0) + &quot;, player 2:&quot; + this.players.get(1));
 
-<span class="pc bpc" id="L82" title="1 of 2 branches missed.">        if (player != null) {</span>
-<span class="fc" id="L83">            System.out.println(&quot;[PlaceShip - PlayerNotNull] Game info: overviews:&quot; + this.overviews.size() + &quot;, name:&quot; + this.name + &quot;, player1:&quot; + this.players.get(0) + &quot;, player 2:&quot; + this.players.get(1));</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        if (player != null) {</span>
+            //System.out.println(&quot;[PlaceShip - PlayerNotNull] Game info: overviews:&quot; + this.overviews.size() + &quot;, name:&quot; + this.name + &quot;, player1:&quot; + this.players.get(0) + &quot;, player 2:&quot; + this.players.get(1));
 
-<span class="fc" id="L85">            Overview playerOverview = null;</span>
-<span class="fc" id="L86">            boolean notFound = true;</span>
-<span class="fc bfc" id="L87" title="All 4 branches covered.">            for (int i = 0; i &lt; this.overviews.size() &amp;&amp; notFound; i++) {</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">                if (this.overviews.get(i).equals(player.getPlayer())) {</span>
-<span class="fc" id="L89">                    playerOverview = this.overviews.get(i);</span>
-<span class="fc" id="L90">                    notFound = false;</span>
+<span class="fc" id="L86">            Overview playerOverview = null;</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">            for (int i = 0; i &lt; this.players.size(); i++) {</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">                if (this.players.get(i).equals(player)) {</span>
+
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">                    if (this.players.get(i).getPlayer() != null) {</span>
+<span class="fc" id="L91">                        playerOverview = this.players.get(i).getPlayer();</span>
+                    } else {
+<span class="nc" id="L93">                        throw new BattleshipExceptions(&quot;Player overview not available.&quot;);</span>
+                    }
                 }
             }
-<span class="fc bfc" id="L93" title="All 2 branches covered.">            if (playerOverview.amountOfShips() &lt; 7) {</span>
-<span class="pc bpc" id="L94" title="1 of 2 branches missed.">                if (locationStart.length == 2) {</span>
-<span class="fc" id="L95">                    ship = new Ship(shipLength, locationStart, direction);</span>
+            //System.out.println(&quot;[PlaceShip - OverviewNotNull] Overview info: \n&quot;);
+            //playerOverview.printBoard();
+<span class="fc bfc" id="L99" title="All 2 branches covered.">            if (playerOverview.amountOfShips() &lt; 7) {</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">                if (locationStart.length == 2) {</span>
+<span class="fc" id="L101">                    ship = new Ship(shipLength, locationStart, direction);</span>
                     // Confirm availability start and end.
-<span class="pc bpc" id="L97" title="1 of 4 branches missed.">                    if (playerOverview.locationAvailable(ship.getLocationStart()) &amp;&amp; playerOverview.locationAvailable(ship.getLocationEnd())) {</span>
+<span class="pc bpc" id="L103" title="1 of 4 branches missed.">                    if (playerOverview.locationAvailable(ship.getLocationStart()) &amp;&amp; playerOverview.locationAvailable(ship.getLocationEnd())) {</span>
                         // Confirm availability inbetween start and end.
-<span class="fc bfc" id="L99" title="All 2 branches covered.">                        if (playerOverview.locationShipLengthAvailable(ship.getLocationStart(), ship.getLocationEnd(), direction)) {</span>
-<span class="pc bpc" id="L100" title="1 of 2 branches missed.">                            if (playerOverview.addShip(ship)) {</span>
-<span class="fc" id="L101">                                this.updateOverview(player, playerOverview);</span>
-<span class="fc" id="L102">                                return true;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">                        if (playerOverview.locationShipLengthAvailable(ship.getLocationStart(), ship.getLocationEnd(), direction)) {</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">                            if (playerOverview.addShip(ship)) {</span>
+                                //this.updateOverview(player, playerOverview);
+<span class="fc" id="L108">                                System.out.println(&quot;[PlaceShip - UpdatedOverview] New Overview:&quot;);</span>
+<span class="fc" id="L109">                                player.getPlayer().printBoard();</span>
+<span class="fc" id="L110">                                return true;</span>
                             }
                         }
                     }
                 }
             }
         }
-<span class="fc" id="L109">        return false;</span>
+
+<span class="fc" id="L118">        return false;</span>
     }
 
     /**
@@ -114,6 +123,7 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
      * damage. If a special package is hit is will be claimed by the player.
      *
      * @param firingPlayer not null
+     * @param receivingPlayer
      * @param receiveingPlayer
      * @param torpedoName not null
      * @param firedLocation
@@ -122,10 +132,10 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
      */
     @Override
     public synchronized boolean fireTorpedo(IPlayer firingPlayer, IPlayer receivingPlayer, String torpedoName, int[] firedLocation) throws RemoteException {
-<span class="fc" id="L125">        Torpedo torpedo = null;</span>
-<span class="pc bpc" id="L126" title="2 of 4 branches missed.">        if (firingPlayer != null &amp;&amp; receivingPlayer != null) {</span>
-<span class="fc" id="L127">            Overview receivingPlayerOverview = receivingPlayer.getPlayer();</span>
-<span class="fc" id="L128">            boolean notFound = true;</span>
+<span class="fc" id="L135">        Torpedo torpedo = null;</span>
+<span class="pc bpc" id="L136" title="2 of 4 branches missed.">        if (firingPlayer != null &amp;&amp; receivingPlayer != null) {</span>
+<span class="fc" id="L137">            Overview receivingPlayerOverview = receivingPlayer.getPlayer();</span>
+<span class="fc" id="L138">            boolean notFound = true;</span>
 
 //            for (int i = 0; i &lt; this.overviews.size() &amp;&amp; notFound; i++) {
 //                if (this.overviews.get(i).equals(firingPlayer.getPlayer())) {
@@ -133,45 +143,53 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
 //                    notFound = false;
 //                }
 //            }
-<span class="pc bpc" id="L136" title="1 of 2 branches missed.">            if (torpedoName != null) {</span>
-<span class="fc bfc" id="L137" title="All 2 branches covered.">                if (receivingPlayerOverview.locationHasTorpedo(firedLocation)) {</span>
-<span class="fc" id="L138">                    return false;</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">            if (torpedoName != null) {</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">                if (receivingPlayerOverview.locationHasTorpedo(firedLocation)) {</span>
+<span class="fc" id="L148">                    return false;</span>
                 }
-<span class="fc" id="L140">                torpedo = new Torpedo(torpedoName);</span>
-<span class="fc" id="L141">                torpedo.updateFireLocation(firedLocation);</span>
-<span class="fc" id="L142">                torpedos.add(torpedo);</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">                if (receivingPlayerOverview.locationHasShip(firedLocation)) {</span>
+<span class="fc" id="L150">                torpedo = new Torpedo(torpedoName);</span>
+<span class="fc" id="L151">                torpedo.updateFireLocation(firedLocation);</span>
+<span class="fc" id="L152">                torpedos.add(torpedo);</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">                if (receivingPlayerOverview.locationHasShip(firedLocation)) {</span>
 
-<span class="fc bfc" id="L145" title="All 2 branches covered.">                    if (this.damageShip(receivingPlayer, firedLocation) == 1) {</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">                    if (this.damageShip(receivingPlayer, firedLocation) == -1) {</span>
                         // TODO: Animation of ship destruction?
-
+<span class="fc" id="L157">                        int score = receivingPlayer.getPlayer().getShipOnLocation(firedLocation).getAmountHit() * 200;</span>
+<span class="fc" id="L158">                        firingPlayer.setScore(score);</span>
                     }
-<span class="fc" id="L149">                    receivingPlayerOverview.displayTorpedoShipHit(firedLocation);</span>
-<span class="fc" id="L150">                    this.updateOverview(receivingPlayer, receivingPlayerOverview);</span>
-<span class="fc" id="L151">                    return true;</span>
-<span class="pc bpc" id="L152" title="1 of 2 branches missed.">                } else if (receivingPlayerOverview.locationHasSpecial(firedLocation)) {</span>
+<span class="fc" id="L160">                    System.out.println(&quot;[FireTorpedo - ShipDamage] Damaged ship: &quot; + receivingPlayer.getPlayer().getShipOnLocation(firedLocation).getAmountHit());</span>
+<span class="fc" id="L161">                    receivingPlayerOverview.displayTorpedoShipHit(firedLocation);</span>
+<span class="fc" id="L162">                    this.updateOverview(receivingPlayer, receivingPlayerOverview);</span>
+<span class="fc" id="L163">                    System.out.println(&quot;[FireTorpedo - UpdatedOverview] New Overview:&quot;);</span>
+<span class="fc" id="L164">                    receivingPlayerOverview.printBoard();</span>
+<span class="fc" id="L165">                    return true;</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">                } else if (receivingPlayerOverview.locationHasSpecial(firedLocation)) {</span>
                     // TODO: Obtain Special TESTING
-<span class="nc" id="L154">                    this.claimSpecial(firedLocation, firingPlayer);</span>
-<span class="nc" id="L155">                    this.updateOverview(receivingPlayer, receivingPlayerOverview);</span>
-<span class="nc" id="L156">                    return true;</span>
+<span class="nc" id="L168">                    this.claimSpecial(firedLocation, firingPlayer);</span>
+<span class="nc" id="L169">                    this.updateOverview(receivingPlayer, receivingPlayerOverview);</span>
+<span class="nc" id="L170">                    System.out.println(&quot;[FireTorpedo - UpdatedOverview] New Overview:&quot;);</span>
+<span class="nc" id="L171">                    receivingPlayerOverview.printBoard();</span>
+<span class="nc" id="L172">                    return true;</span>
                 } else {
-<span class="fc" id="L158">                    receivingPlayerOverview.displayTorpedo(firedLocation);</span>
-<span class="fc" id="L159">                    this.updateOverview(receivingPlayer, receivingPlayerOverview);</span>
-<span class="fc" id="L160">                    return true;</span>
+<span class="fc" id="L174">                    receivingPlayerOverview.displayTorpedo(firedLocation);</span>
+<span class="fc" id="L175">                    this.updateOverview(receivingPlayer, receivingPlayerOverview);</span>
+<span class="fc" id="L176">                    System.out.println(&quot;[FireTorpedo - UpdatedOverview] New Overview:&quot;);</span>
+<span class="fc" id="L177">                    receivingPlayerOverview.printBoard();</span>
+<span class="fc" id="L178">                    return true;</span>
                 }
             }
         }
-<span class="nc" id="L164">        return false;</span>
+<span class="nc" id="L182">        return false;</span>
     }
 
     @Override
     public List&lt;IPlayer&gt; getPlayers() throws RemoteException {
-<span class="fc" id="L169">        return this.players;</span>
+<span class="fc" id="L187">        return this.players;</span>
     }
 
     @Override
     public List&lt;Torpedo&gt; getTorpedos() throws RemoteException {
-<span class="fc" id="L174">        return torpedos;</span>
+<span class="fc" id="L192">        return torpedos;</span>
     }
 
     /**
@@ -183,29 +201,29 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
      */
     @Override
     public synchronized SpecialPackage claimSpecial(int[] location, IPlayer player) throws RemoteException {
-<span class="nc bnc" id="L186" title="All 2 branches missed.">        if (player != null) {</span>
-<span class="nc" id="L187">            List&lt;SpecialPackage&gt; specials = player.getSpecials();</span>
-<span class="nc bnc" id="L188" title="All 2 branches missed.">            for (SpecialPackage special : specials) {</span>
-<span class="nc bnc" id="L189" title="All 2 branches missed.">                if (special.getPlacedLocation().equals(location)) {</span>
-<span class="nc" id="L190">                    special.claimSpecial();</span>
-<span class="nc" id="L191">                    return special;</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">        if (player != null) {</span>
+<span class="nc" id="L205">            List&lt;SpecialPackage&gt; specials = player.getSpecials();</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">            for (SpecialPackage special : specials) {</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">                if (special.getPlacedLocation().equals(location)) {</span>
+<span class="nc" id="L208">                    special.claimSpecial();</span>
+<span class="nc" id="L209">                    return special;</span>
                     // TODO: claimSpecial TESTING
                 }
-<span class="nc" id="L194">            }</span>
+<span class="nc" id="L212">            }</span>
         }
-<span class="nc" id="L196">        return null;</span>
+<span class="nc" id="L214">        return null;</span>
     }
 
     @Override
     public void updateOverview(IPlayer player, Overview overview) throws RemoteException {
-<span class="fc bfc" id="L201" title="All 2 branches covered.">        if (player.equals(this.players.get(0))) {</span>
-<span class="fc" id="L202">            this.overviews.set(0, overview);</span>
-<span class="fc" id="L203">            player.setPlayerOverview(overview);</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">        if (player.equals(this.players.get(0))) {</span>
+<span class="fc" id="L220">            this.overviews.set(0, overview);</span>
+<span class="fc" id="L221">            this.players.get(0).setPlayerOverview(overview);</span>
         } else {
-<span class="fc" id="L205">            this.overviews.set(1, overview);</span>
-<span class="fc" id="L206">            player.setPlayerOverview(overview);</span>
+<span class="fc" id="L223">            this.overviews.set(1, overview);</span>
+<span class="fc" id="L224">            this.players.get(1).setPlayerOverview(overview);</span>
         }
-<span class="fc" id="L208">    }</span>
+<span class="fc" id="L226">    }</span>
 
     /**
      * Places special packages on the overview
@@ -214,10 +232,10 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
      */
     @Override
     public synchronized void placeSpecials(Overview overview) throws RemoteException {
-<span class="nc bnc" id="L217" title="All 2 branches missed.">        if (overview != null) {</span>
-<span class="nc" id="L218">            overview.buildSpecialPackages();</span>
+<span class="nc bnc" id="L235" title="All 2 branches missed.">        if (overview != null) {</span>
+<span class="nc" id="L236">            overview.buildSpecialPackages();</span>
         }
-<span class="nc" id="L220">    }</span>
+<span class="nc" id="L238">    }</span>
 
     /**
      * Repairs the ship that's selected by the player.
@@ -229,37 +247,37 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
      */
     @Override
     public synchronized boolean repairShip(int fix, IPlayer player, int[] location) throws RemoteException {
-<span class="pc bpc" id="L232" title="2 of 4 branches missed.">        if (player != null &amp;&amp; fix &gt; 0) {</span>
-<span class="fc" id="L233">            Ship tempShip = player.getPlayer().getShipOnLocation(location);</span>
-<span class="pc bpc" id="L234" title="1 of 2 branches missed.">            if (tempShip != null) {</span>
-<span class="fc" id="L235">                tempShip.changeAmountHit((-1) * fix);</span>
-<span class="pc bpc" id="L236" title="1 of 2 branches missed.">                if (player.getPlayer().fixShipOnLocation(location)) {</span>
-<span class="fc" id="L237">                    return true;</span>
+<span class="pc bpc" id="L250" title="2 of 4 branches missed.">        if (player != null &amp;&amp; fix &gt; 0) {</span>
+<span class="fc" id="L251">            Ship tempShip = player.getPlayer().getShipOnLocation(location);</span>
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">            if (tempShip != null) {</span>
+<span class="fc" id="L253">                tempShip.changeAmountHit((-1) * fix);</span>
+<span class="pc bpc" id="L254" title="1 of 2 branches missed.">                if (player.getPlayer().fixShipOnLocation(location)) {</span>
+<span class="fc" id="L255">                    return true;</span>
                 }
             }
         }
 
-<span class="nc" id="L242">        return false;</span>
+<span class="nc" id="L260">        return false;</span>
     }
 
     @Override
     public synchronized List&lt;Torpedo&gt; getAvailableTorpedos(IPlayer player) throws RemoteException {
-<span class="nc" id="L247">        return null;</span>
+<span class="nc" id="L265">        return null;</span>
     }
 
     @Override
     public synchronized List&lt;Overview&gt; getOverviews() throws RemoteException {
-<span class="fc" id="L252">        return this.overviews;</span>
+<span class="fc" id="L270">        return this.overviews;</span>
     }
 
     @Override
     public synchronized List&lt;SpecialPackage&gt; getSpecials(IPlayer player) throws RemoteException {
-<span class="nc" id="L257">        return player.getSpecials();</span>
+<span class="nc" id="L275">        return player.getSpecials();</span>
     }
 
     @Override
     public synchronized boolean useSpecial(SpecialPackage special) throws RemoteException {
-<span class="nc" id="L262">        return false;</span>
+<span class="nc" id="L280">        return false;</span>
     }
 
     /**
@@ -271,19 +289,19 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
      */
     @Override
     public synchronized IPlayer addPlayer(IPlayer player) throws RemoteException {
-<span class="fc bfc" id="L274" title="All 2 branches covered.">        if (player != null) {</span>
-<span class="fc bfc" id="L275" title="All 2 branches covered.">            if (this.players.size() != 0) {</span>
-<span class="fc bfc" id="L276" title="All 2 branches covered.">                for (IPlayer p : this.players) {</span>
-<span class="fc bfc" id="L277" title="All 2 branches covered.">                    if (p.equals(player)) {</span>
-<span class="fc" id="L278">                        throw new IllegalArgumentException(&quot;The player you tried to add is already in the list.&quot;);</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">        if (player != null) {</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">            if (this.players.size() != 0) {</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">                for (IPlayer p : this.players) {</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">                    if (p.equals(player)) {</span>
+<span class="fc" id="L296">                        throw new IllegalArgumentException(&quot;The player you tried to add is already in the list.&quot;);</span>
                     }
-<span class="fc" id="L280">                }</span>
+<span class="fc" id="L298">                }</span>
             }
 
-<span class="fc" id="L283">            this.players.add(player);</span>
-<span class="fc" id="L284">            return player;</span>
+<span class="fc" id="L301">            this.players.add(player);</span>
+<span class="fc" id="L302">            return player;</span>
         }
-<span class="fc" id="L286">        throw new IllegalArgumentException(&quot;Unable to add a NULL player to the list..&quot;);</span>
+<span class="fc" id="L304">        throw new IllegalArgumentException(&quot;Unable to add a NULL player to the list..&quot;);</span>
     }
 
     /**
@@ -294,36 +312,36 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
      */
     @Override
     public synchronized boolean removePlayer(IPlayer player) throws RemoteException {
-<span class="fc bfc" id="L297" title="All 2 branches covered.">        if (player != null) {</span>
-<span class="fc" id="L298">            List&lt;IPlayer&gt; playersTemp = this.getPlayers();</span>
-<span class="pc bpc" id="L299" title="1 of 2 branches missed.">            for (IPlayer p : playersTemp) {</span>
-<span class="fc bfc" id="L300" title="All 2 branches covered.">                if (p.equals(player)) {</span>
-<span class="fc" id="L301">                    this.players.remove(p);</span>
-<span class="fc" id="L302">                    return true;</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">        if (player != null) {</span>
+<span class="fc" id="L316">            List&lt;IPlayer&gt; playersTemp = this.getPlayers();</span>
+<span class="pc bpc" id="L317" title="1 of 2 branches missed.">            for (IPlayer p : playersTemp) {</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">                if (p.equals(player)) {</span>
+<span class="fc" id="L319">                    this.players.remove(p);</span>
+<span class="fc" id="L320">                    return true;</span>
                 }
-<span class="fc" id="L304">            }</span>
+<span class="fc" id="L322">            }</span>
         }
-<span class="fc" id="L306">        return false;</span>
+<span class="fc" id="L324">        return false;</span>
     }
 
     public boolean changeTurn(IPlayer player) throws RemoteException {
-<span class="nc bnc" id="L310" title="All 2 branches missed.">        for (IPlayer playerLoop : this.players) {</span>
-<span class="nc bnc" id="L311" title="All 2 branches missed.">            if (playerLoop.equals(player)) {</span>
-<span class="nc" id="L312">                playerLoop.changeTurn();</span>
+<span class="nc bnc" id="L328" title="All 2 branches missed.">        for (IPlayer playerLoop : this.players) {</span>
+<span class="nc bnc" id="L329" title="All 2 branches missed.">            if (playerLoop.equals(player)) {</span>
+<span class="nc" id="L330">                playerLoop.changeTurn();</span>
             }
-<span class="nc" id="L314">        }</span>
-<span class="nc" id="L315">        return true;</span>
+<span class="nc" id="L332">        }</span>
+<span class="nc" id="L333">        return true;</span>
     }
 
     public boolean getPlayerTurn(IPlayer player) throws RemoteException {
-<span class="nc bnc" id="L319" title="All 2 branches missed.">        for (IPlayer playerLoop : this.players) {</span>
-<span class="nc bnc" id="L320" title="All 2 branches missed.">            if (playerLoop.equals(playerLoop)) {</span>
-<span class="nc bnc" id="L321" title="All 2 branches missed.">                if (playerLoop.isTurn()) {</span>
-<span class="nc" id="L322">                    return true;</span>
+<span class="nc bnc" id="L337" title="All 2 branches missed.">        for (IPlayer playerLoop : this.players) {</span>
+<span class="nc bnc" id="L338" title="All 2 branches missed.">            if (playerLoop.equals(playerLoop)) {</span>
+<span class="nc bnc" id="L339" title="All 2 branches missed.">                if (playerLoop.isTurn()) {</span>
+<span class="nc" id="L340">                    return true;</span>
                 }
             }
-<span class="nc" id="L325">        }</span>
-<span class="nc" id="L326">        return false;</span>
+<span class="nc" id="L343">        }</span>
+<span class="nc" id="L344">        return false;</span>
     }
 
     /**
@@ -335,23 +353,23 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
      */
     @Override
     public int damageShip(IPlayer player, int[] location) throws RemoteException {
-<span class="fc" id="L338">        Ship ship = player.getPlayer().getShipOnLocation(location);</span>
-<span class="fc" id="L339">        int damage = 1;</span>
-<span class="fc" id="L340">        int shipDamage = ship.changeAmountHit(damage);</span>
+<span class="fc" id="L356">        Ship ship = player.getPlayer().getShipOnLocation(location);</span>
+<span class="fc" id="L357">        int damage = 1;</span>
+<span class="fc" id="L358">        int shipDamage = ship.changeAmountHit(damage);</span>
 
-<span class="fc bfc" id="L342" title="All 2 branches covered.">        if (ship.isDestroyed()) {</span>
-<span class="fc" id="L343">            return -1;</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">        if (ship.isDestroyed()) {</span>
+<span class="fc" id="L361">            return -1;</span>
         }
-<span class="fc" id="L345">        return shipDamage;</span>
+<span class="fc" id="L363">        return shipDamage;</span>
     }
 
     public void changePlayerTurn(IPlayer player) {
-<span class="nc bnc" id="L349" title="All 2 branches missed.">        if (player != null) {</span>
-<span class="nc bnc" id="L350" title="All 2 branches missed.">            for (IPlayer playerLoop : this.players) {</span>
-<span class="nc" id="L351">                playerLoop.changeTurn();</span>
-<span class="nc" id="L352">            }</span>
+<span class="nc bnc" id="L367" title="All 2 branches missed.">        if (player != null) {</span>
+<span class="nc bnc" id="L368" title="All 2 branches missed.">            for (IPlayer playerLoop : this.players) {</span>
+<span class="nc" id="L369">                playerLoop.changeTurn();</span>
+<span class="nc" id="L370">            }</span>
         }
-<span class="nc" id="L354">    }</span>
+<span class="nc" id="L372">    }</span>
 
     /**
      * Set the overviews per player.
@@ -361,12 +379,12 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
      */
     @Override
     public synchronized void buildOverviewsForPlayers() throws RemoteException {
-<span class="fc" id="L364">        IPlayer player1 = this.players.get(0);</span>
-<span class="fc" id="L365">        IPlayer player2 = this.players.get(1);</span>
+<span class="fc" id="L382">        IPlayer player1 = this.players.get(0);</span>
+<span class="fc" id="L383">        IPlayer player2 = this.players.get(1);</span>
 
         // Set players own overview.
-<span class="fc" id="L368">        Overview player1OwnField = player1.setPlayerOverview(new Overview(player1.getName()));</span>
-<span class="fc" id="L369">        Overview player2OwnField = player2.setPlayerOverview(new Overview(player2.getName()));</span>
+<span class="fc" id="L386">        Overview player1OwnField = player1.setPlayerOverview(new Overview(player1.getName()));</span>
+<span class="fc" id="L387">        Overview player2OwnField = player2.setPlayerOverview(new Overview(player2.getName()));</span>
 
         // Set players opponents overviews.
         /*Overview player1OpponentField = player2OwnField;
@@ -374,34 +392,36 @@ public class GameManager extends UnicastRemoteObject implements IGameManager, Re
 
          Overview player2OpponentField = player1OwnField;
          player2.setOpponentOverview(player2OpponentField);*/
-<span class="fc" id="L377">        overviews.add(player1.getPlayer());</span>
-<span class="fc" id="L378">        overviews.add(player2.getPlayer());</span>
-<span class="fc" id="L379">    }</span>
+<span class="fc" id="L395">        overviews.add(player1.getPlayer());</span>
+<span class="fc" id="L396">        overviews.add(player2.getPlayer());</span>
+<span class="fc" id="L397">    }</span>
 
     @Override
     public void addListener(RemotePropertyListener listener, String property) throws RemoteException {
 
-<span class="nc" id="L384">    }</span>
+<span class="nc" id="L402">    }</span>
 
     @Override
     public void removeListener(RemotePropertyListener listener, String property) throws RemoteException {
-<span class="nc" id="L388">    }</span>
+<span class="nc" id="L406">    }</span>
 
     @Override
     public void propertyChange(PropertyChangeEvent pce) throws RemoteException {
-<span class="nc" id="L392">        IGameManager manager = (IGameManager) pce.getNewValue();</span>
+<span class="nc" id="L410">        IGameManager manager = (IGameManager) pce.getNewValue();</span>
 
-<span class="nc" id="L394">        Platform.runLater(new Runnable() {</span>
+<span class="nc" id="L412">        Platform.runLater(new Runnable() {</span>
             @Override
             public void run() {
                 try {
-<span class="nc" id="L398">                    System.out.println(manager.getPlayers().size());</span>
-<span class="nc" id="L399">                } catch (RemoteException ex) {</span>
-<span class="nc" id="L400">                    Logger.getLogger(RMIClient.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L401">                }</span>
-<span class="nc" id="L402">            }</span>
+<span class="nc" id="L416">                    System.out.println(manager.getPlayers().size());</span>
+
+<span class="nc" id="L418">                } catch (RemoteException ex) {</span>
+<span class="nc" id="L419">                    Logger.getLogger(RMIClient.class</span>
+<span class="nc" id="L420">                            .getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L421">                }</span>
+<span class="nc" id="L422">            }</span>
         });
-<span class="nc" id="L404">    }</span>
+<span class="nc" id="L424">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>
